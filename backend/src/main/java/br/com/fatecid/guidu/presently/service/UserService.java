@@ -59,9 +59,21 @@ public class UserService implements UserDetailsService {
                 encoder.encode(request.getPassword())
         );
 
-        // Define os roles do usuário. Por enquanto novos usuários são criados com permissões básicas
-        // TODO (Gui): Desenvolver um método para criação de admin
-        user.setRoles(Set.of("ROLE_USER"));
+        // Recebe os roles solicitados para o novo usuário
+        String role = request.getRole();
+       
+        if (role.equals("user")) {
+            // Define o usuário somente como user
+            user.setRoles(Set.of("ROLE_USER"));
+        }
+        else if (role.equals("admin")){
+            // Dá privilégios de admin
+            user.setRoles(Set.of("ROLE_ADMIN", "ROLE_USER"));
+        }
+        else {
+            // Erro de role inválido
+            throw new IllegalArgumentException("Role inválido! O novo usuário deve possuir nível user ou admin");
+        }
 
         return repository.save(user);
     }

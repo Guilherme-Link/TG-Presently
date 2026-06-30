@@ -4,6 +4,7 @@ public class RegisterUserRequest {
 
     private String username;
     private String password;
+    private String role;
 
     // Getters e Setters
     public String getUsername() {
@@ -20,5 +21,13 @@ public class RegisterUserRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+     public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }
