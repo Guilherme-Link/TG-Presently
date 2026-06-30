@@ -27,7 +27,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // .requestMatchers("/users/register").permitAll()
+                // Limita as rotas de security apenas para usuários admin
+                .requestMatchers("/security/**").hasRole("ADMIN")
                 .anyRequest().authenticated())
             .httpBasic(Customizer.withDefaults());
 

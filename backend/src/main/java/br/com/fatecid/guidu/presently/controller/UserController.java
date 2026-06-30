@@ -19,7 +19,6 @@ public class UserController {
     }
 
     // Criação de novos usuários
-    // TODO (Gui): Limitar os endpoints apenas para usuários autenticados como admin
     @PostMapping("/register")
     public UserResponse register(
             @RequestBody RegisterUserRequest request) {
