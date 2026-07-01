@@ -4,7 +4,10 @@ import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
 import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.service.UserService;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -23,7 +26,13 @@ public class UserController {
     public UserResponse register(
             @RequestBody RegisterUserRequest request) {
 
-        User user = service.register(request);
+        User user =  new User();
+        try{
+            user = service.register(request);
+        }
+        catch(IllegalArgumentException e){
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, e.getMessage());
+        } 
 
         return new UserResponse(
                 user.getId(),
@@ -48,6 +57,7 @@ public class UserController {
 
     // Deleta um usuário pelo ID
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
