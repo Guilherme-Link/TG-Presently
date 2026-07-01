@@ -6,7 +6,6 @@ import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.service.UserService;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -58,9 +57,9 @@ public class UserController {
 
     // Deleta um usuário pelo ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public void delete(@PathVariable Long id) {
         service.delete(id);
-        return ResponseEntity.ok().body("Recurso deletado com sucesso");
     }
 
 
