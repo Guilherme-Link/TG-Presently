@@ -1,0 +1,96 @@
+package br.com.fatecid.guidu.presently.dto;
+
+import br.com.fatecid.guidu.presently.entity.Event;
+
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
+
+// DTO usado para criação e edição de um evento
+// Diferente do EventDTO, não tem campo para o ID, e como só é recebido, não tem método de conversão de evento para DTO
+
+public class EventCreateDTO {
+
+    private String name;
+
+    private String description;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
+
+    private Event.EventType eventType;
+
+    private Long responsibleUserId;
+
+    private Long ambientId;
+
+    private Set<Long> participantIds = new HashSet<>();
+
+    public EventCreateDTO() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public LocalTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalTime endTime) {
+        this.endTime = endTime;
+    }
+
+    public Event.EventType getEventType() {
+        return eventType;
+    }
+
+    public void setEventType(Event.EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public Long getResponsibleUserId() {
+        return responsibleUserId;
+    }
+
+    public void setResponsibleUserId(Long responsibleUserId) {
+        this.responsibleUserId = responsibleUserId;
+    }
+
+    public Long getAmbientId() {
+        return ambientId;
+    }
+
+    public void setAmbientId(Long ambientId) {
+        this.ambientId = ambientId;
+    }
+
+    public Set<Long> getParticipantIds() {
+        return participantIds;
+    }
+
+    public void setParticipantIds(Set<Long> participantIds) {
+        this.participantIds = participantIds;
+    }
+}

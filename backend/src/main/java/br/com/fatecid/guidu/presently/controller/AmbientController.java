@@ -17,22 +17,26 @@ public class AmbientController {
         this.service = service;
     }
 
+    // Retorna uma lista de todos os ambientes cadastrados
     @GetMapping
     public List<AmbientDTO> findAll() {
         return service.findAll();
     }
 
+    // Retorna detalhes de um ambiente específico pelo ID
     @GetMapping("/{id}")
     public AmbientDTO findById(@PathVariable Long id) {
         return service.findById(id);
     }
 
+    // Cria um novo ambiente, recebendo um AmbientDTO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public AmbientDTO save(@RequestBody AmbientDTO dto) {
         return service.save(dto);
     }
 
+    // Edita um ambiente com base no ID, recebendo um AmbientDTO
     @PutMapping("/{id}")
     public AmbientDTO update(
             @PathVariable Long id,
@@ -41,6 +45,7 @@ public class AmbientController {
         return service.update(id, dto);
     }
 
+    // Deleta um ambiente, com base no ID
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
