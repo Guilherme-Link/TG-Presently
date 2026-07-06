@@ -1,13 +1,18 @@
 package br.com.fatecid.guidu.presently.service;
 
+import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.repository.UserRepository;
+
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -81,6 +86,37 @@ public class UserService implements UserDetailsService {
     // Retorna uma lista de todos os usuários
     public List<User> findAll() {
         return repository.findAll();
+    }
+
+    // Retorna uma lista dos eventos pelos quais o usuário é reponsável
+    @Transactional(readOnly = true)
+    public List<EventDTO> getResponsibleEvents(Long userId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : user.getResponsibleEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
+    }
+
+    // Retorna uma lista dos eventos dos quais o usuário é participante
+    @Transactional(readOnly = true)
+    public List<EventDTO> getParticipatingEvents(Long userId) {
+        User user = repository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : user.getParticipatingEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
     }
 
     // Deleta um usuário específico

@@ -1,8 +1,10 @@
 package br.com.fatecid.guidu.presently.controller;
 
 import br.com.fatecid.guidu.presently.dto.AmbientDTO;
+import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.service.AmbientService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,12 @@ public class AmbientController {
     @GetMapping("/{id}")
     public AmbientDTO findById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    // Retorna os eventos programados para um ambiente específico pelo ID
+    @GetMapping("schedule/{id}")
+    public ResponseEntity<List<EventDTO>> scheduledEvents(@PathVariable Long id) {
+        return ResponseEntity.ok(service.scheduledEvents(id));
     }
 
     // Cria um novo ambiente, recebendo um AmbientDTO

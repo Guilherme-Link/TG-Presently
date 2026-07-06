@@ -2,10 +2,16 @@ package br.com.fatecid.guidu.presently.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 
 //Entidade que representa os ambientes a serem validados (As "salas de aula")
 @Entity
@@ -21,6 +27,10 @@ public class Ambient {
 
     @Column(nullable = false, unique = true)
     private String description;
+
+    // Relacionamento para retornar os eventos cadastrados para o ambiente
+    @OneToMany(mappedBy = "ambient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Event> events = new ArrayList<>();
 
     // TODO (Gui): Adicionar campo para gravar geolocalização do ambiente (Provavelmente PostGIS)
 
@@ -51,5 +61,9 @@ public class Ambient {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public List<Event> getEvents(){
+        return events;
     }
 }

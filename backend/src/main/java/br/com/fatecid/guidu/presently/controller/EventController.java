@@ -3,6 +3,7 @@ package br.com.fatecid.guidu.presently.controller;
 import br.com.fatecid.guidu.presently.dto.EventCreateDTO;
 import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.service.EventService;
+import br.com.fatecid.guidu.presently.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +17,11 @@ import java.util.List;
 public class EventController {
 
     private final EventService service;
+    private final UserService userService;
 
-    EventController(EventService service) {
+    EventController(EventService service, UserService userService) {
         this.service = service;
+        this.userService = userService;
     }
 
     // Retorna a lista de eventos cadastrados
@@ -59,4 +62,17 @@ public class EventController {
         return ResponseEntity.noContent().build();
     }
 
+    // Lista os eventos em que o ID de usuário fornecido é responsável
+    @GetMapping("/responsible/{id}")
+    public ResponseEntity<List<EventDTO>> getResponsibleEvents(@PathVariable Long id) {
+        List<EventDTO> events = userService.getResponsibleEvents(id);
+        return ResponseEntity.ok(events);
+    }
+
+    // Lista os eventos em que o ID de usuário fornecido participa
+    @GetMapping("/participating/{id}")
+    public ResponseEntity<List<EventDTO>> getParticipatingEvents(@PathVariable Long id) {
+        List<EventDTO> events = userService.getParticipatingEvents(id);
+        return ResponseEntity.ok(events);
+    }
 }
