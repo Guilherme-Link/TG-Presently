@@ -1,5 +1,7 @@
 package br.com.fatecid.guidu.presently.dto;
 
+import br.com.fatecid.guidu.presently.entity.Ambient;
+
 public class AmbientDTO {
 
     private Long id;
@@ -7,6 +9,13 @@ public class AmbientDTO {
     private String description;
 
     public AmbientDTO() {
+    }
+
+    public AmbientDTO(Ambient ambient) {
+        this.id = ambient.getId();
+        this.name = ambient.getName();
+        this.description = ambient.getDescription();
+        
     }
 
     public AmbientDTO(Long id, String name, String description) {
