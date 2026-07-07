@@ -1,0 +1,117 @@
+import "../styles/theme.css";
+import Header from "../components/Header/Header.jsx";
+import Sidebar from "../components/Sidebar/Sidebar (1).jsx";
+import BottomNavigation from "../components/BottomNavigation/BottomNavigation (1).jsx";
+import StatisticCard from "../components/StatisticCard/StatisticCard (1).jsx";
+import ClassCard from "../components/ClassCard/ClassCard (1).jsx";
+import QuickAccessCard from "../components/QuickAccessCard/QuickAccessCard (1).jsx";
+import AttendanceHeatmap from "../components/AttendenceHeatmap/AttendanceHeatmap.jsx";
+import {
+  statistics,
+  classes,
+  shortcuts,
+  heatmapDays,
+  heatmapMatrix,
+  heatmapTitle,
+} from "../data/dashboardData";
+import "./Dashboard.css";
+
+function getCurrentDateLabel() {
+  const today = new Date();
+  const formatted = new Intl.DateTimeFormat("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(today);
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
+
+function Dashboard() {
+  const dateLabel = getCurrentDateLabel();
+
+  return (
+    <div className="dashboard">
+      <Sidebar activeId="dashboard" />
+
+      <div className="dashboard__content">
+        <Header userName="Aluno" date={dateLabel} notificationCount={9} />
+
+        <main className="dashboard__main">
+          <section className="dashboard__section">
+            <h2 className="dashboard__section-title dashboard__section-title--mobile-only">
+              Dados do semestre
+            </h2>
+            <div className="dashboard__stats-grid">
+              {statistics.map((stat) => (
+                <StatisticCard
+                  key={stat.id}
+                  title={stat.title}
+                  value={stat.value}
+                  description={stat.description}
+                  valueColor={stat.valueColor}
+                />
+              ))}
+            </div>
+          </section>
+
+          <div className="dashboard__body-grid">
+            <section className="dashboard__classes">
+              <div className="dashboard__classes-header">
+                <h2 className="dashboard__section-title">Minhas aulas</h2>
+                <button type="button" className="dashboard__attendance-btn">
+                  <span
+                    className="dashboard__attendance-emoji"
+                    aria-hidden="true"
+                  >
+                    🤚
+                  </span>
+                  Marcar presença
+                </button>
+              </div>
+
+              <div className="dashboard__classes-list">
+                {classes.map((item) => (
+                  <ClassCard
+                    key={item.id}
+                    time={item.time}
+                    subject={item.subject}
+                    room={item.room}
+                    professor={item.professor}
+                  />
+                ))}
+              </div>
+            </section>
+
+            <section className="dashboard__heatmap-section">
+              <AttendanceHeatmap
+                title={heatmapTitle}
+                days={heatmapDays}
+                matrix={heatmapMatrix}
+              />
+            </section>
+          </div>
+
+          <section className="dashboard__shortcuts">
+            <h2 className="dashboard__section-title dashboard__section-title--mobile-only">
+              Atalhos
+            </h2>
+            <div className="dashboard__shortcuts-grid">
+              {shortcuts.map((shortcut) => (
+                <QuickAccessCard
+                  key={shortcut.id}
+                  label={shortcut.label}
+                  icon={shortcut.icon}
+                />
+              ))}
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <BottomNavigation activeId="dashboard" />
+    </div>
+  );
+}
+
+export default Dashboard;
