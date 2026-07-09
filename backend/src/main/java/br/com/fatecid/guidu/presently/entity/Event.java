@@ -1,7 +1,10 @@
 package br.com.fatecid.guidu.presently.entity;
 
 import jakarta.persistence.*;
+
+import java.security.SecureRandom;
 import java.time.LocalTime;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,6 +20,9 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 44)
+    private String secretKey;
 
     @Column(nullable = false, length = 150)
     private String name;
@@ -70,6 +76,32 @@ public class Event {
         this.eventType = eventType;
         this.responsibleUser = responsibleUser;
         this.ambient = ambient;
+        this.generateSecretKey();
+    }
+
+    // Auxiliares para manipulação dos códigos de verificação (somente getter e geração de chave secreta)
+    public String getSecretKey(){
+        return secretKey;
+    }
+
+    public void generateSecretKey(){
+        SecureRandom random = new SecureRandom();
+
+        // Criando array de 32 bytes (256 bits) e atribuindo valor aleatório
+        byte[] bytes = new byte[32];
+        random.nextBytes(bytes);
+
+        // Fazendo a conversão para String em base64, 256 bits equivalem a 44 caracteres
+        secretKey = Base64.getEncoder().encodeToString(bytes);
+    }
+
+    // Auxiliares para manipulação individual de participantes
+    public void addParticipant(User user) {
+        this.participants.add(user);
+    }
+
+    public void removeParticipant(User user) {
+        this.participants.remove(user);
     }
 
 
@@ -145,16 +177,6 @@ public class Event {
 
     public void setParticipants(Set<User> participants) {
         this.participants = participants;
-    }
-
-
-    // Auxiliares para manipulação individual de participantes
-    public void addParticipant(User user) {
-        this.participants.add(user);
-    }
-
-    public void removeParticipant(User user) {
-        this.participants.remove(user);
     }
 
 }

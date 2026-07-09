@@ -51,11 +51,22 @@ public class EventService {
         return new EventDTO(event);
     }
 
+    public String getSecretKeyById(Long id) {
+
+        Event event = eventRepository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Evento não encontrado."));
+
+        return event.getSecretKey();
+    }
+
     public EventDTO create(EventCreateDTO dto) {
 
         Event event = new Event();
 
+        // Copia as informações recebidas pelo DTO e gera a chave secreta do evento
         copyDtoToEntity(dto, event);
+        event.generateSecretKey();
 
         event = eventRepository.save(event);
 
