@@ -7,6 +7,7 @@ import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 
 import br.com.fatecid.guidu.presently.dto.QrCodeRenderingDTO;
+import br.com.fatecid.guidu.presently.dto.QrCodeValidationDTO;
 
 import org.springframework.stereotype.Service;
 
@@ -93,5 +94,18 @@ public class QrCodeService {
         );
 
         return RenderingDTO;
+    }
+
+    public boolean validateCode(QrCodeValidationDTO validationDTO){
+
+        // TODO (Gui): Modificar o tipo de retorno e adicionar as outras validações; Também adicionar registro no banco
+        // Validação básica, gera novamente o código de validação do evento e compara com o lido no QR code
+        if(generateValidationCode(validationDTO.getEventId()).equals(validationDTO.getValidationCode())){
+            return true;
+        }
+        else {
+            return false;
+        }
+
     }
 }   
