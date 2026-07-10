@@ -1,4 +1,5 @@
 import "../styles/theme.css";
+import { useNavigate } from "react-router-dom";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
@@ -19,6 +20,7 @@ function getCurrentDateLabel() {
 }
 
 function DashboardMobile() {
+  const navigate = useNavigate();
   const dateLabel = getCurrentDateLabel();
 
   return (
@@ -53,7 +55,11 @@ function DashboardMobile() {
             <section className="dashboard__classes">
               <div className="dashboard__classes-header">
                 <h2 className="dashboard__section-title">Minhas aulas</h2>
-                <button type="button" className="dashboard__attendance-btn">
+                <button
+                  type="button"
+                  className="dashboard__attendance-btn"
+                  onClick={() => navigate("/presenca")}
+                >
                   <span
                     className="dashboard__attendance-emoji"
                     aria-hidden="true"

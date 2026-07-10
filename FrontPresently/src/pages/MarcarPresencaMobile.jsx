@@ -1,4 +1,5 @@
 import { MdArrowBackIosNew, MdCameraAlt } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import "./MarcarPresencaMobile.css";
 
 function QRViewfinderGlyph() {
@@ -39,13 +40,17 @@ function MarcarPresencaMobile({
   onBack,
   onOpenCamera,
 }) {
+  const navigate = useNavigate();
+  const handleBack = onBack ?? (() => navigate(-1));
+  const handleOpenCamera = onOpenCamera ?? (() => {});
+
   return (
     <div className="mp-mobile">
       <header className="mp-mobile__topbar">
         <button
           type="button"
           className="mp-mobile__back"
-          onClick={onBack}
+          onClick={handleBack}
           aria-label="Voltar"
         >
           <MdArrowBackIosNew size={15} />
@@ -74,7 +79,11 @@ function MarcarPresencaMobile({
           com a câmera autorizada
         </p>
 
-        <button type="button" className="mp-mobile__button" onClick={onOpenCamera}>
+        <button
+          type="button"
+          className="mp-mobile__button"
+          onClick={handleOpenCamera}
+        >
           <MdCameraAlt size={18} />
           Abrir câmera
         </button>
