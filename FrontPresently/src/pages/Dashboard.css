@@ -175,3 +175,278 @@
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
+
+/* ---------- Dedicated mobile page ---------- */
+.dashboard--mobile {
+  flex-direction: column;
+}
+
+.dashboard--mobile .header--mobile {
+  display: flex;
+}
+
+.dashboard--mobile .dashboard__main {
+  padding: 18px 20px calc(var(--bottomnav-height) + 24px);
+  gap: 24px;
+}
+
+.dashboard--mobile .dashboard__section-title--mobile-only,
+.dashboard--mobile .dashboard__shortcuts,
+.dashboard--mobile .bottom-nav {
+  display: block;
+}
+
+.dashboard--mobile .bottom-nav {
+  display: flex;
+}
+
+.dashboard--mobile .dashboard__stats-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.dashboard--mobile .dashboard__body-grid {
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.dashboard--mobile .dashboard__classes {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.dashboard--mobile .dashboard__attendance-btn {
+  display: flex;
+}
+
+.dashboard--mobile .dashboard__heatmap-section {
+  display: none;
+}
+
+/* ---------- Dedicated desktop page ---------- */
+.dashboard--desktop {
+  overflow-x: hidden;
+}
+
+.dashboard--desktop .sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 1.8vw, 22px);
+  width: clamp(210px, 18vw, var(--sidebar-width));
+  flex-shrink: 0;
+  background: var(--color-primary);
+  color: #fff;
+  padding: clamp(18px, 2vw, 24px) clamp(14px, 1.6vw, 20px);
+  min-height: 100vh;
+}
+
+.dashboard--desktop .sidebar__logo-text {
+  font-size: clamp(14px, 1.25vw, 17px);
+}
+
+.dashboard--desktop .sidebar__institution,
+.dashboard--desktop .sidebar__link {
+  font-size: clamp(11.5px, 1vw, 13.5px);
+}
+
+.dashboard--desktop .sidebar__link {
+  gap: clamp(8px, 1vw, 12px);
+  padding: 10px clamp(9px, 1vw, 12px);
+}
+
+.dashboard--desktop .header--desktop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--header-height-desktop);
+  padding: 0 clamp(18px, 2.2vw, 32px);
+  background: #fff;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dashboard--desktop .header__greeting h1 {
+  font-size: clamp(17px, 1.55vw, 20px);
+}
+
+.dashboard--desktop .dashboard__main {
+  padding: clamp(20px, 2vw, 28px) clamp(18px, 2.2vw, 32px)
+    clamp(24px, 2.2vw, 32px);
+  gap: clamp(20px, 2vw, 28px);
+}
+
+.dashboard--desktop .dashboard__stats-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(12px, 1.4vw, 20px);
+}
+
+.dashboard--desktop .dashboard__stats-grid > *:nth-child(n + 3) {
+  display: flex;
+}
+
+.dashboard--desktop .statistic-card {
+  padding: clamp(14px, 1.6vw, 20px);
+}
+
+.dashboard--desktop .statistic-card__title {
+  font-size: clamp(10.5px, 0.9vw, 12px);
+}
+
+.dashboard--desktop .statistic-card__value {
+  font-size: clamp(22px, 2vw, 28px);
+}
+
+.dashboard--desktop .statistic-card__description {
+  font-size: clamp(11px, 0.95vw, 12.5px);
+}
+
+.dashboard--desktop .dashboard__body-grid {
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 1fr);
+  gap: clamp(16px, 1.8vw, 24px);
+  align-items: start;
+}
+
+.dashboard--desktop .dashboard__classes {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: clamp(16px, 1.8vw, 22px);
+}
+
+.dashboard--desktop .dashboard__attendance-btn,
+.dashboard--desktop .dashboard__section-title--mobile-only,
+.dashboard--desktop .dashboard__shortcuts {
+  display: none;
+}
+
+.dashboard--desktop .dashboard__heatmap-section {
+  display: block;
+}
+
+.dashboard--desktop .class-card {
+  gap: clamp(10px, 1.2vw, 16px);
+  padding: clamp(12px, 1.4vw, 16px);
+}
+
+.dashboard--desktop .class-card__time {
+  font-size: clamp(12px, 1vw, 13.5px);
+  padding: 8px clamp(10px, 1vw, 14px);
+}
+
+.dashboard--desktop .class-card__subject {
+  font-size: clamp(12.5px, 1.1vw, 14.5px);
+}
+
+.dashboard--desktop .class-card__meta {
+  font-size: clamp(11px, 0.95vw, 12.5px);
+}
+
+.dashboard--desktop .attendance-heatmap {
+  padding: clamp(16px, 1.8vw, 22px);
+}
+
+.dashboard--desktop .attendance-heatmap__grid {
+  gap: clamp(4px, 0.55vw, 6px);
+}
+
+.dashboard--desktop .attendance-heatmap__cell {
+  min-height: clamp(18px, 2vw, 28px);
+}
+
+@media (max-width: 1280px) {
+  .dashboard--desktop .dashboard__stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard--desktop .dashboard__body-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard--desktop .dashboard__heatmap-section {
+    max-width: 760px;
+  }
+
+  .dashboard--desktop .attendance-heatmap__cell {
+    min-height: clamp(22px, 3.2vw, 34px);
+  }
+}
+
+@media (max-width: 1023px) {
+  .dashboard--desktop {
+    flex-direction: column;
+  }
+
+  .dashboard--desktop .sidebar {
+    width: 100%;
+    min-height: auto;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 16px 20px;
+  }
+
+  .dashboard--desktop .sidebar__brand {
+    flex: 0 0 auto;
+  }
+
+  .dashboard--desktop .sidebar__institution {
+    flex: 1 1 220px;
+  }
+
+  .dashboard--desktop .sidebar__group {
+    flex: 1 1 300px;
+    min-width: 0;
+  }
+
+  .dashboard--desktop .sidebar__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .dashboard--desktop .sidebar__link {
+    flex: 1 1 130px;
+    justify-content: center;
+  }
+
+  .dashboard--desktop .header--desktop {
+    height: auto;
+    min-height: var(--header-height-desktop);
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+
+  .dashboard--desktop .dashboard__main {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 720px) {
+  .dashboard--desktop .dashboard__stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard--desktop .dashboard__classes-header,
+  .dashboard--desktop .header--desktop,
+  .dashboard--desktop .header__actions {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard--desktop .class-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .dashboard--desktop .attendance-heatmap {
+    overflow-x: auto;
+  }
+
+  .dashboard--desktop .attendance-heatmap__grid {
+    min-width: 420px;
+  }
+}

@@ -1,0 +1,142 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+.mp-mobile {
+  --mp-red: #FF1E1E;
+  --mp-red-dark: #7B1414;
+  --mp-text: #2F2F2F;
+  --mp-text-secondary: #8A8A8A;
+
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #ffffff;
+}
+
+.mp-mobile * {
+  box-sizing: border-box;
+}
+
+/* ---------- Top bar ---------- */
+.mp-mobile__topbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  background: #E9E9E9;
+}
+
+.mp-mobile__back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border: none;
+  background: transparent;
+  color: var(--mp-text);
+  cursor: pointer;
+  padding: 0;
+}
+
+.mp-mobile__topbar-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--mp-text);
+}
+
+/* ---------- Lesson banner ---------- */
+.mp-mobile__banner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 22px 22px 26px;
+  background: linear-gradient(155deg, var(--mp-red) 0%, var(--mp-red) 60%, var(--mp-red-dark) 140%);
+}
+
+.mp-mobile__subject {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.mp-mobile__meta {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ---------- Body ---------- */
+.mp-mobile__body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  padding: 30px 28px 40px;
+}
+
+.mp-mobile__instruction {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--mp-text);
+}
+
+.mp-mobile__frame {
+  width: 180px;
+  height: 180px;
+  border-radius: 22px;
+  border: 1.5px solid var(--mp-red);
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+}
+
+.mp-mobile__glyph {
+  width: 100%;
+  height: 100%;
+}
+
+.mp-mobile__status-title {
+  margin: 6px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--mp-text);
+}
+
+.mp-mobile__status-description {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--mp-text-secondary);
+}
+
+.mp-mobile__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 300px;
+  margin-top: 8px;
+  background: var(--mp-red-dark);
+  color: #fff;
+  border: none;
+  padding: 15px 24px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.mp-mobile__button:hover {
+  background: #611010;
+  transform: translateY(-1px);
+}

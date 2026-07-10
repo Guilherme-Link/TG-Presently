@@ -1,5 +1,5 @@
 import { MdHome, MdQrCodeScanner, MdPerson } from "react-icons/md";
-import { bottomNavItems } from "../../data/dashboardData";
+import { bottomNavItems } from "../../../data/dashboardData";
 import "./BottomNavigation.css";
 
 const ICONS = {
