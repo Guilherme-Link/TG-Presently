@@ -7,6 +7,7 @@ import {
   MdLogout,
   MdKeyboardArrowDown,
 } from "react-icons/md";
+import { NavLink } from "react-router-dom";
 import { sidebarNavAluno, sidebarNavConta } from "../../../data/dashboardData";
 import "./Sidebar (1).css";
 
@@ -19,23 +20,25 @@ const ICONS = {
   logout: MdLogout,
 };
 
-function NavGroup({ title, items, activeId }) {
+function NavGroup({ title, items }) {
   return (
     <div className="sidebar__group">
       <span className="sidebar__group-title">{title}</span>
       <nav className="sidebar__nav">
-        {items.map(({ id, label, icon }) => {
+        {items.map(({ id, label, icon, path }) => {
           const Icon = ICONS[icon];
-          const isActive = id === activeId;
           return (
-            <a
+            <NavLink
               key={id}
-              href="#"
-              className={`sidebar__link ${isActive ? "sidebar__link--active" : ""}`}
+              to={path}
+              end
+              className={({ isActive }) =>
+                `sidebar__link${isActive ? " sidebar__link--active" : ""}`
+              }
             >
               <Icon size={18} />
               <span>{label}</span>
-            </a>
+            </NavLink>
           );
         })}
       </nav>
@@ -43,7 +46,7 @@ function NavGroup({ title, items, activeId }) {
   );
 }
 
-function Sidebar({ institution = "Fatec Indaiatuba", activeId = "dashboard" }) {
+function Sidebar({ institution = "Fatec Indaiatuba" }) {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
@@ -56,8 +59,8 @@ function Sidebar({ institution = "Fatec Indaiatuba", activeId = "dashboard" }) {
         <MdKeyboardArrowDown size={18} />
       </button>
 
-      <NavGroup title="Aluno" items={sidebarNavAluno} activeId={activeId} />
-      <NavGroup title="Conta" items={sidebarNavConta} activeId={activeId} />
+      <NavGroup title="Aluno" items={sidebarNavAluno} />
+      <NavGroup title="Conta" items={sidebarNavConta} />
     </aside>
   );
 }

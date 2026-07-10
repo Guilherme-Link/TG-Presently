@@ -3,6 +3,8 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import PresentlyLogin from "./pages/PresentlyLogin.jsx";
 import DashboardDesktop from "./pages/DashboardDesktop.jsx";
 import DashboardMobile from "./pages/DashboardMobile.jsx";
+import MarcarPresencaMobile from "./pages/MarcarPresencaMobile.jsx";
+import MarcarPresencaDesktop from "./pages/MarcarPresencaDesktop.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -84,11 +86,21 @@ function DashboardRoute() {
   );
 }
 
+function PresencaRoute() {
+  return (
+    <ResponsiveRoute
+      mobileComponent={MarcarPresencaMobile}
+      desktopComponent={MarcarPresencaDesktop}
+    />
+  );
+}
+
 function App() {
   return (
     <Routes>
       <Route path="/login" element={<PresentlyLogin />} />
       <Route path="/dashboard" element={<DashboardRoute />} />
+      <Route path="/presenca" element={<PresencaRoute />} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );
