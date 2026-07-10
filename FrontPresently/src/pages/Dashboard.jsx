@@ -1,11 +1,11 @@
 import "../styles/theme.css";
-import Header from "../components/Header/Header.jsx";
-import Sidebar from "../components/Sidebar/Sidebar (1).jsx";
-import BottomNavigation from "../components/BottomNavigation/BottomNavigation (1).jsx";
-import StatisticCard from "../components/StatisticCard/StatisticCard (1).jsx";
-import ClassCard from "../components/ClassCard/ClassCard (1).jsx";
-import QuickAccessCard from "../components/QuickAccessCard/QuickAccessCard (1).jsx";
-import AttendanceHeatmap from "../components/AttendenceHeatmap/AttendanceHeatmap.jsx";
+import Header from "../components/DashboardComponents/Header/Header.jsx";
+import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
+import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
+import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
+import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
+import QuickAccessCard from "../components/DashboardComponents/QuickAccessCard/QuickAccessCard (1).jsx";
+import AttendanceHeatmap from "../components/DashboardComponents/AttendenceHeatmap/AttendanceHeatmap.jsx";
 import {
   statistics,
   classes,

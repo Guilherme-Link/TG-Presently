@@ -7,7 +7,7 @@ import {
   MdLogout,
   MdKeyboardArrowDown,
 } from "react-icons/md";
-import { sidebarNavAluno, sidebarNavConta } from "../../data/dashboardData";
+import { sidebarNavAluno, sidebarNavConta } from "../../../data/dashboardData";
 import "./Sidebar (1).css";
 
 const ICONS = {
