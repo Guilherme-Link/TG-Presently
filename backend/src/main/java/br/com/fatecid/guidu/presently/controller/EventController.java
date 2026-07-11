@@ -33,7 +33,7 @@ public class EventController {
     // Traz informações de um evento específico baseado no id
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(new EventDTO(service.findById(id)));
     }
 
 
