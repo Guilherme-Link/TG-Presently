@@ -3,7 +3,10 @@ package br.com.fatecid.guidu.presently.entity;
 import jakarta.persistence.*;
 
 import java.security.SecureRandom;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +15,7 @@ import java.util.Set;
 @Table(name = "events")
 public class Event {
 
+    // Definições do tipo de evento
     public enum EventType {
         SINGLE,
         RECURRING
@@ -31,6 +35,12 @@ public class Event {
     private String description;
 
     @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
+
+    @Column(nullable = false)
     private LocalTime startTime;
 
     @Column(nullable = false)
@@ -39,6 +49,10 @@ public class Event {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private EventType eventType;
+
+    // Define a cada quantos dias um evento se repete
+    @Column(nullable = false)
+    private int intervalDays;
 
     // Relacionamento para vincular o responsável pelo evento
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -64,19 +78,53 @@ public class Event {
 
     public Event(String name,
              String description,
+             LocalDate startDate,
+             LocalDate endDate,
              LocalTime startTime,
              LocalTime endTime,
              EventType eventType,
+             int intervalDays,
              User responsibleUser,
              Ambient ambient) {
         this.name = name;
         this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventType = eventType;
+        this.intervalDays = intervalDays;
         this.responsibleUser = responsibleUser;
         this.ambient = ambient;
         this.generateSecretKey();
+    }
+
+    // Verifica se o evento está ativo em determinado momento
+    public boolean isActive(LocalDateTime dateTime) {
+        LocalDate date = dateTime.toLocalDate();
+        LocalTime time = dateTime.toLocalTime();
+
+        // Verifica se o dia está no intervalo
+        if (date.isBefore(startDate) || date.isAfter(endDate)) {
+            return false;
+        }
+
+        // Verifica se o horário está no intervalo
+        if (time.isBefore(startTime) || time.isAfter(endTime)) {
+            return false;
+        }
+
+        // Se for um evento único, está válido
+        if (eventType == EventType.SINGLE) {
+            return true;
+        }
+
+        // Se for um evento recorrente, é preciso verificar se o evento deveria ocorrer nessa data
+        // Pega a diferença entre a data verificada e a data de início
+        long days = ChronoUnit.DAYS.between(startDate, date);
+
+        // Verifica se a quantidade de dias bate com o intervalo cadastrado
+        return days % intervalDays == 0;
     }
 
     // Auxiliares para manipulação dos códigos de verificação (somente getter e geração de chave secreta)
@@ -131,6 +179,22 @@ public class Event {
         this.description = description;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalTime getStartTime() {
         return startTime;
     }
@@ -153,6 +217,14 @@ public class Event {
 
     public void setEventType(EventType eventType) {
         this.eventType = eventType;
+    }
+
+    public int getIntervalDays(){
+        return intervalDays;
+    }
+    
+    public void setIntervalDays(int intervalDays){
+        this.intervalDays = intervalDays;
     }
 
     public User getResponsibleUser() {
