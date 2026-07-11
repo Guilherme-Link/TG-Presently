@@ -25,7 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 @Service
 public class QrCodeService {
 
-    // TODO (Gui): Externalizar configuração de tempo de validade do código
+    // TODO (Gui): Externalizar configuração de tempo de validade do código, adicionar input de datetime
     private int codeValidForSeconds = 60;
     private final EventService eventService;
 
@@ -98,14 +98,19 @@ public class QrCodeService {
 
     public boolean validateCode(QrCodeValidationDTO validationDTO){
 
-        // TODO (Gui): Modificar o tipo de retorno e adicionar as outras validações; Também adicionar registro no banco
-        // Validação básica, gera novamente o código de validação do evento e compara com o lido no QR code
-        if(generateValidationCode(validationDTO.getEventId()).equals(validationDTO.getValidationCode())){
-            return true;
-        }
-        else {
+        // TODO (Gui): Adicionar as outras validações; Também adicionar registro no banco
+        // TODO (Gui): Adicionar try para handle de evento não encontrado
+
+        // Primeira validação: Verifica se o evento ainda existe e está ativo
+        if(!eventService.findById(validationDTO.getEventId()).isActive(validationDTO.getValidationTimestamp())){
             return false;
         }
 
+        // Segunda validação: Verifica se o código de evento ainda é válido
+        if (!generateValidationCode(validationDTO.getEventId()).equals(validationDTO.getValidationCode())){
+            return false;
+        }
+        
+        return true;
     }
 }   
