@@ -2,6 +2,7 @@ package br.com.fatecid.guidu.presently.dto;
 
 import br.com.fatecid.guidu.presently.entity.Event;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -17,11 +18,17 @@ public class EventDTO {
 
     private String description;
 
+    private LocalDate startDate;
+
+    private LocalDate endDate;
+
     private LocalTime startTime;
 
     private LocalTime endTime;
 
     private Event.EventType eventType;
+
+    private int intervalDays;
 
     private Long responsibleUserId;
 
@@ -37,9 +44,12 @@ public class EventDTO {
         this.id = event.getId();
         this.name = event.getName();
         this.description = event.getDescription();
+        this.startDate = event.getStartDate();
+        this.endTime = event.getEndTime();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
         this.eventType = event.getEventType();
+        this.intervalDays = event.getIntervalDays();
 
         if (event.getResponsibleUser() != null) {
             this.responsibleUserId = event.getResponsibleUser().getId();
@@ -78,6 +88,22 @@ public class EventDTO {
         this.description = description;
     }
 
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
     public LocalTime getStartTime() {
         return startTime;
     }
@@ -100,6 +126,14 @@ public class EventDTO {
 
     public void setEventType(Event.EventType eventType) {
         this.eventType = eventType;
+    }
+
+    public int getIntervalDays(){
+        return intervalDays;
+    }
+    
+    public void setIntervalDays(int intervalDays){
+        this.intervalDays = intervalDays;
     }
 
     public Long getResponsibleUserId() {
