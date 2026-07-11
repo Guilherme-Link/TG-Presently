@@ -42,13 +42,13 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public EventDTO findById(Long id) {
+    public Event findById(Long id) {
 
         Event event = eventRepository.findById(id)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Evento não encontrado."));
 
-        return new EventDTO(event);
+        return event;
     }
 
     public String getSecretKeyById(Long id) {
@@ -99,9 +99,12 @@ public class EventService {
 
         event.setName(dto.getName());
         event.setDescription(dto.getDescription());
+        event.setStartDate(dto.getStartDate());
+        event.setEndDate(dto.getEndDate());
         event.setStartTime(dto.getStartTime());
         event.setEndTime(dto.getEndTime());
         event.setEventType(dto.getEventType());
+        event.setIntervalDays(dto.getIntervalDays());
 
         User responsible = userRepository.findById(dto.getResponsibleUserId())
                 .orElseThrow(() ->
