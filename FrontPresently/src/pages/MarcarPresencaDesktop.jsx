@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { MdCheck, MdAccessTime, MdClose } from "react-icons/md";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import "./MarcarPresencaDesktop.css";
@@ -91,12 +92,117 @@ function MarcarPresencaDesktop({
   },
   history = HISTORY,
   onGenerateQRCode,
+  eventId = 1,
 }) {
-  const handleGenerateQRCode = onGenerateQRCode ?? (() => {});
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [qrCodeData, setQrCodeData] = useState(null);
+  const [isLoadingQr, setIsLoadingQr] = useState(false);
+  const [qrError, setQrError] = useState("");
+
+  const handleGenerateQRCode = async () => {
+    if (typeof onGenerateQRCode === "function") {
+      try {
+        const result = onGenerateQRCode();
+        if (result?.then) {
+          await result;
+        }
+        return;
+      } catch (error) {
+        setQrError(error.message || "Não foi possível gerar o QR Code.");
+        setIsModalOpen(true);
+        return;
+      }
+    }
+
+    setQrError("");
+    setQrCodeData(null);
+    setIsModalOpen(true);
+    setIsLoadingQr(true);
+
+    try {
+      const apiBaseUrl =
+        import.meta.env.VITE_API_URL || "http://localhost:8080";
+      const credentials = window.btoa("admin:admin");
+      const response = await fetch(`${apiBaseUrl}/api/v1/qrcode/${eventId}`, {
+        headers: {
+          Authorization: `Basic ${credentials}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Não foi possível gerar o QR Code no momento.");
+      }
+
+      const payload = await response.json();
+      setQrCodeData(payload);
+    } catch (error) {
+      setQrError(error.message || "Erro inesperado ao gerar o QR Code.");
+    } finally {
+      setIsLoadingQr(false);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setQrCodeData(null);
+    setQrError("");
+  };
 
   return (
     <div className="mpd">
       <Sidebar institution={institution} />
+
+      {isModalOpen && (
+        <div
+          className="mpd-modal__backdrop"
+          role="presentation"
+          onClick={closeModal}
+        >
+          <div
+            className="mpd-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="qr-modal-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="mpd-modal__close"
+              onClick={closeModal}
+              aria-label="Fechar modal"
+            >
+              <MdClose size={18} />
+            </button>
+
+            <h2 id="qr-modal-title" className="mpd-modal__title">
+              QR Code da aula
+            </h2>
+            <p className="mpd-modal__description">
+              Mostre esse código para registrar a presença.
+            </p>
+
+            {isLoadingQr ? (
+              <div className="mpd-modal__state">Gerando QR Code...</div>
+            ) : qrError ? (
+              <div className="mpd-modal__state mpd-modal__state--error">
+                {qrError}
+              </div>
+            ) : qrCodeData?.imageData ? (
+              <div className="mpd-modal__qr">
+                <img
+                  className="mpd-modal__image"
+                  src={`data:image/png;base64,${qrCodeData.imageData}`}
+                  alt="QR Code para presença"
+                />
+              </div>
+            ) : (
+              <div className="mpd-modal__state">
+                Ainda não há um QR Code disponível.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="mpd-content">
         <div className="mpd-content__header">
@@ -118,6 +224,7 @@ function MarcarPresencaDesktop({
               type="button"
               className="mpd-generator__button"
               onClick={handleGenerateQRCode}
+              disabled={isLoadingQr}
             >
               <MdCheck size={18} />
               Gerar QR Code
