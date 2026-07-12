@@ -1,18 +1,18 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
 
 .mpd {
-  --mpd-red: #FF1E1E;
-  --mpd-red-hover: #E11414;
-  --mpd-red-dark: #7B1414;
-  --mpd-bg: #F7F7F7;
-  --mpd-card: #FFFFFF;
-  --mpd-text: #2F2F2F;
-  --mpd-text-secondary: #8A8A8A;
-  --mpd-border: #E7E7E7;
-  --mpd-success: #16A34A;
-  --mpd-warning: #D4A017;
+  --mpd-red: #ff1e1e;
+  --mpd-red-hover: #e11414;
+  --mpd-red-dark: #7b1414;
+  --mpd-bg: #f7f7f7;
+  --mpd-card: #ffffff;
+  --mpd-text: #2f2f2f;
+  --mpd-text-secondary: #8a8a8a;
+  --mpd-border: #e7e7e7;
+  --mpd-success: #16a34a;
+  --mpd-warning: #d4a017;
 
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   display: flex;
   min-height: 100vh;
   background: var(--mpd-bg);
@@ -112,7 +112,9 @@
   text-decoration: none;
   font-size: 13px;
   font-weight: 500;
-  transition: background 0.18s ease, color 0.18s ease;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease;
 }
 
 .mpd-sidebar__link:hover {
@@ -168,7 +170,7 @@
 /* ---------- QR generator ---------- */
 .mpd-generator {
   background: var(--mpd-card);
-  border: 1.5px dashed #D8D8D8;
+  border: 1.5px dashed #d8d8d8;
   border-radius: 16px;
   padding: 50px 40px;
   display: flex;
@@ -221,12 +223,113 @@
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 10px 22px -8px rgba(255, 30, 30, 0.55);
-  transition: background 0.18s ease, transform 0.18s ease;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
 }
 
 .mpd-generator__button:hover {
   background: var(--mpd-red-hover);
   transform: translateY(-1px);
+}
+
+.mpd-generator__button:disabled {
+  opacity: 0.8;
+  cursor: wait;
+  transform: none;
+}
+
+.mpd-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(3px);
+}
+
+.mpd-modal {
+  position: relative;
+  width: min(92vw, 420px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 28px 24px 24px;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.mpd-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--mpd-text-secondary);
+  cursor: pointer;
+}
+
+.mpd-modal__close:hover {
+  background: #f3f3f3;
+}
+
+.mpd-modal__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mpd-text);
+}
+
+.mpd-modal__description {
+  margin: 0;
+  text-align: center;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mpd-text-secondary);
+}
+
+.mpd-modal__qr {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 14px;
+  border: 1px solid var(--mpd-border);
+  border-radius: 16px;
+  background: #fdfdfd;
+}
+
+.mpd-modal__image {
+  width: 220px;
+  height: auto;
+  max-width: 100%;
+  display: block;
+}
+
+.mpd-modal__state {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--mpd-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.mpd-modal__state--error {
+  color: var(--mpd-red);
 }
 
 /* ---------- Side column ---------- */
@@ -308,7 +411,9 @@
   border: 1px solid var(--mpd-border);
   border-radius: 12px;
   padding: 11px 14px;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
 .mpd-history__item:hover {
