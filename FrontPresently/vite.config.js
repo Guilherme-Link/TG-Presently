@@ -6,7 +6,9 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   plugins: [
     react(),
-    mkcert()
+    mkcert({
+      savePath: './certs',
+    })
   ],
   server: {
     host: true,

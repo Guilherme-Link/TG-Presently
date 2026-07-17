@@ -1,0 +1,170 @@
+.sidebar-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: clamp(240px, 20vw, 280px);
+  flex-shrink: 0;
+  background: linear-gradient(165deg, var(--color-primary) 0%, var(--color-primary) 55%, var(--color-primary-dark) 150%);
+  color: #fff;
+  padding: 24px 18px;
+  min-height: 100vh;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-admin * {
+  box-sizing: border-box;
+}
+
+.sidebar-admin__brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 4px 8px;
+}
+
+.sidebar-admin__logo-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-admin__logo-text {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+}
+
+.sidebar-admin__institution {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.14);
+  border: none;
+  color: #fff;
+  font-family: var(--font-family);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-admin__institution:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.sidebar-admin__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sidebar-admin__group-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.66);
+  padding: 0 10px;
+}
+
+.sidebar-admin__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-admin__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.sidebar-admin__link:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(1px);
+}
+
+.sidebar-admin__link--active {
+  background: #fff;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.sidebar-admin__link--active:hover {
+  background: #fff;
+}
+
+.sidebar-admin__link-label {
+  flex: 1;
+}
+
+.sidebar-admin__badge {
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.18);
+  color: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+}
+
+.sidebar-admin__link--active .sidebar-admin__badge {
+  background: rgba(255, 30, 30, 0.12);
+  color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+  .sidebar-admin {
+    width: 100%;
+    min-height: auto;
+    position: static;
+    padding: 18px 16px;
+    gap: 16px;
+  }
+
+  .sidebar-admin__group {
+    gap: 6px;
+  }
+
+  .sidebar-admin__nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .sidebar-admin__link {
+    flex: 1 1 140px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .sidebar-admin__nav {
+    flex-direction: column;
+  }
+
+  .sidebar-admin__link {
+    justify-content: flex-start;
+  }
+}
