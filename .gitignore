@@ -30,3 +30,9 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Keystore (sensível - chave privada do certificado HTTPS)
+backend/src/main/resources/keystore.p12
+
+# Certificados do front (sensível - chave privada e CA local)
+FrontPresently/certs/

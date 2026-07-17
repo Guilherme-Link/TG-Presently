@@ -5,6 +5,8 @@ import DashboardDesktop from "./pages/DashboardDesktop.jsx";
 import DashboardMobile from "./pages/DashboardMobile.jsx";
 import MarcarPresencaMobile from "./pages/MarcarPresencaMobile.jsx";
 import MarcarPresencaDesktop from "./pages/MarcarPresencaDesktop.jsx";
+import DashboardDesktopAdmin from "./pages/DashboardDesktopAdmin.jsx"
+import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -100,8 +102,12 @@ function App() {
   return (
     <Routes>
       <Route path="/login" element={<PresentlyLogin />} />
-      <Route path="/dashboard" element={<DashboardRoute />} />
-      <Route path="/presenca" element={<PresencaRoute />} />
+
+      <Route path="/dashboard" element={<ProtectedRoute> <DashboardRoute /> </ProtectedRoute>} />
+
+      <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
+
+      <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

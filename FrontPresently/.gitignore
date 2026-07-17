@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Certificados (sensível - chave privada e CA local)
+certs/
