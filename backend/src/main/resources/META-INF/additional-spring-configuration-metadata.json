@@ -1,0 +1,5 @@
+{"properties": [{
+  "name": "presently.validationcode.validfor",
+  "type": "java.lang.String",
+  "description": "Define o tempo de validade em segundos para os códigos de validação de evento"
+}]}
