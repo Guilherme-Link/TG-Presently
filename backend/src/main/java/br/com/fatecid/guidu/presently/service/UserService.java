@@ -2,13 +2,10 @@ package br.com.fatecid.guidu.presently.service;
 
 import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
-import br.com.fatecid.guidu.presently.dto.UserLoginDTO;
-import br.com.fatecid.guidu.presently.dto.UserResponse;
 import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.repository.UserRepository;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
