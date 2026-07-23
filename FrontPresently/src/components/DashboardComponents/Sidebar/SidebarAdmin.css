@@ -1,7 +1,7 @@
 .sidebar-admin {
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 0;
   width: clamp(240px, 20vw, 280px);
   flex-shrink: 0;
   background: linear-gradient(165deg, var(--color-primary) 0%, var(--color-primary) 55%, var(--color-primary-dark) 150%);
@@ -10,13 +10,27 @@
   min-height: 100vh;
   position: sticky;
   top: 0;
+  overflow: hidden;
+  transition: height 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
 }
 
 .sidebar-admin * {
   box-sizing: border-box;
 }
 
-.sidebar-admin__brand {
+.sidebar-admin__mobile-header {
+  display: none;
+}
+
+.sidebar-admin__menu {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  min-height: 0;
+}
+
+.sidebar-admin__brand,
+.sidebar-admin__desktop-brand {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -41,6 +55,10 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: lowercase;
+}
+
+.sidebar-admin__toggle {
+  display: none;
 }
 
 .sidebar-admin__institution {
@@ -135,36 +153,104 @@
   color: var(--color-primary);
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 768px) {
   .sidebar-admin {
-    width: 100%;
-    min-height: auto;
-    position: static;
-    padding: 18px 16px;
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 100vw;
+    height: 72px;
+    min-height: 0;
+    padding: 0;
+    z-index: 1000;
+    border-radius: 0;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  }
+
+  .sidebar-admin--open {
+    height: 100dvh;
+  }
+
+  .sidebar-admin__mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    min-height: 72px;
+    padding: 0 18px 0 16px;
+    flex-shrink: 0;
+  }
+
+  .sidebar-admin__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .sidebar-admin__menu {
+    height: calc(100dvh - 72px);
+    min-height: 0;
+    padding: 18px 16px 22px;
     gap: 16px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
+    overflow: hidden;
+  }
+
+  .sidebar-admin--open .sidebar-admin__menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .sidebar-admin__desktop-brand {
+    display: none;
   }
 
   .sidebar-admin__group {
+    min-height: 0;
+    gap: 8px;
+  }
+
+  .sidebar-admin__nav {
+    min-height: 0;
     gap: 6px;
   }
 
-  .sidebar-admin__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
+  .sidebar-admin__institution {
+    width: 100%;
+    padding: 12px 14px;
   }
 
   .sidebar-admin__link {
-    flex: 1 1 140px;
-    justify-content: center;
+    min-height: 44px;
   }
 }
 
-@media (max-width: 720px) {
-  .sidebar-admin__nav {
-    flex-direction: column;
+@media (min-width: 769px) {
+  .sidebar-admin__mobile-header {
+    display: none;
   }
 
-  .sidebar-admin__link {
-    justify-content: flex-start;
+  .sidebar-admin__menu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+
+  .sidebar-admin__desktop-brand {
+    display: flex;
   }
 }

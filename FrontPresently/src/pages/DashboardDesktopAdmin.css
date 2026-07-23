@@ -458,10 +458,6 @@
 }
 
 @media (max-width: 1024px) {
-  .dashboard-admin {
-    flex-direction: column;
-  }
-
   .dashboard-admin__header {
     padding: 20px 18px 0;
   }
@@ -472,6 +468,20 @@
 
   .dashboard-admin__datebox {
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-admin__content {
+    padding-top: 72px;
+  }
+
+  .dashboard-admin__header {
+    padding: 16px 16px 0;
+  }
+
+  .dashboard-admin__main {
+    padding: 16px;
   }
 }
 

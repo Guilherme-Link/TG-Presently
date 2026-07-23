@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   MdDashboard,
   MdOutlineDescription,
@@ -7,9 +8,10 @@ import {
   MdPeople,
   MdSettings,
   MdLogout,
+  MdMenu,
+  MdClose,
   MdKeyboardArrowDown,
 } from "react-icons/md";
-import { NavLink } from "react-router-dom";
 import { adminSidebarSections } from "../../../data/dashboardDataAdmin";
 import "./SidebarAdmin.css";
 
@@ -24,7 +26,7 @@ const ICONS = {
   logout: MdLogout,
 };
 
-function NavGroup({ title, items, activeItem }) {
+function NavGroup({ title, items, activeItem, onNavigate }) {
   return (
     <div className="sidebar-admin__group">
       <span className="sidebar-admin__group-title">{title}</span>
@@ -38,6 +40,7 @@ function NavGroup({ title, items, activeItem }) {
               key={id}
               href={to}
               className={`sidebar-admin__link${isActive ? " sidebar-admin__link--active" : ""}`}
+              onClick={onNavigate}
             >
               <Icon size={18} />
               <span className="sidebar-admin__link-label">{label}</span>
@@ -57,26 +60,114 @@ function SidebarAdmin({
   sections = adminSidebarSections,
   activeItem = "painel-geral-link",
 }) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+
+    const handleChange = (event) => {
+      setIsMobile(event.matches);
+    };
+
+    setIsMobile(mediaQuery.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
+
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setIsMenuOpen(false);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) {
+      return undefined;
+    }
+
+    const root = document.documentElement;
+    const body = document.body;
+    const previousRootOverflow = root.style.overflow;
+    const previousBodyOverflow = body.style.overflow;
+    const previousBodyOverscroll = body.style.overscrollBehavior;
+
+    if (isMenuOpen) {
+      root.style.overflow = "hidden";
+      body.style.overflow = "hidden";
+      body.style.overscrollBehavior = "none";
+    }
+
+    return () => {
+      root.style.overflow = previousRootOverflow;
+      body.style.overflow = previousBodyOverflow;
+      body.style.overscrollBehavior = previousBodyOverscroll;
+    };
+  }, [isMobile, isMenuOpen]);
+
+  function closeMenu() {
+    setIsMenuOpen(false);
+  }
+
+  function toggleMenu() {
+    setIsMenuOpen((current) => !current);
+  }
+
   return (
-    <aside className="sidebar-admin">
-      <div className="sidebar-admin__brand">
-        <span className="sidebar-admin__logo-mark">P</span>
-        <span className="sidebar-admin__logo-text">presently admin</span>
+    <aside
+      className={`sidebar-admin${isMenuOpen ? " sidebar-admin--open" : ""}`}
+      aria-label="Menu administrativo"
+    >
+      <div className="sidebar-admin__mobile-header">
+        <div className="sidebar-admin__brand">
+          <span className="sidebar-admin__logo-mark">P</span>
+          <span className="sidebar-admin__logo-text">presently admin</span>
+        </div>
+
+        <button
+          type="button"
+          className="sidebar-admin__toggle"
+          onClick={toggleMenu}
+          aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={isMenuOpen}
+        >
+          {isMenuOpen ? <MdClose size={22} /> : <MdMenu size={22} />}
+        </button>
       </div>
 
-      <button type="button" className="sidebar-admin__institution">
-        <span>{institution}</span>
-        <MdKeyboardArrowDown size={18} />
-      </button>
+      <div className="sidebar-admin__menu">
+        <div className="sidebar-admin__desktop-brand">
+          <span className="sidebar-admin__logo-mark">P</span>
+          <span className="sidebar-admin__logo-text">presently admin</span>
+        </div>
 
-      {sections.map((section) => (
-        <NavGroup
-          key={section.title}
-          title={section.title}
-          items={section.items}
-          activeItem={activeItem}
-        />
-      ))}
+        <button type="button" className="sidebar-admin__institution">
+          <span>{institution}</span>
+          <MdKeyboardArrowDown size={18} />
+        </button>
+
+        {sections.map((section) => (
+          <NavGroup
+            key={section.title}
+            title={section.title}
+            items={section.items}
+            activeItem={activeItem}
+            onNavigate={closeMenu}
+          />
+        ))}
+      </div>
     </aside>
   );
 }

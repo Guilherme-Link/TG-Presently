@@ -39,7 +39,7 @@ export const adminSidebarSections = [
         id: "painel-geral-link",
         label: "Dashboard",
         icon: "dashboard",
-        to: "#painel-geral",
+        to: "dashboardAdmin",
       },
       {
         id: "detalhes-falta-link",
@@ -53,19 +53,19 @@ export const adminSidebarSections = [
         icon: "trending",
         to: "#tendencias",
       },
-      { id: "salas-link", label: "Salas", icon: "rooms", to: "#salas" },
-      { id: "grade-link", label: "Grade", icon: "calendar", to: "#grade" },
+      { id: "salas-link", label: "Salas", icon: "rooms", to: "salas" },
+      { id: "aulas-link", label: "Aulas", icon: "calendar", to: "aulas" },
+      {
+        id: "usuarios-link",
+        label: "Usuarios",
+        icon: "users",
+        to: "usuarios",
+      },
     ],
   },
   {
     title: "Sistema",
     items: [
-      {
-        id: "usuarios-link",
-        label: "Usuarios",
-        icon: "users",
-        to: "#usuarios",
-      },
       {
         id: "configuracoes-link",
         label: "Configurações",
