@@ -59,8 +59,9 @@ function DashboardDesktopAdmin({
   dateLabel = getCurrentDateLabel(),
   institution = "Fatec Indaiatuba",
 }) {
+  /* eslint-disable no-unused-vars */
   const [activeItem, setActiveItem] = useState("painel-geral-link");
-
+  
   return (
     <div className="dashboard-admin">
       <SidebarAdmin

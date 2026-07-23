@@ -1,0 +1,432 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;700&display=swap');
+
+.gds {
+  --gds-red: #FF0E18;
+  --gds-red-dark: #7B1F10;
+  --gds-black: #000000;
+  --gds-green: #288200;
+  --gds-white: #FFFFFF;
+  --gds-bg: #F1F1F1;
+  --gds-text-secondary: #8A8A8A;
+  --gds-border: #E7E7E7;
+
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background: var(--gds-bg);
+}
+
+.gds *,
+.gds *::before,
+.gds *::after {
+  box-sizing: border-box;
+}
+
+/* ================= Sidebar ================= */
+.gds-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: var(--gds-red);
+  color: var(--gds-white);
+  padding: 22px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.gds-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 6px 8px;
+}
+
+.gds-sidebar__logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--gds-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gds-sidebar__logo-text {
+  font-size: 15.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gds-sidebar__institution {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  color: var(--gds-white);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.gds-sidebar__institution:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.gds-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gds-sidebar__group--bottom {
+  margin-top: auto;
+}
+
+.gds-sidebar__group-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 4px 10px 0;
+}
+
+.gds-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gds-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+}
+
+.gds-sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.gds-sidebar__link--active {
+  background: var(--gds-red-dark);
+  color: var(--gds-white);
+  font-weight: 600;
+}
+
+.gds-sidebar__link--active:hover {
+  background: var(--gds-red-dark);
+}
+
+/* ================= Content ================= */
+.gds-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gds-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--gds-white);
+  border-bottom: 1px solid var(--gds-border);
+  padding: 18px 32px;
+}
+
+.gds-breadcrumb {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gds-text-secondary);
+}
+
+.gds-title {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--gds-red);
+}
+
+.gds-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  align-items: start;
+  gap: 22px;
+  padding: 24px 32px 32px;
+}
+
+/* ================= Create room card ================= */
+.gds-create {
+  background: var(--gds-white);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 26px 28px;
+}
+
+.gds-create__title {
+  margin: 0 0 20px;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--gds-black);
+}
+
+.gds-field-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gds-black);
+  margin-bottom: 8px;
+}
+
+.gds-input {
+  display: block;
+  width: 100%;
+  border: 1px solid var(--gds-border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 18px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--gds-black);
+  outline: none;
+  transition: border-color 0.18s ease;
+}
+
+.gds-input:focus {
+  border-color: var(--gds-red);
+}
+
+.gds-create__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+/* ================= Buttons ================= */
+.gds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 999px;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+  white-space: nowrap;
+}
+
+.gds-btn--primary {
+  border: none;
+  background: var(--gds-red);
+  color: var(--gds-white);
+  font-size: 14px;
+  padding: 12px 26px;
+  box-shadow: 0 10px 22px -8px rgba(255, 14, 24, 0.55);
+}
+
+.gds-btn--primary:hover {
+  background: var(--gds-red-dark);
+  transform: translateY(-1px);
+}
+
+.gds-btn--outline {
+  border: 1.5px solid var(--gds-red);
+  background: transparent;
+  color: var(--gds-red);
+  font-size: 14px;
+  padding: 11px 22px;
+}
+
+.gds-btn--outline:hover {
+  background: #FDECEB;
+}
+
+.gds-btn--small {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+/* ================= Room list ================= */
+.gds-list {
+  background: var(--gds-white);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 26px 22px;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+
+.gds-list__title {
+  margin: 0 0 18px;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--gds-black);
+}
+
+.gds-list__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.gds-room-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--gds-border);
+  border-radius: 12px;
+  padding: 14px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gds-room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.gds-room-card__icon {
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  border-radius: 10px;
+  background: var(--gds-red);
+  color: var(--gds-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gds-room-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gds-room-card__name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--gds-black);
+  line-height: 1.15;
+}
+
+.gds-room-card__meta {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--gds-text-secondary);
+  line-height: 1.3;
+}
+
+.gds-list__count {
+  margin-top: auto;
+  padding-top: 20px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gds-text-secondary);
+}
+
+/* ================= Responsividade ================= */
+@media (max-width: 1180px) {
+  .gds-main {
+    grid-template-columns: minmax(300px, 380px) 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .gds-sidebar {
+    width: 84px;
+    padding: 20px 12px;
+    align-items: center;
+  }
+
+  .gds-sidebar__logo-text,
+  .gds-sidebar__institution span,
+  .gds-sidebar__group-title,
+  .gds-sidebar__link span {
+    display: none;
+  }
+
+  .gds-sidebar__brand,
+  .gds-sidebar__institution,
+  .gds-sidebar__link {
+    justify-content: center;
+  }
+
+  .gds-main {
+    grid-template-columns: 1fr;
+  }
+
+  .gds-list__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .gds-content {
+    padding-top: 72px;
+  }
+
+  .gds-header {
+    padding: 16px 16px 0;
+  }
+
+  .gds-main {
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gds-header {
+    padding: 16px 18px;
+  }
+
+  .gds-main {
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .gds-create,
+  .gds-list {
+    padding: 20px 18px;
+  }
+
+  .gds-list__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gds-room-card {
+    flex-wrap: wrap;
+  }
+
+  .gds-create__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gds-btn--outline {
+    width: 100%;
+  }
+}

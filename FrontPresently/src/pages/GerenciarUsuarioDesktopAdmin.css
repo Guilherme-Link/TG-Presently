@@ -1,0 +1,583 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;700&display=swap');
+
+.gua {
+  --gua-red: #FF0E18;
+  --gua-red-dark: #7B1F10;
+  --gua-black: #000000;
+  --gua-green: #288200;
+  --gua-white: #FFFFFF;
+  --gua-bg: #F1F1F1;
+  --gua-text-secondary: #8A8A8A;
+  --gua-border: #E7E7E7;
+
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background: var(--gua-bg);
+}
+
+.gua *,
+.gua *::before,
+.gua *::after {
+  box-sizing: border-box;
+}
+
+/* ================= Sidebar ================= */
+.gua-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  background: var(--gua-red);
+  color: var(--gua-white);
+  padding: 22px 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.gua-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 2px 6px 8px;
+}
+
+.gua-sidebar__logo-mark {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--gua-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.gua-sidebar__logo-text {
+  font-size: 15.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.gua-sidebar__institution {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.16);
+  border: none;
+  color: var(--gua-white);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.18s ease;
+}
+
+.gua-sidebar__institution:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.gua-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gua-sidebar__group--bottom {
+  margin-top: auto;
+}
+
+.gua-sidebar__group-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+  padding: 4px 10px 0;
+}
+
+.gua-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gua-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: background 0.18s ease, color 0.18s ease;
+  white-space: nowrap;
+}
+
+.gua-sidebar__link:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.gua-sidebar__link--active {
+  background: var(--gua-red-dark);
+  color: var(--gua-white);
+  font-weight: 600;
+}
+
+.gua-sidebar__link--active:hover {
+  background: var(--gua-red-dark);
+}
+
+/* ================= Content ================= */
+.gua-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gua-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--gua-white);
+  border-bottom: 1px solid var(--gua-border);
+  padding: 18px 32px;
+}
+
+.gua-breadcrumb {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gua-text-secondary);
+}
+
+.gua-title {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--gua-red);
+}
+
+.gua-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  align-items: start;
+  gap: 22px;
+  padding: 24px 32px 32px;
+}
+
+/* ================= Register card ================= */
+.gua-register {
+  background: var(--gua-white);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 26px 28px;
+}
+
+.gua-register__title {
+  margin: 0 0 20px;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--gua-black);
+}
+
+.gua-field-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--gua-black);
+  margin-bottom: 8px;
+}
+
+.gua-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gua-border);
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 20px;
+  transition: border-color 0.18s ease;
+}
+
+.gua-input:focus-within {
+  border-color: var(--gua-red);
+}
+
+.gua-input__icon {
+  color: var(--gua-text-secondary);
+  flex-shrink: 0;
+}
+
+.gua-input input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--gua-black);
+  background: transparent;
+}
+
+.gua-input input::placeholder {
+  color: #B7B2B0;
+  font-weight: 300;
+}
+
+.gua-register__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+/* Dropdown select (Tipo de usuário / Senha) */
+.gua-dropdown {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gua-dropdown__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gua-black);
+}
+
+.gua-dropdown__control {
+  position: relative;
+  border: 1px solid var(--gua-border);
+  border-radius: 10px;
+  background: #FAFAFA;
+}
+
+.gua-dropdown__select {
+  width: 100%;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gua-black);
+  padding: 12px 40px 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  outline: none;
+}
+
+.gua-dropdown__select:focus {
+  box-shadow: inset 0 0 0 1px var(--gua-red);
+}
+
+.gua-dropdown__select option {
+  color: var(--gua-black);
+}
+
+.gua-dropdown__icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--gua-text-secondary);
+  pointer-events: none;
+}
+
+.gua-register__submit {
+  width: 100%;
+  border: none;
+  background: var(--gua-red);
+  color: var(--gua-white);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 700;
+  padding: 13px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 10px 22px -8px rgba(255, 14, 24, 0.55);
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.gua-register__submit:hover {
+  background: var(--gua-red-dark);
+  transform: translateY(-1px);
+}
+
+/* ================= List card ================= */
+.gua-list {
+  background: var(--gua-white);
+  border-radius: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 26px 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+}
+
+.gua-list__title {
+  margin: 0 0 18px;
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--gua-black);
+}
+
+.gua-table {
+  flex: 1;
+  overflow-x: auto;
+}
+
+.gua-table__head {
+  display: grid;
+  grid-template-columns: 110px 1fr 80px 80px;
+  gap: 12px;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid var(--gua-border);
+}
+
+.gua-table__col {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--gua-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.gua-table__col--action {
+  justify-content: center;
+}
+
+.gua-table__body {
+  display: flex;
+  flex-direction: column;
+}
+
+.gua-table__row {
+  display: grid;
+  grid-template-columns: 110px 1fr 80px 80px;
+  gap: 12px;
+  align-items: center;
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--gua-border);
+}
+
+.gua-table__row:last-child {
+  border-bottom: none;
+}
+
+.gua-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.gua-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.gua-status--active {
+  color: var(--gua-green);
+}
+
+.gua-status--active .gua-status__dot {
+  background: var(--gua-green);
+}
+
+.gua-status--inactive {
+  color: var(--gua-red);
+}
+
+.gua-status--inactive .gua-status__dot {
+  background: var(--gua-red);
+}
+
+.gua-table__email {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gua-black);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gua-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.gua-icon-btn:hover {
+  transform: translateY(-1px);
+}
+
+.gua-icon-btn--edit {
+  color: var(--gua-black);
+}
+
+.gua-icon-btn--edit:hover {
+  background: #EFEFEF;
+}
+
+.gua-icon-btn--delete {
+  color: var(--gua-red);
+}
+
+.gua-icon-btn--delete:hover {
+  background: #FDE7E6;
+}
+
+/* ================= Pagination ================= */
+.gua-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 16px;
+  margin-top: auto;
+}
+
+.gua-pagination__nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gua-text-secondary);
+  cursor: pointer;
+  padding: 6px 4px;
+  transition: color 0.15s ease;
+}
+
+.gua-pagination__nav:hover {
+  color: var(--gua-red);
+}
+
+.gua-pagination__pages {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gua-pagination__page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 4px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gua-text-secondary);
+}
+
+.gua-pagination__page--active {
+  background: var(--gua-red);
+  color: var(--gua-white);
+  font-weight: 700;
+}
+
+.gua-pagination__page--ellipsis {
+  color: #C7C7C7;
+}
+
+/* ================= Responsividade ================= */
+@media (max-width: 1180px) {
+  .gua-main {
+    grid-template-columns: minmax(300px, 380px) 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .gua-sidebar {
+    width: 84px;
+    padding: 20px 12px;
+    align-items: center;
+  }
+
+  .gua-sidebar__logo-text,
+  .gua-sidebar__institution span,
+  .gua-sidebar__group-title,
+  .gua-sidebar__link span {
+    display: none;
+  }
+
+  .gua-sidebar__brand,
+  .gua-sidebar__institution,
+  .gua-sidebar__link {
+    justify-content: center;
+  }
+
+  .gua-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .gua-content {
+    padding-top: 72px;
+  }
+
+  .gua-header {
+    padding: 16px 16px 0;
+  }
+
+  .gua-main {
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gua-header {
+    padding: 16px 18px;
+  }
+
+  .gua-main {
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .gua-register,
+  .gua-list {
+    padding: 20px 18px;
+  }
+
+  .gua-register__row {
+    grid-template-columns: 1fr;
+  }
+
+  .gua-table__head,
+  .gua-table__row {
+    grid-template-columns: 90px 1fr 60px 60px;
+  }
+
+  .gua-pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
