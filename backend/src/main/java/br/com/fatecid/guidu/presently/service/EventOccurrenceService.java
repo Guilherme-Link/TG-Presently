@@ -1,6 +1,7 @@
 package br.com.fatecid.guidu.presently.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import br.com.fatecid.guidu.presently.entity.AttendanceRecord;
 import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.EventOccurrence;
 import br.com.fatecid.guidu.presently.entity.User;
+import br.com.fatecid.guidu.presently.repository.AttendanceRecordRepository;
 import br.com.fatecid.guidu.presently.repository.EventOccurrenceRepository;
 import jakarta.persistence.EntityNotFoundException;
 
@@ -15,18 +17,27 @@ import jakarta.persistence.EntityNotFoundException;
 public class EventOccurrenceService {
 
     private final EventOccurrenceRepository repository;
+    private final AttendanceRecordRepository recordRepository;
 
-    public EventOccurrenceService(EventOccurrenceRepository repository) {
+    public EventOccurrenceService(EventOccurrenceRepository repository, AttendanceRecordRepository recordRepository) {
         this.repository = repository;
+        this.recordRepository = recordRepository;
     }
 
     public List<EventOccurrence> findAll() {
         return repository.findAll();
     }
 
-
     public EventOccurrence findById(Long id) {
         EventOccurrence occurrence = repository.findById(id)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Ocorrência de evento não encontrada."));
+
+        return occurrence;
+    }
+
+    public EventOccurrence findByEventIdAndDate(Long id, LocalDate date) {
+        EventOccurrence occurrence = repository.findByEventIdAndDate(id, date)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Ocorrência de evento não encontrada."));
 
@@ -57,6 +68,28 @@ public class EventOccurrenceService {
         }
 
         return repository.save(occurrence);
+    }
+
+    // Abre uma ocorrência de evento (Exemplo: Evento começou antes do horário)
+    public void openOccurrenceById(long id){
+        EventOccurrence occurrence = findById(id);
+        occurrence.setClosed(false);
+    }
+
+    // Abre uma ocorrência de evento (Exemplo: Evento foi instanciado antes do horário, mas ainda não abriu)
+    public void closeOccurrenceById(long id){
+        EventOccurrence occurrence = findById(id);
+        occurrence.setClosed(true);
+    }
+
+    // Valida a presença de um participante em uma instância da ocorrência pelo ID de usuário
+    public void registerPresence(long OccurrenceId, long userId, LocalDateTime checkInTime){
+        AttendanceRecord record = recordRepository.findByOccurrenceIdAndParticipantId(OccurrenceId, userId)
+            .orElseThrow(() -> 
+                new EntityNotFoundException("Usuário não participa deste evento."));
+
+        record.setPresent(true);
+        record.setCheckInTime(checkInTime);
     }
 
     // Atualiza uma ocorrência existente.
