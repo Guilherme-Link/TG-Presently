@@ -70,6 +70,22 @@ public class EventOccurrenceService {
         return repository.save(occurrence);
     }
 
+    public EventOccurrence getOrCreateOccurrence(Event event, LocalDate eventDate){
+        EventOccurrence occurrence;
+
+        // Verifica se já existe uma instância para o evento em questão
+        try{
+            // Caso já exista, usa a existente
+            occurrence = findByEventIdAndDate(event.getId(),eventDate);
+        }
+        catch(EntityNotFoundException e){
+            // Cria uma nova ocorrência a partir do evento que está sendo validado
+            occurrence = createFromEvent(event,eventDate);
+        }
+
+        return occurrence;
+    }
+
     // Abre uma ocorrência de evento (Exemplo: Evento começou antes do horário)
     public void openOccurrenceById(long id){
         EventOccurrence occurrence = findById(id);

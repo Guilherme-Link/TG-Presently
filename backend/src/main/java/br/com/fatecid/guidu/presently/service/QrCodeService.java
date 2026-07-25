@@ -130,23 +130,10 @@ public class QrCodeService {
         }
 
         // Objeto de ocorrência de evento para armazenar histórico
-        EventOccurrence occurrence;
-
-        // Verifica se já existe uma instância para o evento em questão
-        try{
-            // Caso já exista, usa a existente
-            occurrence = occurrenceService.findByEventIdAndDate(
-                event.getId(),
-                validationDTO.getValidationTimestamp().toLocalDate()
-            );
-        }
-        catch(EntityNotFoundException e){
-            // Cria uma nova ocorrência a partir do evento que está sendo validado
-            occurrence = occurrenceService.createFromEvent(
-                event, 
-                validationDTO.getValidationTimestamp().toLocalDate()
-            );
-        }
+        EventOccurrence occurrence = occurrenceService.getOrCreateOccurrence(
+            event, 
+            validationDTO.getValidationTimestamp().toLocalDate()
+        );
 
         // Verifica se a ocorrência está aberta
         if (occurrence.isClosed()){
