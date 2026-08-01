@@ -9,6 +9,7 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import br.com.fatecid.guidu.presently.dto.QrCodeRenderingDTO;
 import br.com.fatecid.guidu.presently.dto.QrCodeValidationDTO;
 import br.com.fatecid.guidu.presently.entity.Event;
+import br.com.fatecid.guidu.presently.entity.EventOccurrence;
 import jakarta.persistence.EntityNotFoundException;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -34,9 +35,11 @@ public class QrCodeService {
     private int codeValidForSeconds;
 
     private final EventService eventService;
+    private final EventOccurrenceService occurrenceService;
 
-    public QrCodeService(EventService eventService) {
+    public QrCodeService(EventService eventService, EventOccurrenceService occurrenceService) {
         this.eventService = eventService;
+        this.occurrenceService = occurrenceService;
     }
 
     public String generateValidationCode(long eventId, LocalDateTime timestamp){
@@ -125,7 +128,25 @@ public class QrCodeService {
         if (!generateValidationCode(event.getId(), validationDTO.getValidationTimestamp()).equals(validationDTO.getValidationCode())){
             return false;
         }
+
+        // Objeto de ocorrência de evento para armazenar histórico
+        EventOccurrence occurrence = occurrenceService.getOrCreateOccurrence(
+            event, 
+            validationDTO.getValidationTimestamp().toLocalDate()
+        );
+
+        // Verifica se a ocorrência está aberta
+        if (occurrence.isClosed()){
+            return false;
+        }
         
+        // Registra a presença do usuário e o timestamp de chegada no registro da instância do evento
+        occurrenceService.registerPresence(
+            occurrence.getId(), 
+            validationDTO.getUserId(),
+            validationDTO.getValidationTimestamp()
+        );
+
         return true;
     }
 }   
