@@ -38,6 +38,11 @@ public class AmbientService {
         return new AmbientDTO(ambient);
     }
 
+    // Verifica se a latitude a longitude fornecidas estão dentro de um determinado ambiente
+    public boolean validateInsideAmbient(Long id, double latitude, double longitude) {
+        return repository.contains(id, latitude, longitude);
+    }
+
     // Cria um novo ambiente
     public AmbientDTO save(AmbientDTO dto) {
 
