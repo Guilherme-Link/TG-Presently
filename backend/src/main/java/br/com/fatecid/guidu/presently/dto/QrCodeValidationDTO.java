@@ -8,11 +8,15 @@ public class QrCodeValidationDTO {
 
     private long userId;
 
+    private double userLatitude;
+
+    private double userLongitude;
+
     private String validationCode;
     
     private LocalDateTime validationTimestamp;
 
-    // TODO (Gui): Adicionar campos de biometria e de geolocalização
+    // TODO (Gui): Adicionar campos de biometria
 
     public QrCodeValidationDTO() {
     }
@@ -33,6 +37,22 @@ public class QrCodeValidationDTO {
 
     public void setEventId(long eventId) {
         this.eventId = eventId;
+    }
+
+    public double getUserLatitude() {
+        return userLatitude;
+    }
+
+    public void setUserLatitude(double UserLatitude) {
+        this.userLatitude = UserLatitude;
+    }
+
+    public double getUserLongitude() {
+        return userLongitude;
+    }
+
+    public void setUserLongitude(double UserLongitude) {
+        this.userLongitude = UserLongitude;
     }
 
     public long getUserId() {
