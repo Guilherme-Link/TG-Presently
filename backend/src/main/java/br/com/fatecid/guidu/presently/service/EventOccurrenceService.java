@@ -37,7 +37,7 @@ public class EventOccurrenceService {
     }
 
     public EventOccurrence findByEventIdAndDate(Long id, LocalDate date) {
-        EventOccurrence occurrence = repository.findByEventIdAndDate(id, date)
+        EventOccurrence occurrence = repository.findByEventIdAndEventDate(id, date)
                 .orElseThrow(() ->
                         new EntityNotFoundException("Ocorrência de evento não encontrada."));
 
