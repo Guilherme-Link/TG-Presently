@@ -50,7 +50,7 @@ public class User {
     public User(String username, String password, Set<String> roles) {
         this.username = username;
         this.password = password;
-        this.roles = roles;
+        this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
     }
 
     // Getters e Setters
@@ -79,7 +79,7 @@ public class User {
     }
 
     public void setRoles(Set<String> roles) {
-        this.roles = roles;
+        this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
     }
 
 
