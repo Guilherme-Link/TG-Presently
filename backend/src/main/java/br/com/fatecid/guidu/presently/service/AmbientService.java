@@ -39,8 +39,8 @@ public class AmbientService {
     }
 
     // Verifica se a latitude a longitude fornecidas estão dentro de um determinado ambiente
-    public boolean validateInsideAmbient(Long id, double latitude, double longitude) {
-        return repository.contains(id, latitude, longitude);
+    public boolean validateInsideAmbient(Long ambientId, double latitude, double longitude) {
+        return repository.contains(ambientId, latitude, longitude);
     }
 
     // Cria um novo ambiente
@@ -49,6 +49,7 @@ public class AmbientService {
         Ambient ambient = new Ambient();
         ambient.setName(dto.getName());
         ambient.setDescription(dto.getDescription());
+        ambient.setArea(dto.getArea());
 
         Ambient saved = repository.save(ambient);
 
@@ -63,6 +64,7 @@ public class AmbientService {
 
         ambient.setName(dto.getName());
         ambient.setDescription(dto.getDescription());
+        ambient.setArea(dto.getArea());
 
         Ambient updated = repository.save(ambient);
 
