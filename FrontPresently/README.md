@@ -1,16 +1,59 @@
-# React + Vite
+# Presently Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend da aplicação Presently, desenvolvido com React + Vite.
 
-Currently, two official plugins are available:
+## Requisitos
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Node.js instalado
+- Backend da aplicação em execução
+- `mkcert` instalado na máquina para gerar certificado local confiável
 
-## React Compiler
+## Instalação do `mkcert` no Windows
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O projeto usa `vite-plugin-mkcert` no arquivo [vite.config.js](./vite.config.js) para criar certificados locais durante o desenvolvimento.
 
-## Expanding the ESLint configuration
+### 1. Instale o `mkcert`
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Você pode instalar de uma destas formas:
+
+npm install -g mkcert
+```
+
+Se não tiver `Chocolatey` ou `Scoop`, instale um dos dois antes de seguir.
+
+### 2. Instale a autoridade certificadora local
+
+Depois de instalar o `mkcert`, execute:
+
+```powershell
+mkcert -install
+```
+
+Esse comando registra a CA local no sistema e permite que o navegador confie nos certificados gerados.
+
+### 3. Execute o projeto pela primeira vez
+
+Na primeira execução do frontend, o plugin gera os certificados dentro da pasta `certs/` automaticamente.
+
+```powershell
+npm install
+npm run dev
+```
+
+### 4. Verifique se o certificado foi criado
+
+Se tudo estiver correto, a pasta `certs/` será criada no projeto e o Vite subirá com HTTPS local.
+
+## Scripts
+
+```powershell
+npm install
+npm run dev
+npm run build
+npm run lint
+```
+
+## Observações
+
+- O frontend usa HTTPS local para funcionar corretamente com o backend.
+- Se o navegador avisar sobre certificado, normalmente o problema é o `mkcert -install` não ter sido executado com sucesso.

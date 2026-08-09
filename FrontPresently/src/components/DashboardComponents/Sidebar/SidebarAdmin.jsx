@@ -61,7 +61,13 @@ function SidebarAdmin({
   activeItem = "painel-geral-link",
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined" || !window.matchMedia) {
+      return false;
+    }
+
+    return window.matchMedia("(max-width: 768px)").matches;
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -69,8 +75,6 @@ function SidebarAdmin({
     const handleChange = (event) => {
       setIsMobile(event.matches);
     };
-
-    setIsMobile(mediaQuery.matches);
 
     if (mediaQuery.addEventListener) {
       mediaQuery.addEventListener("change", handleChange);
@@ -86,12 +90,6 @@ function SidebarAdmin({
       }
     };
   }, []);
-
-  useEffect(() => {
-    if (!isMobile) {
-      setIsMenuOpen(false);
-    }
-  }, [isMobile]);
 
   useEffect(() => {
     if (!isMobile) {
@@ -125,9 +123,11 @@ function SidebarAdmin({
     setIsMenuOpen((current) => !current);
   }
 
+  const menuIsOpen = isMobile ? isMenuOpen : false;
+
   return (
     <aside
-      className={`sidebar-admin${isMenuOpen ? " sidebar-admin--open" : ""}`}
+      className={`sidebar-admin${menuIsOpen ? " sidebar-admin--open" : ""}`}
       aria-label="Menu administrativo"
     >
       <div className="sidebar-admin__mobile-header">
@@ -140,10 +140,10 @@ function SidebarAdmin({
           type="button"
           className="sidebar-admin__toggle"
           onClick={toggleMenu}
-          aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
-          aria-expanded={isMenuOpen}
+          aria-label={menuIsOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={menuIsOpen}
         >
-          {isMenuOpen ? <MdClose size={22} /> : <MdMenu size={22} />}
+          {menuIsOpen ? <MdClose size={22} /> : <MdMenu size={22} />}
         </button>
       </div>
 

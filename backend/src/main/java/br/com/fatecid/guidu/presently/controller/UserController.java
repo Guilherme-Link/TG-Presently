@@ -1,14 +1,17 @@
 package br.com.fatecid.guidu.presently.controller;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.dto.RegisterUserResponse;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
-import br.com.fatecid.guidu.presently.entity.User;
+import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
+import br.com.fatecid.guidu.presently.dto.UpdateUserResponse;
 import br.com.fatecid.guidu.presently.service.UserService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -23,22 +26,15 @@ public class UserController {
 
     // Criação de novos usuários
     @PostMapping("/register")
-    public UserResponse register(
-            @RequestBody RegisterUserRequest request) {
+    public RegisterUserResponse register(
+            @Valid @RequestBody RegisterUserRequest request) {
 
-        User user =  new User();
         try{
-            user = service.register(request);
+            return service.register(request);
         }
         catch(IllegalArgumentException e){
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, e.getMessage());
-        } 
-
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getRoles()
-        );
+        }
     }
 
     // Lista todos os usuários existentes
@@ -59,7 +55,23 @@ public class UserController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void delete(@PathVariable Long id) {
-        service.delete(id);
+        try {
+            service.delete(id);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
+    }
+
+    // Edita um usuário pelo ID
+    @PutMapping("/{id}")
+    public UpdateUserResponse update(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateUserRequest request) {
+        try {
+            return service.update(id, request);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, e.getMessage());
+        }
     }
 
 
