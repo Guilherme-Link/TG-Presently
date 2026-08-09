@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.fatecid.guidu.presently.dto.QrCodeRenderingDTO;
 import br.com.fatecid.guidu.presently.dto.QrCodeValidationDTO;
 import br.com.fatecid.guidu.presently.service.QrCodeService;
+import br.com.fatecid.guidu.presently.service.ValidationCodeService;
 
 import java.io.IOException;
 
@@ -22,9 +23,11 @@ import java.io.IOException;
 public class QrCodeController {
     
     private final QrCodeService qrCodeService;
+    private final ValidationCodeService validationService;
 
-    public QrCodeController(QrCodeService qrCodeService) {
+    public QrCodeController(QrCodeService qrCodeService, ValidationCodeService validationService) {
         this.qrCodeService = qrCodeService;
+        this.validationService = validationService;
     }
 
     // Devolve o QR code de um evento pelo ID
@@ -38,11 +41,11 @@ public class QrCodeController {
         }
     }
 
-    // Criação de novos usuários
+    // Valida uma leitura de código qr
     @PostMapping("/validate")
     public HttpStatus register(@RequestBody QrCodeValidationDTO validationDTO) {
 
-        if(qrCodeService.validateCode(validationDTO)){
+        if(validationService.validateCode(validationDTO)){
             return HttpStatus.OK;
         }
         else{
