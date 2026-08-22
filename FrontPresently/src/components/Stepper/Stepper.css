@@ -1,0 +1,70 @@
+.evt-stepper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.evt-stepper__dots {
+  display: flex;
+  align-items: center;
+}
+
+.evt-stepper__dot-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.evt-stepper__dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #e2e2e2;
+  color: #8a8a8a;
+  font-size: 12.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--evt-transition), color var(--evt-transition);
+}
+
+.evt-stepper__dot--active {
+  background: var(--evt-red);
+  color: var(--evt-white);
+}
+
+.evt-stepper__dot--done {
+  background: var(--evt-red);
+  color: var(--evt-white);
+}
+
+.evt-stepper__line {
+  width: 64px;
+  height: 2px;
+  background: #e2e2e2;
+  margin: 0 6px;
+}
+
+.evt-stepper__line--done {
+  background: var(--evt-red);
+}
+
+.evt-stepper__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--evt-red);
+  color: var(--evt-white);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 999px;
+}
+
+@media (max-width: 640px) {
+  .evt-stepper__line {
+    width: 32px;
+  }
+}

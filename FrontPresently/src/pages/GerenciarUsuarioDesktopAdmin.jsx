@@ -9,7 +9,7 @@ import {
   MdRefresh,
   MdInfoOutline,
 } from "react-icons/md";
-import "./GerenciarUsuarioDesktopAdmin.css";
+import "../styles/pages/GerenciarUsuarioDesktopAdmin.css";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
 import { isFetchNetworkError } from "../utils/api.js";
 import { deleteUser, listUsers, registerUser, updateUser } from "../services/usersApi.js";

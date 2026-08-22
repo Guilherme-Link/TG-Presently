@@ -1,0 +1,100 @@
+.evt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.evt-field__label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--evt-black);
+}
+
+.evt-field__required {
+  color: var(--evt-red);
+  margin-left: 3px;
+}
+
+.evt-field__control {
+  position: relative;
+  display: flex;
+}
+
+.evt-field__input,
+.evt-field__textarea,
+.evt-field__select {
+  width: 100%;
+  border: 1px solid var(--evt-border);
+  border-radius: var(--evt-radius-sm);
+  padding: 11px 14px;
+  font-family: var(--evt-font);
+  font-size: 13.5px;
+  font-weight: 400;
+  color: var(--evt-black);
+  outline: none;
+  background: var(--evt-white);
+  transition: border-color var(--evt-transition);
+}
+
+.evt-field__input::placeholder,
+.evt-field__textarea::placeholder {
+  color: #b7b2b0;
+  font-weight: 300;
+}
+
+.evt-field__input:focus,
+.evt-field__textarea:focus,
+.evt-field__select:focus {
+  border-color: var(--evt-red);
+}
+
+.evt-field__textarea {
+  min-height: 92px;
+  resize: vertical;
+}
+
+.evt-field__select {
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238A8A8A' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+}
+
+.evt-field__icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--evt-text-secondary);
+  pointer-events: none;
+}
+
+.evt-field__control--error .evt-field__input,
+.evt-field__control--error .evt-field__textarea,
+.evt-field__control--error .evt-field__select {
+  border-color: var(--evt-red);
+}
+
+.evt-field__error {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--evt-red);
+}
+
+.evt-field__helper {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--evt-text-secondary);
+  line-height: 1.45;
+}
+
+.evt-field__input:disabled,
+.evt-field__textarea:disabled,
+.evt-field__select:disabled {
+  cursor: not-allowed;
+  background: #f7f7f7;
+  color: #9a9a9a;
+}

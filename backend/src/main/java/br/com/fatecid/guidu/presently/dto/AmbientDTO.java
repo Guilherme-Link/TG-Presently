@@ -1,11 +1,16 @@
 package br.com.fatecid.guidu.presently.dto;
 
 import br.com.fatecid.guidu.presently.entity.Ambient;
+import jakarta.validation.constraints.NotBlank;
 
 public class AmbientDTO {
 
     private Long id;
+
+    @NotBlank(message = "Informe o nome do ambiente.")
     private String name;
+
+    @NotBlank(message = "Informe a descrição do ambiente.")
     private String description;
 
     public AmbientDTO() {
@@ -15,7 +20,6 @@ public class AmbientDTO {
         this.id = ambient.getId();
         this.name = ambient.getName();
         this.description = ambient.getDescription();
-        
     }
 
     public AmbientDTO(Long id, String name, String description) {

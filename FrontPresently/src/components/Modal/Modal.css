@@ -1,0 +1,81 @@
+.evt-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+  animation: evt-fade-in 0.15s ease;
+}
+
+@keyframes evt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.evt-modal {
+  width: 100%;
+  background: var(--evt-white);
+  border-radius: var(--evt-radius-lg);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
+  animation: evt-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes evt-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.evt-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--evt-border);
+  flex-shrink: 0;
+}
+
+.evt-modal__title {
+  margin: 0;
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--evt-black);
+}
+
+.evt-modal__close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--evt-text-secondary);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--evt-transition);
+}
+
+.evt-modal__close:hover {
+  background: #f1f1f1;
+}
+
+.evt-modal__body {
+  padding: 20px 22px 22px;
+  overflow-y: auto;
+}

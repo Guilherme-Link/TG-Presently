@@ -9,9 +9,6 @@ import br.com.fatecid.guidu.presently.entity.EventOccurrence;
 
 public interface EventOccurrenceRepository extends JpaRepository<EventOccurrence, Long> {
 
-    Optional<EventOccurrence> findByEventIdAndDate(
-        Long eventId,
-        LocalDate date
-    );
+    Optional<EventOccurrence> findByEventIdAndEventDate(Long id, LocalDate eventDate);
 
 }

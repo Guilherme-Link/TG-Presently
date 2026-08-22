@@ -2,7 +2,7 @@ import { MdArrowBackIosNew, MdCameraAlt, MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useEffect, useRef, useState } from "react";
-import "./MarcarPresencaMobile.css";
+import "../styles/pages/MarcarPresencaMobile.css";
 
 function QRViewfinderGlyph() {
   return (

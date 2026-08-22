@@ -1,0 +1,599 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
+.gds {
+  --gds-red: #ff0e18;
+  --gds-red-dark: #7b1f10;
+  --gds-black: #000000;
+  --gds-green: #288200;
+  --gds-white: #ffffff;
+  --gds-bg: #f1f1f1;
+  --gds-text-secondary: #8a8a8a;
+  --gds-border: #e7e7e7;
+  --gds-font-family: "Poppins", sans-serif;
+
+  min-height: 100vh;
+  display: flex;
+  font-family: var(--gds-font-family);
+  background: var(--gds-bg);
+}
+
+.gds *,
+.gds *::before,
+.gds *::after {
+  box-sizing: border-box;
+}
+
+.gds-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gds-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--gds-white);
+  border-bottom: 1px solid var(--gds-border);
+  padding: 18px 32px;
+}
+
+.gds-breadcrumb {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gds-text-secondary);
+}
+
+.gds-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--gds-red);
+  letter-spacing: -0.02em;
+}
+
+.gds-subtitle {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--gds-text-secondary);
+}
+
+.gds-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(320px, 420px) 1fr;
+  align-items: start;
+  gap: 32px;
+  padding: 48px 32px 32px;
+}
+
+.gds-card {
+  background: var(--gds-white);
+  border-radius: 14px;
+  border: 1px solid #dddddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  padding: 24px 26px 22px;
+}
+
+.gds-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.gds-card__eyebrow {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--gds-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.gds-card__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--gds-black);
+  letter-spacing: -0.01em;
+}
+
+.gds-card__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gds-red);
+  background: transparent;
+  color: var(--gds-red);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.gds-card__refresh:hover:not(:disabled) {
+  background: #fdeceb;
+  transform: translateY(-1px);
+}
+
+.gds-card__refresh:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.gds-card__description {
+  margin: 0 0 20px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--gds-text-secondary);
+}
+
+.gds-card__footer {
+  display: flex;
+  justify-content: center;
+  padding-top: 18px;
+}
+
+.gds-card__count {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--gds-text-secondary);
+}
+
+.gds-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.gds-field-label {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gds-black);
+}
+
+.gds-input-shell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #bdbdbd;
+  border-radius: 10px;
+  background: var(--gds-white);
+  padding: 10px 12px;
+  margin-bottom: 18px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gds-input-shell:focus-within {
+  border-color: var(--gds-red);
+  box-shadow: 0 0 0 3px rgba(255, 14, 24, 0.08);
+}
+
+.gds-input-shell__icon {
+  flex-shrink: 0;
+  color: var(--gds-text-secondary);
+}
+
+.gds-input-shell--textarea {
+  align-items: flex-start;
+}
+
+.gds-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gds-black);
+  resize: none;
+}
+
+.gds-input::placeholder {
+  color: #b7b2b0;
+}
+
+.gds-input--textarea {
+  min-height: 108px;
+}
+
+.gds-form__actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.gds-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+}
+
+.gds-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.gds-btn--primary {
+  border: none;
+  background: var(--gds-red);
+  color: var(--gds-white);
+  font-size: 13.5px;
+  padding: 12px 24px;
+  min-width: 180px;
+}
+
+.gds-btn--primary:hover:not(:disabled) {
+  background: var(--gds-red-dark);
+  transform: translateY(-1px);
+}
+
+.gds-btn--ghost {
+  border: 1px solid var(--gds-red);
+  background: transparent;
+  color: var(--gds-red);
+  font-size: 13.5px;
+  padding: 11px 20px;
+}
+
+.gds-btn--ghost:hover:not(:disabled) {
+  background: #fdeceb;
+}
+
+.gds-btn--small {
+  padding: 8px 14px;
+  font-size: 12px;
+  min-width: auto;
+}
+
+.gds-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  margin-bottom: 16px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.gds-alert--success {
+  background: #edf8e8;
+  color: #245b00;
+  border: 1px solid #cfe9be;
+}
+
+.gds-alert--error {
+  background: #fff0f0;
+  color: #8b1d12;
+  border: 1px solid #f3c1bc;
+}
+
+.gds-alert__retry {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.gds-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  border: 1px dashed var(--gds-border);
+  border-radius: 12px;
+  background: #fcfcfc;
+  color: var(--gds-text-secondary);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+}
+
+.gds-room-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.gds-room-card {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid var(--gds-border);
+  border-radius: 12px;
+  background: var(--gds-white);
+  padding: 14px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gds-room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+}
+
+.gds-room-card__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  background: var(--gds-red);
+  color: var(--gds-white);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.gds-room-card__content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gds-room-card__content:focus-visible {
+  outline: 2px solid rgba(255, 14, 24, 0.35);
+  outline-offset: 4px;
+  border-radius: 8px;
+}
+
+.gds-room-card__topline {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.gds-room-card__name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--gds-black);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.gds-room-card__meta {
+  margin: 2px 0 0;
+  font-size: 10.75px;
+  color: #b4b4b4;
+  line-height: 1.35;
+}
+
+.gds-room-card__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gds-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  border: 1px solid var(--gds-red);
+  background: transparent;
+  color: var(--gds-red);
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.18s ease;
+  flex-direction: column;
+  padding: 8px 6px;
+}
+
+.gds-icon-btn:hover {
+  background: #fdeceb;
+  transform: translateY(-1px);
+}
+
+.gds-icon-btn__label {
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.gds-icon-btn--delete svg {
+  width: 16px;
+  height: 16px;
+}
+
+.gds-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(20, 20, 20, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.gds-modal__dialog {
+  width: min(100%, 460px);
+  border-radius: 18px;
+  background: var(--gds-white);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  padding: 24px;
+}
+
+.gds-modal__title {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--gds-black);
+  letter-spacing: -0.01em;
+}
+
+.gds-modal__text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #343434;
+}
+
+.gds-modal__error {
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid #f3c1bc;
+  background: #fff0f0;
+  color: #8b1d12;
+  font-size: 12.5px;
+  font-weight: 500;
+  padding: 10px 12px;
+}
+
+.gds-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.gds-modal__button {
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.gds-modal__button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.gds-modal__button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+.gds-modal__button--secondary {
+  background: #efefef;
+  color: var(--gds-black);
+}
+
+.gds-modal__button--secondary:hover:not(:disabled) {
+  background: #e6e6e6;
+}
+
+.gds-modal__button--danger {
+  background: var(--gds-red);
+  color: var(--gds-white);
+}
+
+.gds-modal__button--danger:hover:not(:disabled) {
+  background: var(--gds-red-dark);
+}
+
+@media (max-width: 1180px) {
+  .gds-main {
+    grid-template-columns: minmax(300px, 380px) 1fr;
+  }
+}
+
+@media (max-width: 980px) {
+  .gds-main {
+    grid-template-columns: 1fr;
+  }
+
+  .gds-room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .gds-content {
+    padding-top: 72px;
+  }
+
+  .gds-header {
+    padding: 16px 16px 0;
+  }
+
+  .gds-main {
+    padding: 16px;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .gds-header {
+    padding: 16px 18px;
+  }
+
+  .gds-main {
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .gds-card {
+    padding: 20px 18px;
+  }
+
+  .gds-room-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .gds-room-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .gds-room-card__actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+
+  .gds-form__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gds-btn {
+    width: 100%;
+  }
+
+  .gds-btn--small {
+    width: auto;
+  }
+
+  .gds-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

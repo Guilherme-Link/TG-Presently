@@ -11,7 +11,7 @@ import {
   heatmapMatrix,
   heatmapTitle,
 } from "../data/dashboardData";
-import "./Dashboard.css";
+import "../styles/pages/Dashboard.css";
 
 function getCurrentDateLabel() {
   const today = new Date();

@@ -1,0 +1,37 @@
+.evt-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evt-detail__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--evt-border);
+}
+
+.evt-detail__row:last-of-type {
+  border-bottom: none;
+}
+
+.evt-detail__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--evt-text-secondary);
+  flex-shrink: 0;
+}
+
+.evt-detail__value {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--evt-black);
+  text-align: right;
+}
+
+.evt-detail__footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 18px;
+}

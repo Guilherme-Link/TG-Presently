@@ -1,5 +1,5 @@
 import "../styles/theme.css";
-import "./DashboardDesktopAdmin.css";
+import "../styles/pages/DashboardDesktopAdmin.css";
 import { useState } from "react";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";

@@ -8,6 +8,7 @@ import MarcarPresencaDesktop from "./pages/MarcarPresencaDesktop.jsx";
 import DashboardDesktopAdmin from "./pages/DashboardDesktopAdmin.jsx"
 import GerenciarUsuarioDesktopAdmin from "./pages/GerenciarUsuarioDesktopAdmin.jsx"
 import GerenciamentoDeSalas from "./pages/GerenciamentoDeSalas.jsx"
+import EventosAdminRoutes from "./pages/EventosAdminRoutes.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
@@ -110,6 +111,7 @@ function App() {
       <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
       <Route path="/usuarios" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciarUsuarioDesktopAdmin></GerenciarUsuarioDesktopAdmin></ProtectedRoute>} />
       <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas></GerenciamentoDeSalas></ProtectedRoute>} />
+      <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
 
       <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
