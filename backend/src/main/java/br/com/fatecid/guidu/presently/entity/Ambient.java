@@ -6,6 +6,8 @@ import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.locationtech.jts.geom.Polygon;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -28,11 +30,13 @@ public class Ambient {
     @Column(nullable = false, unique = true)
     private String description;
 
+    // Coluna para armazenar a área do ambiente, usada para geofencing na validação dos códigos
+    @Column(columnDefinition = "geometry(Polygon,4326)")
+    private Polygon area;
+
     // Relacionamento para retornar os eventos cadastrados para o ambiente
     @OneToMany(mappedBy = "ambient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Event> events = new ArrayList<>();
-
-    // TODO (Gui): Adicionar campo para gravar geolocalização do ambiente (Provavelmente PostGIS)
 
     public Ambient() {
     }
@@ -61,6 +65,14 @@ public class Ambient {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Polygon getArea() {
+        return area;
+    }
+
+    public void setArea(Polygon area) {
+        this.area = area;
     }
 
     public List<Event> getEvents(){

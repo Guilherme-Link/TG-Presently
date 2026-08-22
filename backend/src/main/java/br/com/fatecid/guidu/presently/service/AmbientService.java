@@ -8,6 +8,7 @@ import br.com.fatecid.guidu.presently.repository.AmbientRepository;
 import br.com.fatecid.guidu.presently.repository.EventRepository;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;   
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Sort;
@@ -43,16 +44,18 @@ public class AmbientService {
         return new AmbientDTO(ambient);
     }
 
+    // Verifica se a latitude a longitude fornecidas estão dentro de um determinado ambiente
+    public boolean validateInsideAmbient(Long ambientId, double latitude, double longitude) {
+        return repository.contains(ambientId, latitude, longitude);
+    }
+
     // Cria um novo ambiente
-    public AmbientDTO save(AmbientDTO dto) {
-        String name = normalize(dto.getName());
-        String description = normalize(dto.getDescription());
+    public AmbientDTO save(@Valid AmbientDTO dto) {
 
         Ambient ambient = new Ambient();
-        ambient.setName(name);
-        ambient.setDescription(description);
-
-        validateUniqueness(name, description, null);
+        ambient.setName(dto.getName());
+        ambient.setDescription(dto.getDescription());
+        ambient.setArea(dto.getArea());
 
         Ambient saved = repository.save(ambient);
 
@@ -60,17 +63,14 @@ public class AmbientService {
     }
 
     // Atualiza um ambiente
-    public AmbientDTO update(Long id, AmbientDTO dto) {
-        String name = normalize(dto.getName());
-        String description = normalize(dto.getDescription());
+    public AmbientDTO update(Long id, @Valid AmbientDTO dto) {
 
         Ambient ambient = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ambiente não encontrado."));
 
-        validateUniqueness(name, description, id);
-
-        ambient.setName(name);
-        ambient.setDescription(description);
+        ambient.setName(dto.getName());
+        ambient.setDescription(dto.getDescription());
+        ambient.setArea(dto.getArea());
 
         Ambient updated = repository.save(ambient);
 
@@ -104,36 +104,5 @@ public class AmbientService {
         }
 
         return lista;
-    }
-
-    private void validateUniqueness(String name, String description, Long currentId) {
-        boolean duplicateName = currentId == null
-                ? repository.existsByNameIgnoreCase(name)
-                : repository.existsByNameIgnoreCaseAndIdNot(name, currentId);
-
-        if (duplicateName) {
-            throw new IllegalStateException("Já existe um ambiente cadastrado com esse nome.");
-        }
-
-        boolean duplicateDescription = currentId == null
-                ? repository.existsByDescriptionIgnoreCase(description)
-                : repository.existsByDescriptionIgnoreCaseAndIdNot(description, currentId);
-
-        if (duplicateDescription) {
-            throw new IllegalStateException("Já existe um ambiente cadastrado com essa descrição.");
-        }
-    }
-
-    private String normalize(String value) {
-        if (value == null) {
-            throw new IllegalArgumentException("Os campos de ambiente são obrigatórios.");
-        }
-
-        String normalized = value.trim();
-        if (normalized.isEmpty()) {
-            throw new IllegalArgumentException("Os campos de ambiente são obrigatórios.");
-        }
-
-        return normalized;
     }
 }
