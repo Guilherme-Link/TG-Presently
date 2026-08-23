@@ -31,7 +31,7 @@ public class Participant {
     private User user;
 
     // Relacionamento para retornar os eventos pelo qual o participante é responsável
-    @OneToMany(mappedBy = "responsibleUser")
+    @OneToMany(mappedBy = "responsible")
     private List<Event> responsibleEvents = new ArrayList<>();
 
     // Relacionamento para retornar os eventos dos quais participa

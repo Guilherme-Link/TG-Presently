@@ -56,7 +56,7 @@ public class Event {
 
     // Relacionamento para vincular o responsável pelo evento
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "responsible_user_id", nullable = false)
+    @JoinColumn(name = "responsible_id", nullable = false)
     private Participant responsible;
 
     // Relacionamento para vincular o ambiente onde esse evento ocorre
