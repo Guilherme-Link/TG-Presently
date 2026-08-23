@@ -34,6 +34,15 @@ public class ParticipantController {
         );
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<ParticipantDTO> searchByName(
+            @RequestBody String name
+    ) {
+        return ResponseEntity.ok(
+                participantService.searchByName(name)
+        );
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ParticipantDTO> update(
             @PathVariable Long id,
