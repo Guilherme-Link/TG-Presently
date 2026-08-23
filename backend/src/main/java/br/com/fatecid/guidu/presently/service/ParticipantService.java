@@ -1,10 +1,16 @@
 package br.com.fatecid.guidu.presently.service;
 
+import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.dto.ParticipantDTO;
+import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
-import org.springframework.stereotype.Service;
 
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -65,6 +71,37 @@ public class ParticipantService {
         Participant updatedParticipant = participantRepository.save(participant);
 
         return toDTO(updatedParticipant);
+    }
+
+    // Retorna uma lista dos eventos pelos quais o participante é reponsável
+    @Transactional(readOnly = true)
+    public List<EventDTO> getResponsibleEvents(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : participant.getResponsibleEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
+    }
+
+    // Retorna uma lista dos eventos dos quais o participante é membro
+    @Transactional(readOnly = true)
+    public List<EventDTO> getParticipatingEvents(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : participant.getParticipatingEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
     }
 
     private ParticipantDTO toDTO(Participant participant) {
