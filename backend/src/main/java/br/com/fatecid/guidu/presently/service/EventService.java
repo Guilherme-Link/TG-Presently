@@ -4,10 +4,10 @@ import br.com.fatecid.guidu.presently.dto.EventCreateDTO;
 import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.entity.Ambient;
 import br.com.fatecid.guidu.presently.entity.Event;
-import br.com.fatecid.guidu.presently.entity.User;
+import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.repository.AmbientRepository;
 import br.com.fatecid.guidu.presently.repository.EventRepository;
-import br.com.fatecid.guidu.presently.repository.UserRepository;
+import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
 
 import org.springframework.stereotype.Service;
 
@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
+    private final ParticipantRepository participantRepository;
     private final AmbientRepository ambientRepository;
 
     public EventService(
             EventRepository eventRepository,
-            UserRepository userRepository,
+            ParticipantRepository participantRepository,
             AmbientRepository ambientRepository) {
 
         this.eventRepository = eventRepository;
-        this.userRepository = userRepository;
+        this.participantRepository = participantRepository;
         this.ambientRepository = ambientRepository;
     }
 
@@ -106,11 +106,11 @@ public class EventService {
         event.setEventType(dto.getEventType());
         event.setIntervalDays(dto.getIntervalDays());
 
-        User responsible = userRepository.findById(dto.getResponsibleUserId())
+        Participant responsible = participantRepository.findById(dto.getResponsibleId())
                 .orElseThrow(() ->
                         new EntityNotFoundException("Usuário responsável não encontrado."));
 
-        event.setResponsibleUser(responsible);
+        event.setResponsible(responsible);
 
         Ambient ambient = ambientRepository.findById(dto.getAmbientId())
                 .orElseThrow(() ->
@@ -118,13 +118,13 @@ public class EventService {
 
         event.setAmbient(ambient);
 
-        Set<User> participants = new HashSet<>();
+        Set<Participant> participants = new HashSet<>();
 
         if (dto.getParticipantIds() != null) {
 
             for (Long participantId : dto.getParticipantIds()) {
 
-                User participant = userRepository.findById(participantId)
+                Participant participant = participantRepository.findById(participantId)
                         .orElseThrow(() ->
                                 new EntityNotFoundException(
                                         "Participante não encontrado. Id: " + participantId));

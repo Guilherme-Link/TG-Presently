@@ -30,7 +30,7 @@ public class EventDTO {
 
     private int intervalDays;
 
-    private Long responsibleUserId;
+    private Long responsibleId;
 
     private Long ambientId;
 
@@ -51,8 +51,8 @@ public class EventDTO {
         this.eventType = event.getEventType();
         this.intervalDays = event.getIntervalDays();
 
-        if (event.getResponsibleUser() != null) {
-            this.responsibleUserId = event.getResponsibleUser().getId();
+        if (event.getResponsible() != null) {
+            this.responsibleId = event.getResponsible().getId();
         }
 
         if (event.getAmbient() != null) {
@@ -136,12 +136,12 @@ public class EventDTO {
         this.intervalDays = intervalDays;
     }
 
-    public Long getResponsibleUserId() {
-        return responsibleUserId;
+    public Long getResponsibleId() {
+        return responsibleId;
     }
 
-    public void setResponsibleUserId(Long responsibleUserId) {
-        this.responsibleUserId = responsibleUserId;
+    public void setResponsibleId(Long responsibleId) {
+        this.responsibleId = responsibleId;
     }
 
     public Long getAmbientId() {

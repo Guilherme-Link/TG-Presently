@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import br.com.fatecid.guidu.presently.entity.AttendanceRecord;
 import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.EventOccurrence;
-import br.com.fatecid.guidu.presently.entity.User;
+import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.repository.AttendanceRecordRepository;
 import br.com.fatecid.guidu.presently.repository.EventOccurrenceRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -57,7 +57,7 @@ public class EventOccurrenceService {
         occurrence.setClosed(false);
 
         // Copia a lista de participantes do evento e deixa todos por padrão como ausentes
-        for (User participant : event.getParticipants()) {
+        for (Participant participant : event.getParticipants()) {
 
             AttendanceRecord record = new AttendanceRecord();
 
@@ -98,9 +98,9 @@ public class EventOccurrenceService {
         occurrence.setClosed(true);
     }
 
-    // Valida a presença de um participante em uma instância da ocorrência pelo ID de usuário
-    public void registerPresence(long OccurrenceId, long userId, LocalDateTime checkInTime){
-        AttendanceRecord record = recordRepository.findByOccurrenceIdAndParticipantId(OccurrenceId, userId)
+    // Valida a presença de um participante em uma instância da ocorrência pelo ID de participante
+    public void registerPresence(long OccurrenceId, long participantId, LocalDateTime checkInTime){
+        AttendanceRecord record = recordRepository.findByOccurrenceIdAndParticipantId(OccurrenceId, participantId)
             .orElseThrow(() -> 
                 new EntityNotFoundException("Usuário não participa deste evento."));
 

@@ -28,7 +28,7 @@ public class EventCreateDTO {
 
     private int intervalDays;
 
-    private Long responsibleUserId;
+    private Long responsibleId;
 
     private Long ambientId;
 
@@ -101,12 +101,12 @@ public class EventCreateDTO {
         this.intervalDays = intervalDays;
     }
 
-    public Long getResponsibleUserId() {
-        return responsibleUserId;
+    public Long getResponsibleId() {
+        return responsibleId;
     }
 
-    public void setResponsibleUserId(Long responsibleUserId) {
-        this.responsibleUserId = responsibleUserId;
+    public void setResponsibleUserId(Long responsibleId) {
+        this.responsibleId = responsibleId;
     }
 
     public Long getAmbientId() {
