@@ -54,9 +54,13 @@ public class Event {
     @Column(nullable = false)
     private int intervalDays;
 
-    // Relacionamento para vincular o responsável pelo evento
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "responsible_user_id", nullable = false)
+    // Nome livre do responsável informado no cadastro do evento
+    @Column(nullable = true, length = 150)
+    private String responsible;
+
+    // Relacionamento legado para eventos antigos vinculados a um usuário
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "responsible_user_id", nullable = true)
     private User responsibleUser;
 
     // Relacionamento para vincular o ambiente onde esse evento ocorre
@@ -84,6 +88,7 @@ public class Event {
              LocalTime endTime,
              EventType eventType,
              int intervalDays,
+             String responsible,
              User responsibleUser,
              Ambient ambient) {
         this.name = name;
@@ -94,6 +99,7 @@ public class Event {
         this.endTime = endTime;
         this.eventType = eventType;
         this.intervalDays = intervalDays;
+        this.responsible = responsible;
         this.responsibleUser = responsibleUser;
         this.ambient = ambient;
         this.generateSecretKey();
@@ -225,6 +231,14 @@ public class Event {
     
     public void setIntervalDays(int intervalDays){
         this.intervalDays = intervalDays;
+    }
+
+    public String getResponsible() {
+        return responsible;
+    }
+
+    public void setResponsible(String responsible) {
+        this.responsible = responsible;
     }
 
     public User getResponsibleUser() {

@@ -9,7 +9,13 @@ import org.springframework.data.repository.query.Param;
 public interface AmbientRepository extends JpaRepository<Ambient, Long> {
 
     // Implementado automaticamente pelo Spring, não precisa de código extra
-    boolean existsByName(String name);
+    boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
+
+    boolean existsByDescriptionIgnoreCase(String description);
+
+    boolean existsByDescriptionIgnoreCaseAndIdNot(String description, Long id);
 
     // Query para verificar se um ponto fornecido está dentro da área 
     @Query("""

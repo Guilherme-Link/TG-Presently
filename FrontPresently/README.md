@@ -16,10 +16,8 @@ O projeto usa `vite-plugin-mkcert` no arquivo [vite.config.js](./vite.config.js)
 
 Você pode instalar de uma destas formas:
 
-npm install -g mkcert
 ```
-
-Se não tiver `Chocolatey` ou `Scoop`, instale um dos dois antes de seguir.
+npm install -g mkcert
 
 ### 2. Instale a autoridade certificadora local
 

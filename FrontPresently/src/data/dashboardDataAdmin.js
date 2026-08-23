@@ -54,7 +54,7 @@ export const adminSidebarSections = [
         to: "#tendencias",
       },
       { id: "salas-link", label: "Salas", icon: "rooms", to: "salas" },
-      { id: "aulas-link", label: "Aulas", icon: "calendar", to: "aulas" },
+      { id: "eventos-link", label: "Eventos", icon: "calendar", to: "eventos" },
       {
         id: "usuarios-link",
         label: "Usuarios",

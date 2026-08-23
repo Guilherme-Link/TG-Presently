@@ -6,7 +6,7 @@ import StatisticCard from "../components/DashboardComponents/StatisticCard/Stati
 import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
 import QuickAccessCard from "../components/DashboardComponents/QuickAccessCard/QuickAccessCard (1).jsx";
 import { statistics, classes, shortcuts } from "../data/dashboardData";
-import "./Dashboard.css";
+import "../styles/pages/Dashboard.css";
 
 function getCurrentDateLabel() {
   const today = new Date();

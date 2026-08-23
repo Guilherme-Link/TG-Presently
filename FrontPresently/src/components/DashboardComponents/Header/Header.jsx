@@ -3,7 +3,7 @@ import {
   MdPerson,
   MdKeyboardArrowDown,
 } from "react-icons/md";
-import "./Header (1).css";
+import "./Header.css";
 
 function Header({
   userName = "Aluno",

@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import FotoFoda from "../assets/FotoFoda.png";
 import { getApiBaseUrl, isFetchNetworkError } from "../utils/api.js";
-import "./PresentlyLogin.css";
+import "../styles/pages/PresentlyLogin.css";
 
 const COPY = [
   {
