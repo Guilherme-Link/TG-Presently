@@ -38,13 +38,13 @@ public class ParticipantService {
         return toDTO(participant);
     }
 
-    public ParticipantDTO searchByName(String name) {
-        Participant participant = participantRepository.findByNameContaining(name)
-                .orElseThrow(() ->
-                        new RuntimeException("Nenhum participante encontrado para a busca: " + name)
-                );
+    public List<ParticipantDTO> searchByName(String name) {
+        List<Participant> participants =
+            participantRepository.findByNameContainingIgnoreCase(name);
 
-        return toDTO(participant);
+    return participants.stream()
+            .map(this::toDTO)
+            .toList();
     }
 
     public ParticipantDTO create(ParticipantDTO dto) {
