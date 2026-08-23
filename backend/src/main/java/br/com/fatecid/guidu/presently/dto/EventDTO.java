@@ -45,7 +45,7 @@ public class EventDTO {
         this.name = event.getName();
         this.description = event.getDescription();
         this.startDate = event.getStartDate();
-        this.endTime = event.getEndTime();
+        this.endDate = event.getEndDate();
         this.startTime = event.getStartTime();
         this.endTime = event.getEndTime();
         this.eventType = event.getEventType();
