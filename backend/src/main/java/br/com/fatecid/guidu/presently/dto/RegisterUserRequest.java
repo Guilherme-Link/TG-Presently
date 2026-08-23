@@ -3,6 +3,7 @@ package br.com.fatecid.guidu.presently.dto;
 public class RegisterUserRequest {
 
     private String username;
+    private String fullName;
     private String password;
     private String role;
 
@@ -13,6 +14,14 @@ public class RegisterUserRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPassword() {
