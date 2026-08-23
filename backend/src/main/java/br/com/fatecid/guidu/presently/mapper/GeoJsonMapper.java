@@ -14,6 +14,8 @@ public class GeoJsonMapper {
     // Converte um objeto de geometria polygon para o DTO de polygon
     public static Polygon toPolygon(GeoJsonPolygonDTO dto) {
 
+        if (dto == null) return null;
+
         // A conversão só se aplica pra geojson do tipo polígono
         if (!dto.type().equals("Polygon")) {
             throw new IllegalArgumentException("Tipo deve ser Polygon");
@@ -33,6 +35,8 @@ public class GeoJsonMapper {
 
     // Converte um DTO de polygon de volta para um objeto de geometria Polygon
     public static GeoJsonPolygonDTO fromPolygon(Polygon polygon) {
+
+        if (polygon == null) return null;
 
         // Separa os pontos de coordenada do polígono e mapeia para uma lista de pares double
         List<List<Double>> exteriorRing = Arrays.stream(polygon.getCoordinates())

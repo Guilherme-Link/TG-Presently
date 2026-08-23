@@ -102,7 +102,9 @@ public class ValidationCodeService {
         }
 
         // Quarta validação: Verifica se o usuário está dentro da área permitida pelo geofencing
+        //                      - Se a área do ambiente for null, pula a validação 
         if (
+            event.getAmbient().getArea() != null &&
             !ambientService.validateInsideAmbient(
                 event.getAmbient().getId(), 
                 validationDTO.getUserLatitude(), 
