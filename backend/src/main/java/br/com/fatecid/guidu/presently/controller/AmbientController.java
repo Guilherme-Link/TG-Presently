@@ -3,6 +3,7 @@ package br.com.fatecid.guidu.presently.controller;
 import br.com.fatecid.guidu.presently.dto.AmbientDTO;
 import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.service.AmbientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,7 +41,7 @@ public class AmbientController {
     // Cria um novo ambiente, recebendo um AmbientDTO
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public AmbientDTO save(@RequestBody AmbientDTO dto) {
+    public AmbientDTO save(@Valid @RequestBody AmbientDTO dto) {
         return service.save(dto);
     }
 
@@ -48,7 +49,7 @@ public class AmbientController {
     @PutMapping("/{id}")
     public AmbientDTO update(
             @PathVariable Long id,
-            @RequestBody AmbientDTO dto) {
+            @Valid @RequestBody AmbientDTO dto) {
 
         return service.update(id, dto);
     }

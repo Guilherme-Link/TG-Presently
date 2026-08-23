@@ -2,6 +2,10 @@ package br.com.fatecid.guidu.presently.service;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
 import br.com.fatecid.guidu.presently.entity.Participant;
+import br.com.fatecid.guidu.presently.dto.RegisterUserResponse;
+import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
+import br.com.fatecid.guidu.presently.dto.UpdateUserResponse;
+import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.repository.UserRepository;
 
@@ -11,7 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 @Service
@@ -19,6 +26,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
     private final PasswordEncoder encoder;
+    private final PasswordGeneratorService passwordGeneratorService;
 
     public UserService(
                 UserRepository repository,
@@ -26,6 +34,7 @@ public class UserService implements UserDetailsService {
             ) {
         this.repository = repository;
         this.encoder = encoder;
+        this.passwordGeneratorService = passwordGeneratorService;
     }
 
     // Retorna um objeto de detalhes de um usuário; 
@@ -54,32 +63,76 @@ public class UserService implements UserDetailsService {
     public User register(RegisterUserRequest request) {
 
         // Erro de usuário já existente
-        if (repository.existsByUsername(request.getUsername())) {
-            throw new IllegalArgumentException("Nome de usuário já está em uso");
+        if (repository.existsByUsername(email)) {
+            throw new IllegalArgumentException("Email já está em uso");
         }
 
         User user = new User();
+        String rawPassword = normalizePassword(request.getPassword());
+        boolean passwordWasGenerated = false;
 
-        // Salva o nome do usuário e o hash codificado da senha
-        user.setUsername(request.getUsername());
-        user.setPassword(
-                encoder.encode(request.getPassword())
-        );
+        if (rawPassword == null) {
+            rawPassword = passwordGeneratorService.generate();
+            passwordWasGenerated = true;
+        }
+
+        // Salva o e-mail do usuário e a senha codificada
+        user.setUsername(email);
+        user.setPassword(encoder.encode(rawPassword));
 
         // Recebe os roles solicitados para o novo usuário
-        String role = request.getRole();
-       
-        if (role.equals("user")) {
-            // Define o usuário somente como user
-            user.setRoles(Set.of("ROLE_USER"));
+        user.setRoles(resolveRoles(request.getRole()));
+
+        User savedUser = repository.save(user);
+
+        return new RegisterUserResponse(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getRoles(),
+                passwordWasGenerated ? rawPassword : null
+        );
+    }
+
+    @Transactional
+    public UpdateUserResponse update(Long id, UpdateUserRequest request) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        String email = normalizeEmail(request.getEmail());
+
+        if (repository.existsByUsername(email) && !email.equals(user.getUsername())) {
+            throw new IllegalArgumentException("Email já está em uso");
         }
-        else if (role.equals("admin")){
-            // Dá privilégios de admin
-            user.setRoles(Set.of("ROLE_ADMIN", "ROLE_USER"));
+
+        user.setUsername(email);
+        user.setRoles(resolveRoles(request.getRole()));
+
+        User savedUser = repository.save(user);
+
+        return new UpdateUserResponse(
+                savedUser.getId(),
+                savedUser.getUsername(),
+                savedUser.getRoles()
+        );
+    }
+
+    private String normalizeEmail(String email) {
+        if (email == null) {
+            return null;
         }
-        else {
-            // Erro de role inválido
-            throw new IllegalArgumentException("Role inválido! O novo usuário deve possuir nível user ou admin");
+
+        return email.trim().toLowerCase(Locale.ROOT);
+    }
+
+    private Set<String> resolveRoles(String role) {
+        if (role == null) {
+            throw new IllegalArgumentException("Tipo de usuário inválido. Use Aluno ou Administrador.");
+        }
+
+        String normalizedRole = role.trim().toLowerCase(Locale.ROOT);
+
+        if (normalizedRole.equals("aluno") || normalizedRole.equals("user") || normalizedRole.equals("role_user")) {
+            return new HashSet<>(Set.of("ROLE_USER"));
         }
 
         // Criando o participante correspondente ao novo usuário criado
@@ -101,16 +154,16 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(Long id) {
-    User user = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-    Participant participant = user.getParticipant();
+        Participant participant = user.getParticipant();
 
-    if (participant != null) {
-        participant.setUser(null);
-        user.setParticipant(null);
+        if (participant != null) {
+            participant.setUser(null);
+            user.setParticipant(null);
+        }
+
+        repository.delete(user);
     }
-
-    repository.delete(user);
-}
 }

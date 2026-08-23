@@ -12,7 +12,7 @@ import {
 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import { sidebarNavAluno, sidebarNavConta } from "../../../data/dashboardData";
-import "./Sidebar (1).css";
+import "./Sidebar.css";
 
 const ICONS = {
   dashboard: MdDashboard,

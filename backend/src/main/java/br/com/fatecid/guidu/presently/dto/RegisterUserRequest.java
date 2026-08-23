@@ -1,19 +1,31 @@
 package br.com.fatecid.guidu.presently.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
+
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
 public class RegisterUserRequest {
 
+    @NotBlank
     private String username;
+    
+    @NotBlank
     private String fullName;
+    
+    @NotBlank
     private String password;
+
+    @NotBlank
     private String role;
 
     // Getters e Setters
-    public String getUsername() {
-        return username;
+    public String getEmail() {
+        return email;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getFullName() {
@@ -32,7 +44,7 @@ public class RegisterUserRequest {
         this.password = password;
     }
 
-     public String getRole() {
+    public String getRole() {
         return role;
     }
 

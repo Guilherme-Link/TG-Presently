@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  Lock,
+  Mail,
+} from "lucide-react";
 import FotoFoda from "../assets/FotoFoda.png";
-import "./PresentlyLogin.css"
+import { getApiBaseUrl, isFetchNetworkError } from "../utils/api.js";
+import "../styles/pages/PresentlyLogin.css";
 
 const COPY = [
   {
@@ -47,7 +55,7 @@ function Blobs() {
   );
 }
 
-const API_BASE_URL = `https://${window.location.hostname}:8443`;
+const API_BASE_URL = getApiBaseUrl();
 
 export default function PresencefyLogin() {
   const [email, setEmail] = useState("");
@@ -55,13 +63,13 @@ export default function PresencefyLogin() {
   const [showPassword, setShowPassword] = useState(false);
   const [slide, setSlide] = useState(0);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setError("");
+    setError(null);
     setSubmitting(true);
 
     try {
@@ -82,7 +90,28 @@ export default function PresencefyLogin() {
       });
 
       if (!response.ok) {
-        throw new Error("Usuário ou senha inválidos");
+        if (response.status === 401 || response.status === 403) {
+          setError({
+            kind: "credentials",
+            message: "Usuário ou senha incorretos.",
+          });
+          return;
+        }
+
+        if (response.status >= 500) {
+          setError({
+            kind: "server",
+            message:
+              "O servidor encontrou um problema. Tente novamente em instantes.",
+          });
+          return;
+        }
+
+        setError({
+          kind: "generic",
+          message: "Não foi possível realizar o login.",
+        });
+        return;
       }
 
       const user = await response.json();
@@ -102,7 +131,22 @@ export default function PresencefyLogin() {
         navigate("/dashboard");
       }
     } catch (err) {
-      setError(err.message || "Não foi possível fazer login");
+      if (isFetchNetworkError(err)) {
+        setError({
+          kind: "network",
+          message: navigator.onLine
+            ? "Não foi possível conectar ao servidor. Verifique se o backend está ativo e se o endereço foi aberto corretamente no celular."
+            : "Você está sem conexão com a internet.",
+        });
+        return;
+      }
+
+      setError({
+        kind: "generic",
+        message: err instanceof Error && err.message
+          ? err.message
+          : "Não foi possível realizar o login.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -175,7 +219,16 @@ export default function PresencefyLogin() {
               </button>
             </div>
 
-            {error && <p className="pf-error">{error}</p>}
+            {error && (
+              <div
+                className={`pf-error pf-error--${error.kind}`}
+                role="alert"
+                aria-live="assertive"
+              >
+                <AlertCircle size={18} className="pf-error__icon" />
+                <p className="pf-error__text">{error.message}</p>
+              </div>
+            )}
 
             <div className="pf-forgot">
               <a href="#forgot">Esqueci a senha</a>

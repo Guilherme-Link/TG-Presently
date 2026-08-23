@@ -41,4 +41,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             long ambient_id,
             LocalDate date,
             LocalTime time);
+
+    boolean existsByAmbientId(Long ambientId);
 }

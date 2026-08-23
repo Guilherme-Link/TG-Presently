@@ -166,7 +166,7 @@
   flex: 1;
   display: grid;
   grid-template-columns: minmax(320px, 420px) 1fr;
-  align-items: start;
+  align-items: stretch;
   gap: 22px;
   padding: 24px 32px 32px;
 }
@@ -177,6 +177,7 @@
   border-radius: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   padding: 24px 26px 28px;
+  height: 100%;
 }
 
 .gua-register__title {
@@ -231,14 +232,39 @@
   font-weight: 300;
 }
 
+.gua-input input:disabled {
+  color: #9C9C9C;
+  cursor: not-allowed;
+}
+
+.gua-field-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin: -2px 0 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #FDE7E6;
+  border: 1px solid #F3C1BC;
+  color: var(--gua-red-dark);
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 500;
+}
+
+.gua-field-note__icon {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
 .gua-register__row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 22px;
 }
 
-/* Dropdown select (Tipo de usuário / Senha) */
+/* Dropdown select (Tipo de usuário) */
 .gua-dropdown {
   display: flex;
   flex-direction: column;
@@ -283,6 +309,11 @@
   color: var(--gua-black);
 }
 
+.gua-dropdown__select:disabled {
+  color: #9C9C9C;
+  cursor: not-allowed;
+}
+
 .gua-dropdown__icon {
   position: absolute;
   right: 12px;
@@ -312,35 +343,131 @@
   transform: translateY(-1px);
 }
 
+.gua-register__submit:disabled {
+  background: #D44A50;
+  cursor: wait;
+  transform: none;
+  box-shadow: none;
+}
+
 /* ================= List card ================= */
 .gua-list {
   background: var(--gua-white);
   border-radius: 14px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  padding: 24px 26px 20px;
+  padding: 20px 22px 16px;
   display: flex;
   flex-direction: column;
-  min-height: 420px;
+  gap: 10px;
+  height: 100%;
+  max-height: 560px;
+  overflow: hidden;
+}
+
+.gua-list__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .gua-list__title {
-  margin: 0 0 18px;
+  margin: 0;
   font-size: 16.5px;
   font-weight: 700;
   color: var(--gua-black);
 }
 
+.gua-list__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--gua-red);
+  background: transparent;
+  color: var(--gua-red);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.gua-list__refresh:hover:not(:disabled) {
+  background: #FDECEB;
+  transform: translateY(-1px);
+}
+
+.gua-list__refresh:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.gua-alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 12.75px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.gua-alert--success {
+  background: #EDF8E8;
+  color: #245B00;
+  border: 1px solid #CFE9BE;
+}
+
+.gua-alert--error {
+  background: #FFF0F0;
+  color: #8B1D12;
+  border: 1px solid #F3C1BC;
+}
+
+.gua-alert__retry {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.gua-list__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+  border: 1px dashed var(--gua-border);
+  border-radius: 12px;
+  color: var(--gua-text-secondary);
+  font-size: 13.5px;
+  font-weight: 500;
+  background: #FCFCFC;
+}
+
 .gua-table {
   flex: 1;
-  overflow-x: auto;
+  overflow: auto;
+  min-height: 0;
 }
 
 .gua-table__head {
+  position: sticky;
+  top: 0;
+  z-index: 1;
   display: grid;
-  grid-template-columns: 110px 1fr 80px 80px;
-  gap: 12px;
+  grid-template-columns: 120px 1fr 72px 72px;
+  gap: 10px;
   padding: 0 4px 10px;
   border-bottom: 1px solid var(--gua-border);
+  background: var(--gua-white);
 }
 
 .gua-table__col {
@@ -356,6 +483,10 @@
   justify-content: center;
 }
 
+.gua-table__col--profile {
+  justify-content: flex-start;
+}
+
 .gua-table__body {
   display: flex;
   flex-direction: column;
@@ -363,10 +494,10 @@
 
 .gua-table__row {
   display: grid;
-  grid-template-columns: 110px 1fr 80px 80px;
-  gap: 12px;
+  grid-template-columns: 120px 1fr 72px 72px;
+  gap: 10px;
   align-items: center;
-  padding: 14px 4px;
+  padding: 11px 4px;
   border-bottom: 1px solid var(--gua-border);
 }
 
@@ -374,38 +505,38 @@
   border-bottom: none;
 }
 
-.gua-status {
+.gua-profile-badge {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 11.75px;
   font-weight: 600;
 }
 
-.gua-status__dot {
+.gua-profile-badge__dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
 }
 
-.gua-status--active {
+.gua-profile-badge--student {
   color: var(--gua-green);
 }
 
-.gua-status--active .gua-status__dot {
+.gua-profile-badge--student .gua-profile-badge__dot {
   background: var(--gua-green);
 }
 
-.gua-status--inactive {
+.gua-profile-badge--admin {
   color: var(--gua-red);
 }
 
-.gua-status--inactive .gua-status__dot {
+.gua-profile-badge--admin .gua-profile-badge__dot {
   background: var(--gua-red);
 }
 
 .gua-table__email {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 400;
   color: var(--gua-black);
   overflow: hidden;
@@ -418,8 +549,8 @@
   align-items: center;
   justify-content: center;
   margin: 0 auto;
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 8px;
   border: none;
   background: transparent;
@@ -447,13 +578,118 @@
   background: #FDE7E6;
 }
 
+.gua-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 20, 20, 0.62);
+  backdrop-filter: blur(3px);
+}
+
+.gua-modal__dialog {
+  width: min(100%, 460px);
+  border-radius: 18px;
+  background: var(--gua-white);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  padding: 24px;
+}
+
+.gua-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gua-modal__title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gua-black);
+}
+
+.gua-modal__text {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: #343434;
+}
+
+.gua-modal__error {
+  margin-top: 14px;
+  border-radius: 10px;
+  border: 1px solid #F3C1BC;
+  background: #FFF0F0;
+  color: #8B1D12;
+  font-size: 12.75px;
+  font-weight: 500;
+  padding: 10px 12px;
+}
+
+.gua-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.gua-register__row--modal {
+  margin-bottom: 0;
+}
+
+.gua-input--modal {
+  margin-bottom: 0;
+}
+
+.gua-modal__button {
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 11px 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+}
+
+.gua-modal__button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.gua-modal__button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+  transform: none;
+}
+
+.gua-modal__button--secondary {
+  background: #EFEFEF;
+  color: var(--gua-black);
+}
+
+.gua-modal__button--secondary:hover:not(:disabled) {
+  background: #E6E6E6;
+}
+
+.gua-modal__button--danger {
+  background: var(--gua-red);
+  color: var(--gua-white);
+}
+
+.gua-modal__button--danger:hover:not(:disabled) {
+  background: var(--gua-red-dark);
+}
+
 /* ================= Pagination ================= */
 .gua-pagination {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding-top: 16px;
+  padding-top: 12px;
   margin-top: auto;
 }
 
@@ -567,13 +803,33 @@
     padding: 20px 18px;
   }
 
+  .gua-list__header,
+  .gua-alert {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gua-list__refresh,
+  .gua-alert__retry {
+    width: 100%;
+    justify-content: center;
+  }
+
   .gua-register__row {
     grid-template-columns: 1fr;
   }
 
   .gua-table__head,
   .gua-table__row {
-    grid-template-columns: 90px 1fr 60px 60px;
+    grid-template-columns: 120px 1fr 60px 60px;
+  }
+
+  .gua-table__head {
+    min-width: 360px;
+  }
+
+  .gua-table__row {
+    min-width: 360px;
   }
 
   .gua-pagination {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { MdCheck, MdAccessTime, MdClose } from "react-icons/md";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
-import "./MarcarPresencaDesktop.css";
+import "../styles/pages/MarcarPresencaDesktop.css";
 
 const HISTORY = [
   {

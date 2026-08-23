@@ -105,7 +105,7 @@ public class EventCreateDTO {
         return responsibleId;
     }
 
-    public void setResponsibleUserId(Long responsibleId) {
+    public void setResponsibleId(Long responsibleId) {
         this.responsibleId = responsibleId;
     }
 

@@ -96,6 +96,11 @@ public class EventService {
     }
 
     private void copyDtoToEntity(EventCreateDTO dto, Event event) {
+        String responsible = dto.getResponsible() == null ? "" : dto.getResponsible().trim();
+
+        if (responsible.isBlank()) {
+            throw new IllegalArgumentException("Informe o responsável do evento.");
+        }
 
         event.setName(dto.getName());
         event.setDescription(dto.getDescription());
@@ -105,6 +110,7 @@ public class EventService {
         event.setEndTime(dto.getEndTime());
         event.setEventType(dto.getEventType());
         event.setIntervalDays(dto.getIntervalDays());
+        event.setResponsible(responsible);
 
         Participant responsible = participantRepository.findById(dto.getResponsibleId())
                 .orElseThrow(() ->

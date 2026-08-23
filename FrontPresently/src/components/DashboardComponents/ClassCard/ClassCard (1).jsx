@@ -1,4 +1,4 @@
-import "./ClassCard (1).css";
+import "./ClassCard.css";
 
 function ClassCard({ time, subject, room, professor }) {
   return (

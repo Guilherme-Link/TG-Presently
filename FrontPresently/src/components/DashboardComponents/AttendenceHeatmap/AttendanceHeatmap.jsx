@@ -1,4 +1,4 @@
-import "./AttendanceHeatmap (1).css";
+import "./AttendanceHeatmap.css";
 
 const LEVEL_COUNT = 5;
 
