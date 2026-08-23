@@ -38,6 +38,15 @@ public class ParticipantService {
         return toDTO(participant);
     }
 
+    public ParticipantDTO searchByName(String name) {
+        Participant participant = participantRepository.findByNameContaining(name)
+                .orElseThrow(() ->
+                        new RuntimeException("Nenhum participante encontrado para a busca: " + name)
+                );
+
+        return toDTO(participant);
+    }
+
     public ParticipantDTO create(ParticipantDTO dto) {
 
         if (participantRepository.existsByName(dto.getName())) {
