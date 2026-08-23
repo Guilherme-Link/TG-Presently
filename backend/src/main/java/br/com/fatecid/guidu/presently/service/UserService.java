@@ -1,6 +1,7 @@
 package br.com.fatecid.guidu.presently.service;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.entity.User;
 import br.com.fatecid.guidu.presently.repository.UserRepository;
 
@@ -8,6 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Set;
 
@@ -17,8 +20,10 @@ public class UserService implements UserDetailsService {
     private final UserRepository repository;
     private final PasswordEncoder encoder;
 
-    public UserService(UserRepository repository,
-                       PasswordEncoder encoder) {
+    public UserService(
+                UserRepository repository,
+                PasswordEncoder encoder
+            ) {
         this.repository = repository;
         this.encoder = encoder;
     }
@@ -45,6 +50,7 @@ public class UserService implements UserDetailsService {
 
 
     // Cria um novo usuário
+    @Transactional
     public User register(RegisterUserRequest request) {
 
         // Erro de usuário já existente
@@ -76,6 +82,15 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Role inválido! O novo usuário deve possuir nível user ou admin");
         }
 
+        // Criando o participante correspondente ao novo usuário criado
+        Participant participant = new Participant();
+        participant.setName(request.getFullName());
+
+        // Vincula o usuário ao participant
+        participant.setUser(user);
+        user.setParticipant(participant);
+
+        // salva o user, e o hibernate cuida da persistência do participant correspondente
         return repository.save(user);
     }
 
@@ -84,8 +99,18 @@ public class UserService implements UserDetailsService {
         return repository.findAll();
     }
 
-    // Deleta um usuário específico
+    @Transactional
     public void delete(Long id) {
-        repository.deleteById(id);
+    User user = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+    Participant participant = user.getParticipant();
+
+    if (participant != null) {
+        participant.setUser(null);
+        user.setParticipant(null);
     }
+
+    repository.delete(user);
+}
 }
