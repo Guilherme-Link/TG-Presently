@@ -46,7 +46,21 @@ public class Participant {
         this.user = user;
     }
 
+    public boolean isActive(){
+        if (user != null) return true;
+        else return false;
+    }
+
     // Getters e Setters
+
+    public User getUser(){
+        return user;
+    }
+
+    public void setUser(User user){
+        this.user = user;
+    }
+
     public Long getId() {
         return id;
     }
