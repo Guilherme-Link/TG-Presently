@@ -6,7 +6,7 @@ public class QrCodeValidationDTO {
 
     private long eventId;
 
-    private long userId;
+    private long participantId;
 
     private double userLatitude;
 
@@ -55,12 +55,12 @@ public class QrCodeValidationDTO {
         this.userLongitude = UserLongitude;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getParticipantId() {
+        return participantId;
     }
 
-    public void setUserId(long UserId) {
-        this.userId = UserId;
+    public void setParticipantId(long ParticipantId) {
+        this.participantId = ParticipantId;
     }
 
     public String getValidationCode() {

@@ -125,7 +125,7 @@ public class ValidationCodeService {
         // Registra a presença do usuário e o timestamp de chegada no registro da instância do evento
         occurrenceService.registerPresence(
             occurrence.getId(), 
-            validationDTO.getUserId(),
+            validationDTO.getParticipantId(),
             validationDTO.getValidationTimestamp()
         );
 
