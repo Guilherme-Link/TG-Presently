@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/participants")
+@RequestMapping("/api/v1/participants")
 public class ParticipantController {
 
     private final ParticipantService participantService;
@@ -35,8 +35,8 @@ public class ParticipantController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ParticipantDTO> searchByName(
-            @RequestBody String name
+    public ResponseEntity<List<ParticipantDTO>> searchByName(
+            @RequestParam String name
     ) {
         return ResponseEntity.ok(
                 participantService.searchByName(name)
