@@ -23,7 +23,7 @@ public class AttendanceRecord {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "participant_id")
-    private User participant;
+    private Participant participant;
 
     @Column(nullable = false)
     private boolean present;
@@ -34,7 +34,7 @@ public class AttendanceRecord {
     public AttendanceRecord() {
     }
 
-    public AttendanceRecord(Long id, EventOccurrence occurrence, User participant,
+    public AttendanceRecord(Long id, EventOccurrence occurrence, Participant participant,
                             boolean present, LocalDateTime checkInTime) {
         this.id = id;
         this.occurrence = occurrence;
@@ -60,11 +60,11 @@ public class AttendanceRecord {
         this.occurrence = occurrence;
     }
 
-    public User getParticipant() {
+    public Participant getParticipant() {
         return participant;
     }
 
-    public void setParticipant(User participant) {
+    public void setParticipant(Participant participant) {
         this.participant = participant;
     }
 

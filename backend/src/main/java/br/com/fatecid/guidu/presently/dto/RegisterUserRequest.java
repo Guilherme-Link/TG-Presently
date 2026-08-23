@@ -8,11 +8,12 @@ import jakarta.validation.constraints.NotBlank;
 public class RegisterUserRequest {
 
     @NotBlank
-    @Email
-    @JsonAlias("username")
-    private String email;
-
-    @JsonAlias("password")
+    private String username;
+    
+    @NotBlank
+    private String fullName;
+    
+    @NotBlank
     private String password;
 
     @NotBlank
@@ -25,6 +26,14 @@ public class RegisterUserRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
     public String getPassword() {

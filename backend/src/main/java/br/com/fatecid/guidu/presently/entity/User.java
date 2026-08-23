@@ -3,18 +3,17 @@ package br.com.fatecid.guidu.presently.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -36,13 +35,9 @@ public class User {
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
 
-    // Relacionamento para retornar os eventos pelo qual o usuário é responsável
-    @OneToMany(mappedBy = "responsibleUser")
-    private List<Event> responsibleEvents = new ArrayList<>();
-
-    // Relacionamento para retornar os eventos dos quais o usuário participa
-    @ManyToMany(mappedBy = "participants")
-    private Set<Event> participatingEvents = new HashSet<>();
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "participant_id", unique = true)
+    private Participant participant;
 
     public User() {
     }
@@ -82,15 +77,11 @@ public class User {
         this.roles = roles == null ? new HashSet<>() : new HashSet<>(roles);
     }
 
-
-    // A listagem de eventos como responsável e participante por enquanto são somente leitura
-
-    public List<Event> getResponsibleEvents() {
-        return responsibleEvents;
+    public Participant getParticipant(){
+        return participant;
     }
 
-    public Set<Event> getParticipatingEvents() {
-        return participatingEvents;
+    public void setParticipant(Participant participant){
+        this.participant = participant;
     }
-
 }

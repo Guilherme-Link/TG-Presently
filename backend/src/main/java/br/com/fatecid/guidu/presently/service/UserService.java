@@ -1,7 +1,7 @@
 package br.com.fatecid.guidu.presently.service;
 
-import br.com.fatecid.guidu.presently.dto.EventDTO;
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.dto.RegisterUserResponse;
 import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
 import br.com.fatecid.guidu.presently.dto.UpdateUserResponse;
@@ -28,9 +28,10 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder encoder;
     private final PasswordGeneratorService passwordGeneratorService;
 
-    public UserService(UserRepository repository,
-                       PasswordEncoder encoder,
-                       PasswordGeneratorService passwordGeneratorService) {
+    public UserService(
+                UserRepository repository,
+                PasswordEncoder encoder
+            ) {
         this.repository = repository;
         this.encoder = encoder;
         this.passwordGeneratorService = passwordGeneratorService;
@@ -57,10 +58,9 @@ public class UserService implements UserDetailsService {
     }
 
 
-    // Cria um novo usuário com senha temporária gerada no backend
+    // Cria um novo usuário
     @Transactional
-    public RegisterUserResponse register(RegisterUserRequest request) {
-        String email = normalizeEmail(request.getEmail());
+    public User register(RegisterUserRequest request) {
 
         // Erro de usuário já existente
         if (repository.existsByUsername(email)) {
@@ -135,24 +135,16 @@ public class UserService implements UserDetailsService {
             return new HashSet<>(Set.of("ROLE_USER"));
         }
 
-        if (
-                normalizedRole.equals("administrador") ||
-                normalizedRole.equals("admin") ||
-                normalizedRole.equals("role_admin")
-        ) {
-            return new HashSet<>(Set.of("ROLE_ADMIN", "ROLE_USER"));
-        }
+        // Criando o participante correspondente ao novo usuário criado
+        Participant participant = new Participant();
+        participant.setName(request.getFullName());
 
-        throw new IllegalArgumentException("Tipo de usuário inválido. Use Aluno ou Administrador.");
-    }
+        // Vincula o usuário ao participant
+        participant.setUser(user);
+        user.setParticipant(participant);
 
-    private String normalizePassword(String password) {
-        if (password == null) {
-            return null;
-        }
-
-        String normalized = password.trim();
-        return normalized.isEmpty() ? null : normalized;
+        // salva o user, e o hibernate cuida da persistência do participant correspondente
+        return repository.save(user);
     }
 
     // Retorna uma lista de todos os usuários
@@ -160,43 +152,18 @@ public class UserService implements UserDetailsService {
         return repository.findAll();
     }
 
-    // Retorna uma lista dos eventos pelos quais o usuário é reponsável
-    @Transactional(readOnly = true)
-    public List<EventDTO> getResponsibleEvents(Long userId) {
-        User user = repository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
-        List<EventDTO> lista = new ArrayList<>();
-        for (Event event : user.getResponsibleEvents()) {
-            lista.add(new EventDTO(event));
-        }
-
-        return lista;
-    }
-
-    // Retorna uma lista dos eventos dos quais o usuário é participante
-    @Transactional(readOnly = true)
-    public List<EventDTO> getParticipatingEvents(Long userId) {
-        User user = repository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-
-        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
-        List<EventDTO> lista = new ArrayList<>();
-        for (Event event : user.getParticipatingEvents()) {
-            lista.add(new EventDTO(event));
-        }
-
-        return lista;
-    }
-
-    // Deleta um usuário específico
+    @Transactional
     public void delete(Long id) {
-        if (!repository.existsById(id)) {
-            throw new IllegalArgumentException("Usuário não encontrado");
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Participant participant = user.getParticipant();
+
+        if (participant != null) {
+            participant.setUser(null);
+            user.setParticipant(null);
         }
 
-        repository.deleteById(id);
+        repository.delete(user);
     }
 }

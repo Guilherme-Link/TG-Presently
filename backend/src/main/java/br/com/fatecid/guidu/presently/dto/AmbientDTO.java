@@ -32,7 +32,11 @@ public class AmbientDTO {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.area = GeoJsonMapper.fromPolygon(area);
+
+        if (area != null){
+            this.area = GeoJsonMapper.fromPolygon(area);
+        }
+        else this.area = null;
     }
 
     // Getters e setters

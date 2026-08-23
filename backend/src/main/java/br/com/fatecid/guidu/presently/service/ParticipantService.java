@@ -1,0 +1,122 @@
+package br.com.fatecid.guidu.presently.service;
+
+import br.com.fatecid.guidu.presently.dto.EventDTO;
+import br.com.fatecid.guidu.presently.dto.ParticipantDTO;
+import br.com.fatecid.guidu.presently.entity.Event;
+import br.com.fatecid.guidu.presently.entity.Participant;
+import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
+
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Service
+public class ParticipantService {
+
+    private final ParticipantRepository participantRepository;
+
+    public ParticipantService(ParticipantRepository participantRepository) {
+        this.participantRepository = participantRepository;
+    }
+
+    public List<ParticipantDTO> findAll() {
+        return participantRepository.findAll()
+                .stream()
+                .map(this::toDTO)
+                .toList();
+    }
+
+    public ParticipantDTO findById(Long id) {
+        Participant participant = participantRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Participante não encontrado com o id: " + id)
+                );
+
+        return toDTO(participant);
+    }
+
+    public List<ParticipantDTO> searchByName(String name) {
+        List<Participant> participants =
+            participantRepository.findByNameContainingIgnoreCase(name);
+
+    return participants.stream()
+            .map(this::toDTO)
+            .toList();
+    }
+
+    public ParticipantDTO create(ParticipantDTO dto) {
+
+        if (participantRepository.existsByName(dto.getName())) {
+            throw new RuntimeException("Já existe um participante com esse nome");
+        }
+
+        Participant participant = new Participant();
+
+        participant.setName(dto.getName());
+
+        Participant savedParticipant = participantRepository.save(participant);
+
+        return toDTO(savedParticipant);
+    }
+
+    public ParticipantDTO update(Long id, ParticipantDTO dto) {
+
+        Participant participant = participantRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Participante não encontrado com o id: " + id)
+                );
+
+        if (!participant.getName().equals(dto.getName())
+                && participantRepository.existsByName(dto.getName())) {
+
+            throw new RuntimeException("Já existe um participante com esse nome");
+        }
+
+        participant.setName(dto.getName());
+
+        Participant updatedParticipant = participantRepository.save(participant);
+
+        return toDTO(updatedParticipant);
+    }
+
+    // Retorna uma lista dos eventos pelos quais o participante é reponsável
+    @Transactional(readOnly = true)
+    public List<EventDTO> getResponsibleEvents(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : participant.getResponsibleEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
+    }
+
+    // Retorna uma lista dos eventos dos quais o participante é membro
+    @Transactional(readOnly = true)
+    public List<EventDTO> getParticipatingEvents(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+
+        //Precisa da conversão de eventos para EventDTO para evitar referência circular na resposta
+        List<EventDTO> lista = new ArrayList<>();
+        for (Event event : participant.getParticipatingEvents()) {
+            lista.add(new EventDTO(event));
+        }
+
+        return lista;
+    }
+
+    private ParticipantDTO toDTO(Participant participant) {
+        return new ParticipantDTO(
+                participant.getId(),
+                participant.getName()
+        );
+    }
+}

@@ -54,14 +54,10 @@ public class Event {
     @Column(nullable = false)
     private int intervalDays;
 
-    // Nome livre do responsável informado no cadastro do evento
-    @Column(nullable = true, length = 150)
-    private String responsible;
-
-    // Relacionamento legado para eventos antigos vinculados a um usuário
-    @ManyToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "responsible_user_id", nullable = true)
-    private User responsibleUser;
+    // Relacionamento para vincular o responsável pelo evento
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "responsible_id", nullable = false)
+    private Participant responsible;
 
     // Relacionamento para vincular o ambiente onde esse evento ocorre
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -73,9 +69,9 @@ public class Event {
     @JoinTable(
     name = "event_participants",
     joinColumns = @JoinColumn(name = "event_id"),
-    inverseJoinColumns = @JoinColumn(name = "user_id")
+    inverseJoinColumns = @JoinColumn(name = "participant_id")
     )
-    private Set<User> participants = new HashSet<>();
+    private Set<Participant> participants = new HashSet<>();
 
     public Event() {
     }
@@ -88,8 +84,7 @@ public class Event {
              LocalTime endTime,
              EventType eventType,
              int intervalDays,
-             String responsible,
-             User responsibleUser,
+             Participant responsible,
              Ambient ambient) {
         this.name = name;
         this.description = description;
@@ -100,7 +95,6 @@ public class Event {
         this.eventType = eventType;
         this.intervalDays = intervalDays;
         this.responsible = responsible;
-        this.responsibleUser = responsibleUser;
         this.ambient = ambient;
         this.generateSecretKey();
     }
@@ -150,12 +144,12 @@ public class Event {
     }
 
     // Auxiliares para manipulação individual de participantes
-    public void addParticipant(User user) {
-        this.participants.add(user);
+    public void addParticipant(Participant participant) {
+        this.participants.add(participant);
     }
 
-    public void removeParticipant(User user) {
-        this.participants.remove(user);
+    public void removeParticipant(Participant participant) {
+        this.participants.remove(participant);
     }
 
 
@@ -233,20 +227,12 @@ public class Event {
         this.intervalDays = intervalDays;
     }
 
-    public String getResponsible() {
+    public Participant getResponsible() {
         return responsible;
     }
 
-    public void setResponsible(String responsible) {
+    public void setResponsible(Participant responsible) {
         this.responsible = responsible;
-    }
-
-    public User getResponsibleUser() {
-        return responsibleUser;
-    }
-
-    public void setResponsibleUser(User responsibleUser) {
-        this.responsibleUser = responsibleUser;
     }
 
     public Ambient getAmbient() {
@@ -257,11 +243,11 @@ public class Event {
         this.ambient = ambient;
     }
 
-    public Set<User> getParticipants() {
+    public Set<Participant> getParticipants() {
         return participants;
     }
 
-    public void setParticipants(Set<User> participants) {
+    public void setParticipants(Set<Participant> participants) {
         this.participants = participants;
     }
 
