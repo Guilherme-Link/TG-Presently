@@ -1,8 +1,5 @@
 package br.com.fatecid.guidu.presently.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
-
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class RegisterUserRequest {
@@ -20,12 +17,12 @@ public class RegisterUserRequest {
     private String role;
 
     // Getters e Setters
-    public String getEmail() {
-        return email;
+    public String getUsername() {
+        return username;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getFullName() {

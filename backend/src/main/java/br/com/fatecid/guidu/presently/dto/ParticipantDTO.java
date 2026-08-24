@@ -4,13 +4,15 @@ public class ParticipantDTO {
 
     private Long id;
     private String name;
+    private Long userId;
 
     public ParticipantDTO() {
     }
 
-    public ParticipantDTO(Long id, String name) {
+    public ParticipantDTO(Long id, String name, Long userId) {
         this.id = id;
         this.name = name;
+        this.userId = userId;
     }
 
     public Long getId() {
@@ -19,5 +21,9 @@ public class ParticipantDTO {
 
     public String getName() {
         return name;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 }

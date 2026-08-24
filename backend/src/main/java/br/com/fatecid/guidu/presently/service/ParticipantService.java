@@ -116,7 +116,8 @@ public class ParticipantService {
     private ParticipantDTO toDTO(Participant participant) {
         return new ParticipantDTO(
                 participant.getId(),
-                participant.getName()
+                participant.getName(),
+                participant.getUser().getId()
         );
     }
 }

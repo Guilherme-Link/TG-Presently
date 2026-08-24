@@ -50,11 +50,7 @@ public class AuthService {
         User user = repository.findByUsername(loginDTO.getUsername())
                 .orElseThrow(() -> new UsernameNotFoundException(loginDTO.getUsername()));
 
-        return new UserResponse(
-                user.getId(),
-                user.getUsername(),
-                user.getRoles()
-        );
+        return new UserResponse(user);
     }
 
     public UserResponse getCurrentUser(Authentication authentication) {
@@ -63,7 +59,7 @@ public class AuthService {
     User user = repository.findByUsername(authentication.getName())
             .orElseThrow(() -> new UsernameNotFoundException(authentication.getName()));
 
-    return new UserResponse(user.getId(), user.getUsername(), user.getRoles());
+    return new UserResponse(user);
 }
 
 }

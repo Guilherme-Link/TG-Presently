@@ -11,6 +11,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;   
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Validated
 public class AmbientService {
 
     private final AmbientRepository repository;
@@ -30,7 +32,7 @@ public class AmbientService {
 
     // Lista todos os ambientes cadastrados
     public List<AmbientDTO> findAll() {
-        return repository.findAll(Sort.by(Sort.Direction.ASC, "name"))
+        return repository.findAll(Sort.by(Sort.Direction.ASC, Ambient::getName))
                 .stream()
                 .map(AmbientDTO::new)
                 .collect(Collectors.toList());
@@ -63,7 +65,7 @@ public class AmbientService {
     }
 
     // Atualiza um ambiente
-    public AmbientDTO update(Long id, @Valid AmbientDTO dto) {
+    public AmbientDTO update(Long id, AmbientDTO dto) {
 
         Ambient ambient = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ambiente não encontrado."));
