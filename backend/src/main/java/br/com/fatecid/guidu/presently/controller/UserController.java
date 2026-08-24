@@ -1,10 +1,7 @@
 package br.com.fatecid.guidu.presently.controller;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
-import br.com.fatecid.guidu.presently.dto.RegisterUserResponse;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
-import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
-import br.com.fatecid.guidu.presently.dto.UpdateUserResponse;
 import br.com.fatecid.guidu.presently.service.UserService;
 
 import org.springframework.http.HttpStatus;
@@ -26,7 +23,7 @@ public class UserController {
 
     // Criação de novos usuários
     @PostMapping("/register")
-    public RegisterUserResponse register(
+    public UserResponse register(
             @Valid @RequestBody RegisterUserRequest request) {
 
         try{
@@ -43,10 +40,7 @@ public class UserController {
 
         return service.findAll()
                 .stream()
-                .map(u -> new UserResponse(
-                        u.getId(),
-                        u.getUsername(),
-                        u.getRoles()))
+                .map(u -> new UserResponse(u))
                 .toList();
     }
 
@@ -62,9 +56,11 @@ public class UserController {
         }
     }
 
+    // TODO (Gui): criar um método para editar um perfil usuário / adicionar biometria
+    /*
     // Edita um usuário pelo ID
     @PutMapping("/{id}")
-    public UpdateUserResponse update(
+    public UserResponse update(
             @PathVariable Long id,
             @Valid @RequestBody UpdateUserRequest request) {
         try {
@@ -73,7 +69,5 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, e.getMessage());
         }
     }
-
-
-    // TODO (Gui): criar um método para editar um perfil usuário / adicionar biometria
+    */
 }
