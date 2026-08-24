@@ -50,8 +50,7 @@ public class EventDTO {
         this.endTime = event.getEndTime();
         this.eventType = event.getEventType();
         this.intervalDays = event.getIntervalDays();
-        this.responsible = event.getResponsible();
-
+        
         if (event.getResponsible() != null) {
             this.responsibleId = event.getResponsible().getId();
         }
