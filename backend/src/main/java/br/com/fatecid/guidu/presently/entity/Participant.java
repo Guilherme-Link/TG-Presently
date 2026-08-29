@@ -26,6 +26,9 @@ public class Participant {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(nullable = false)
+    private boolean canBeResponsible;
+
     // Relacionamento entre o participante e o usuário do sistema correspondente
     @OneToOne(mappedBy = "participant")
     private User user;
@@ -71,6 +74,14 @@ public class Participant {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean isCanBeResponsible() {
+        return canBeResponsible;
+    }
+
+    public void setCanBeResponsible(boolean canBeResponsible) {
+        this.canBeResponsible = canBeResponsible;
     }
 
     // A listagem de eventos como responsável e participante por enquanto são somente leitura
