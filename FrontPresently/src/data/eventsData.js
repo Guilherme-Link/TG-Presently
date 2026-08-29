@@ -65,6 +65,24 @@ export function toApiDate(value) {
   return `${year}-${month}-${day}`;
 }
 
+export function toDisplayTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const raw = String(value).trim();
+
+  if (/^\d{2}:\d{2}$/.test(raw)) {
+    return raw;
+  }
+
+  if (/^\d{2}:\d{2}:\d{2}$/.test(raw)) {
+    return raw.slice(0, 5);
+  }
+
+  return raw;
+}
+
 export function toParticipantRecord(user) {
   if (!user) {
     return null;
@@ -142,8 +160,8 @@ export function hydrateEventFromApi(
     intervalDays: String(event.intervalDays ?? DEFAULT_INTERVAL_DAYS),
     startDate: toDisplayDate(event.startDate),
     endDate: toDisplayDate(event.endDate),
-    startTime: event.startTime ?? "",
-    endTime: event.endTime ?? "",
+    startTime: toDisplayTime(event.startTime),
+    endTime: toDisplayTime(event.endTime),
     participantIds: Array.from(event.participantIds ?? []).map(String),
     participants,
   };

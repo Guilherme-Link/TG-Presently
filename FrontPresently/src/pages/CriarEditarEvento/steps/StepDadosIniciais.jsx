@@ -33,11 +33,11 @@ function StepDadosIniciais({
           required
           as="select"
           options={responsibleOptions}
-          placeholder={loadingResponsibleOptions ? "Carregando participantes..." : "Selecione um participante"}
+          placeholder={loadingResponsibleOptions ? "Carregando participantes..." : "Selecione um responsável"}
           value={values.responsibleId ?? ""}
           error={errors.responsibleId}
           disabled={loadingResponsibleOptions}
-          helperText="Escolha um participante já cadastrado no sistema."
+          helperText="Escolha um responsável já cadastrado no sistema."
           onChange={(e) => onResponsibleChange?.(e.target.value)}
         />
 
