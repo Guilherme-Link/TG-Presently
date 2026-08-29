@@ -10,7 +10,15 @@ public interface ParticipantRepository extends JpaRepository<Participant, Long> 
 
     Optional<Participant> findByName(String name);
 
+    List<Participant> findAllByCanBeResponsibleTrue();
+
+    List<Participant> findAllByCanBeResponsibleFalse();
+
     List<Participant> findByNameContainingIgnoreCase(String name);
+
+    List<Participant> findByCanBeResponsibleTrueAndNameContainingIgnoreCase(String name);
+
+    List<Participant> findByCanBeResponsibleFalseAndNameContainingIgnoreCase(String name);
 
     boolean existsByName(String name);
 }
