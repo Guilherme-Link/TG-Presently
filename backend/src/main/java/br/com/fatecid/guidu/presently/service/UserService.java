@@ -4,6 +4,7 @@ import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
 import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.entity.User;
+import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
 import br.com.fatecid.guidu.presently.repository.UserRepository;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -19,13 +20,19 @@ import java.util.Set;
 public class UserService implements UserDetailsService {
 
     private final UserRepository repository;
+    private final ParticipantService participantService;
+    private final ParticipantRepository participantRepository;
     private final PasswordEncoder encoder;
 
     public UserService(
                 UserRepository repository,
+                ParticipantService participantService,
+                ParticipantRepository participantRepository,
                 PasswordEncoder encoder
             ) {
         this.repository = repository;
+        this.participantService = participantService;
+        this.participantRepository = participantRepository;
         this.encoder = encoder;
     }
 
@@ -59,39 +66,35 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Nome de usuário já está em uso");
         }
 
+        // Cria o usuário em branco e o participante correspondente
         User user = new User();
+        Participant participant;
+
+        if (request.isLinkedExistingParticipant()) {
+            // Se for criar um link com participante existente, verifica se ele é válido e faz a atribuição
+            participant = participantService.findInactiveById(request.getParticipantId());
+        }
+        else {
+            // Se for um novo participante, cria e parametriza o objeto
+            participant = new Participant();
+            participant.setName(request.getFullName());
+            participantRepository.save(participant);
+        }
 
         // Salva o nome do usuário e o hash codificado da senha
         user.setUsername(request.getUsername());
         user.setPassword(
-                encoder.encode(request.getPassword())
+            encoder.encode(request.getPassword())
         );
 
-        // Recebe os roles solicitados para o novo usuário
-        String role = request.getRole();
-       
-        if (role.equals("user")) {
-            // Define o usuário somente como user
-            user.setRoles(Set.of("ROLE_USER"));
-        }
-        else if (role.equals("admin")){
-            // Dá privilégios de admin
-            user.setRoles(Set.of("ROLE_ADMIN", "ROLE_USER"));
-        }
-        else {
-            // Erro de role inválido
-            throw new IllegalArgumentException("Role inválido! O novo usuário deve possuir nível user ou admin");
-        }
-
-        // Criando o participante correspondente ao novo usuário criado
-        Participant participant = new Participant();
-        participant.setName(request.getFullName());
-
         // Vincula o usuário ao participant
-        participant.setUser(user);
-        user.setParticipant(participant);
+            participant.setUser(user);
+            user.setParticipant(participant);
 
-        // salva o user, e o hibernate cuida da persistência do participant correspondente
+        // Atribui os roles de acordo com o request
+        resolveRoles(user, request.getRole());
+
+        // salva o user
         repository.save(user);
 
         return new UserResponse(user);
@@ -104,16 +107,39 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void delete(Long id) {
-    User user = repository.findById(id)
-            .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-    Participant participant = user.getParticipant();
+        Participant participant = user.getParticipant();
 
-    if (participant != null) {
-        participant.setUser(null);
-        user.setParticipant(null);
+        if (participant != null) {
+            participant.setUser(null);
+            user.setParticipant(null);
+        }
+
+        repository.delete(user);
     }
 
-    repository.delete(user);
-}
+    public void resolveRoles(User user, String role){
+        if (role.equals("user")) {
+            // Define o usuário somente como user
+            user.setRoles(Set.of("ROLE_USER"));
+            user.getParticipant().setCanBeResponsible(false);
+        }
+        else if (role.equals("responsible")){
+            // Dá privilégios de responsável por evento
+            user.setRoles(Set.of("ROLE_RESPONSIBLE", "ROLE_USER"));
+            user.getParticipant().setCanBeResponsible(true);
+        }
+        else if (role.equals("admin")){
+            // Dá privilégios de admin
+            user.setRoles(Set.of("ROLE_ADMIN", "ROLE_RESPONSIBLE", "ROLE_USER"));
+            user.getParticipant().setCanBeResponsible(true);
+        }
+        else {
+            // Erro de role inválido
+            throw new IllegalArgumentException("Role inválido! O novo usuário deve possuir nível user, responsible ou admin");
+        }
+    }
+
 }

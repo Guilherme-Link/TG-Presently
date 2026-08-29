@@ -16,36 +16,40 @@ public class RegisterUserRequest {
     @NotBlank
     private String role;
 
-    // Getters e Setters
+    private boolean linkExistingParticipant;
+    
+    private Long participantId;
+
+    // Getters
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getFullName() {
         return fullName;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getRole() {
         return role;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public boolean isLinkedExistingParticipant() {
+        return linkExistingParticipant;
+    }
+
+    public void setLinkExistingParticipant(boolean linkExistingParticipant) { 
+        this.linkExistingParticipant = linkExistingParticipant; 
+    }
+
+    public Long getParticipantId() {
+        return participantId;
+    }
+
+    public void setParticipantId(Long participantId) { 
+        this.participantId = participantId; 
     }
 }
