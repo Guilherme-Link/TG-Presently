@@ -15,14 +15,14 @@ import { isFetchNetworkError } from "../utils/api.js";
 import { deleteUser, listUsers, registerUser, updateUser } from "../services/usersApi.js";
 
 const USER_TYPE_OPTIONS = [
-  { label: "Aluno", value: "ALUNO" },
-  { label: "Administrador", value: "ADMINISTRADOR" },
+  { label: "Aluno", value: "user" },
+  { label: "Administrador", value: "admin" },
 ];
 
 const DEFAULT_USER_TYPE = USER_TYPE_OPTIONS[0].value;
 
 function getRoleValueFromRoles(roles = []) {
-  return roles.includes("ROLE_ADMIN") ? "ADMINISTRADOR" : "ALUNO";
+  return roles.includes("ROLE_ADMIN") ? "admin" : "user";
 }
 
 function DropdownSelect({ label, options, selected, onSelect, id }) {
@@ -61,7 +61,7 @@ function getUserProfileClass(roles = []) {
 }
 
 function normalizeUserType(role) {
-  return role === "ADMINISTRADOR" ? "ADMINISTRADOR" : "ALUNO";
+  return role === "admin" ? "admin" : "user";
 }
 
 function getFriendlyErrorMessage(error, fallbackMessage) {
@@ -146,7 +146,7 @@ function EditUserModal({ user, loading, error, onCancel, onConfirm }) {
   function handleSubmit(event) {
     event.preventDefault();
     onConfirm({
-      email: email.trim(),
+      username: email.trim(),
       role: userType,
     });
   }
@@ -217,7 +217,8 @@ function EditUserModal({ user, loading, error, onCancel, onConfirm }) {
 }
 
 function RegisterUserCard({ onRegistered }) {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
+  const [fullName, setFullName] = useState("");
   const [password, setPassword] = useState("");
   const [userType, setUserType] = useState(DEFAULT_USER_TYPE);
   const [submitting, setSubmitting] = useState(false);
@@ -226,11 +227,21 @@ function RegisterUserCard({ onRegistered }) {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    const normalizedEmail = email.trim();
-    if (!normalizedEmail) {
+    const normalizedUsername = username.trim();
+    const normalizedFullName = fullName.trim();
+
+    if (!normalizedUsername) {
       setFeedback({
         kind: "error",
-        message: "Informe o e-mail do aluno.",
+        message: "Informe o email do usuário.",
+      });
+      return;
+    }
+
+    if (!normalizedFullName) {
+      setFeedback({
+        kind: "error",
+        message: "Informe o nome completo do usuário.",
       });
       return;
     }
@@ -240,12 +251,14 @@ function RegisterUserCard({ onRegistered }) {
 
     try {
       const createdUser = await registerUser({
-        email: normalizedEmail,
+        username: normalizedUsername,
+        fullName: normalizedFullName,
         password: password.trim(),
         role: userType,
       });
 
-      setEmail("");
+      setUsername("");
+      setFullName("");
       setPassword("");
       setUserType(DEFAULT_USER_TYPE);
 
@@ -291,7 +304,7 @@ function RegisterUserCard({ onRegistered }) {
 
       <form onSubmit={handleSubmit}>
         <label className="gua-field-label" htmlFor="student-email">
-          Email do aluno
+          Email do usuário
         </label>
         <div className="gua-input">
           <MdMail size={17} className="gua-input__icon" />
@@ -299,25 +312,40 @@ function RegisterUserCard({ onRegistered }) {
             id="student-email"
             type="email"
             placeholder="aluno@faculdade.gov.br"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             autoComplete="email"
             disabled={submitting}
           />
         </div>
 
+        <label className="gua-field-label" htmlFor="student-fullname">
+          Nome completo
+        </label>
+        <div className="gua-input">
+          <input
+            id="student-fullname"
+            type="text"
+            placeholder="Nome completo do usuário"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            autoComplete="name"
+            disabled={submitting}
+          />
+        </div>
+
         <label className="gua-field-label" htmlFor="student-password">
-          Senha do aluno
+          Senha do usuário
         </label>
         <p className="gua-field-note">
           <MdInfoOutline size={14} className="gua-field-note__icon" aria-hidden="true" />
-          Opcional. Se vazio, o sistema gera uma senha aleatória automaticamente.
+          Obrigatória. O backend exige uma senha válida para criar o usuário.
         </p>
         <div className="gua-input">
           <input
             id="student-password"
-            type="text"
-            placeholder="Deixe em branco para gerar automaticamente"
+            type="password"
+            placeholder="Digite uma senha"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="new-password"

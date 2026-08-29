@@ -19,6 +19,7 @@ export function createEmptyEvent() {
     name: "",
     description: "",
     responsible: "",
+    responsibleId: null,
     location: "",
     eventType: "",
     intervalDays: DEFAULT_INTERVAL_DAYS,
@@ -64,21 +65,54 @@ export function toApiDate(value) {
   return `${year}-${month}-${day}`;
 }
 
+export function toDisplayTime(value) {
+  if (!value) {
+    return "";
+  }
+
+  const raw = String(value).trim();
+
+  if (/^\d{2}:\d{2}$/.test(raw)) {
+    return raw;
+  }
+
+  if (/^\d{2}:\d{2}:\d{2}$/.test(raw)) {
+    return raw.slice(0, 5);
+  }
+
+  return raw;
+}
+
 export function toParticipantRecord(user) {
   if (!user) {
     return null;
   }
 
+  const id = user.id ?? null;
+  const name = user.name ?? user.username ?? "";
+
+  if (id === null || id === undefined) {
+    return null;
+  }
+
   return {
-    id: user.id,
-    name: user.username,
-    email: user.username,
+    id: String(id),
+    name,
+    email:
+      user.email ??
+      user.username ??
+      (user.userId !== null && user.userId !== undefined ? `Usuário #${user.userId}` : name),
+    userId: user.userId ?? user.id ?? null,
   };
 }
 
-export function buildMockParticipantLists(users = []) {
-  const participants = users.map(toParticipantRecord).filter(Boolean);
-  const chunks = [participants.slice(0, 3), participants.slice(3, 5), participants.slice(5, 8)];
+export function buildMockParticipantLists(participants = []) {
+  const normalizedParticipants = participants.map(toParticipantRecord).filter(Boolean);
+  const chunks = [
+    normalizedParticipants.slice(0, 3),
+    normalizedParticipants.slice(3, 5),
+    normalizedParticipants.slice(5, 8),
+  ];
   const names = [
     "Turma A - Mockup",
     "Turma B - Mockup",
@@ -95,11 +129,19 @@ export function buildMockParticipantLists(users = []) {
     }));
 }
 
-export function hydrateEventFromApi(event, ambientsById = new Map(), usersById = new Map()) {
+export function hydrateEventFromApi(
+  event,
+  participantsById = new Map(),
+  ambientsById = new Map()
+) {
   const ambient = ambientsById.get(event.ambientId);
-  const responsibleUser = usersById.get(event.responsibleUserId);
+  const responsibleId = event.responsibleId ?? event.responsibleUserId ?? null;
+  const responsibleParticipant =
+    responsibleId !== null && responsibleId !== undefined
+      ? participantsById.get(String(responsibleId))
+      : null;
   const participants = Array.from(event.participantIds ?? [])
-    .map((participantId) => usersById.get(participantId))
+    .map((participantId) => participantsById.get(String(participantId)))
     .filter(Boolean)
     .map(toParticipantRecord)
     .filter(Boolean);
@@ -108,8 +150,9 @@ export function hydrateEventFromApi(event, ambientsById = new Map(), usersById =
     id: event.id,
     name: event.name ?? "",
     description: event.description ?? "",
-    responsible: event.responsible ?? responsibleUser?.username ?? "",
+    responsible: event.responsible ?? responsibleParticipant?.name ?? "",
     responsibleUserId: event.responsibleUserId ?? null,
+    responsibleId: responsibleId !== null && responsibleId !== undefined ? String(responsibleId) : null,
     location: event.ambientId != null ? String(event.ambientId) : "",
     ambientId: event.ambientId ?? null,
     ambientName: ambient?.name ?? "",
@@ -117,14 +160,28 @@ export function hydrateEventFromApi(event, ambientsById = new Map(), usersById =
     intervalDays: String(event.intervalDays ?? DEFAULT_INTERVAL_DAYS),
     startDate: toDisplayDate(event.startDate),
     endDate: toDisplayDate(event.endDate),
-    startTime: event.startTime ?? "",
-    endTime: event.endTime ?? "",
-    participantIds: Array.from(event.participantIds ?? []),
+    startTime: toDisplayTime(event.startTime),
+    endTime: toDisplayTime(event.endTime),
+    participantIds: Array.from(event.participantIds ?? []).map(String),
     participants,
   };
 }
 
-export function buildEventPayload(values) {
+function toNullableNumber(value) {
+  if (value === null || value === undefined || value === "") {
+    return null;
+  }
+
+  const numberValue = Number(value);
+  return Number.isNaN(numberValue) ? null : numberValue;
+}
+
+export function buildEventPayload(values, fallbackResponsibleId = null) {
+  const responsibleId = toNullableNumber(values.responsibleId ?? fallbackResponsibleId);
+  const filteredParticipantIds = values.participants
+    .filter((participant) => String(participant.id) !== String(responsibleId ?? ""))
+    .map((participant) => Number(participant.id));
+
   return {
     name: values.name,
     description: values.description,
@@ -135,8 +192,8 @@ export function buildEventPayload(values) {
     eventType: values.eventType,
     intervalDays: Number(values.intervalDays || 0),
     responsible: values.responsible.trim(),
-    responsibleUserId: null,
+    responsibleId,
     ambientId: Number(values.location),
-    participantIds: values.participants.map((participant) => Number(participant.id)),
+    participantIds: filteredParticipantIds,
   };
 }

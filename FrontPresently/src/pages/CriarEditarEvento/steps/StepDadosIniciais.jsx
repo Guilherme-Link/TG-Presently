@@ -4,6 +4,9 @@ function StepDadosIniciais({
   values,
   errors,
   setField,
+  responsibleOptions,
+  loadingResponsibleOptions,
+  onResponsibleChange,
   ambients,
   loadingAmbients,
 }) {
@@ -26,13 +29,16 @@ function StepDadosIniciais({
 
       <div className="evt-step__row">
         <FormField
-          label="Responsavel"
+          label="Responsável"
           required
-          placeholder="Informe o responsável"
-          helperText="Digite o nome do responsável pelo evento."
-          value={values.responsible}
-          error={errors.responsible}
-          onChange={(e) => setField("responsible", e.target.value)}
+          as="select"
+          options={responsibleOptions}
+          placeholder={loadingResponsibleOptions ? "Carregando participantes..." : "Selecione um responsável"}
+          value={values.responsibleId ?? ""}
+          error={errors.responsibleId}
+          disabled={loadingResponsibleOptions}
+          helperText="Escolha um responsável já cadastrado no sistema."
+          onChange={(e) => onResponsibleChange?.(e.target.value)}
         />
 
         <FormField

@@ -16,7 +16,8 @@ import "../../styles/pages/CriarEditarEvento/CriarEditarEvento.css";
 function CriarEditarEvento({
   eventToEdit,
   ambients = [],
-  users = [],
+  participants = [],
+  currentUser = null,
   loadingData = false,
   dataError = null,
   onCancel,
@@ -36,6 +37,11 @@ function CriarEditarEvento({
     removeParticipant,
   } = useEventForm(eventToEdit);
 
+  const participantsById = useMemo(
+    () => new Map(participants.map((participant) => [String(participant.id), participant])),
+    [participants]
+  );
+
   const ambientOptions = useMemo(
     () =>
       ambients.map((ambient) => ({
@@ -45,9 +51,18 @@ function CriarEditarEvento({
     [ambients]
   );
 
+  const responsibleOptions = useMemo(
+    () =>
+      participants.map((participant) => ({
+        label: participant.name,
+        value: String(participant.id),
+      })),
+    [participants]
+  );
+
   const mockParticipantLists = useMemo(
-    () => buildMockParticipantLists(users),
-    [users]
+    () => buildMockParticipantLists(participants),
+    [participants]
   );
 
   useEffect(() => {
@@ -56,11 +71,56 @@ function CriarEditarEvento({
     }
   }, [eventToEdit?.location, setField, values.location]);
 
+  useEffect(() => {
+    if (isEditing) {
+      return;
+    }
+
+    if (String(values.responsibleId ?? "").trim()) {
+      return;
+    }
+
+    const fallbackResponsibleId = currentUser?.participantId;
+    if (fallbackResponsibleId === null || fallbackResponsibleId === undefined) {
+      return;
+    }
+
+    const fallbackKey = String(fallbackResponsibleId);
+    const fallbackParticipant = participantsById.get(fallbackKey);
+
+    if (!fallbackParticipant) {
+      return;
+    }
+
+    setField("responsibleId", fallbackKey);
+    setField("responsible", fallbackParticipant.name ?? "");
+  }, [currentUser?.participantId, isEditing, participantsById, setField, values.responsibleId]);
+
+  useEffect(() => {
+    const responsibleId = String(values.responsibleId ?? "");
+    if (!responsibleId) {
+      return;
+    }
+
+    const hasResponsibleAsParticipant = values.participants.some(
+      (participant) => String(participant.id) === responsibleId
+    );
+
+    if (!hasResponsibleAsParticipant) {
+      return;
+    }
+
+    setField(
+      "participants",
+      values.participants.filter((participant) => String(participant.id) !== responsibleId)
+    );
+  }, [setField, values.participants, values.responsibleId]);
+
   async function handleSubmit() {
     setSaving(true);
 
     try {
-      const payload = buildEventPayload(values);
+      const payload = buildEventPayload(values, currentUser?.participantId ?? eventToEdit?.responsibleId ?? null);
       await onSave?.(payload);
     } finally {
       setSaving(false);
@@ -71,6 +131,8 @@ function CriarEditarEvento({
     if (!selectedItems.length) {
       return;
     }
+
+    const responsibleId = String(values.responsibleId ?? "");
 
     if (activeModal === "participants") {
       addParticipants(
@@ -84,6 +146,7 @@ function CriarEditarEvento({
               : null
           )
           .filter(Boolean)
+          .filter((participant) => String(participant.id) !== responsibleId)
       );
     }
 
@@ -95,7 +158,7 @@ function CriarEditarEvento({
               sourceLabel: item.title,
             }))
           : []
-      );
+      ).filter((participant) => String(participant.id) !== responsibleId);
       addParticipants(participantsFromLists);
     }
 
@@ -134,8 +197,15 @@ function CriarEditarEvento({
                       values={values}
                       errors={errors}
                       setField={setField}
+                      responsibleOptions={responsibleOptions}
+                      loadingResponsibleOptions={loadingData || responsibleOptions.length === 0}
                       ambients={ambientOptions}
                       loadingAmbients={loadingData}
+                      onResponsibleChange={(responsibleId) => {
+                        const responsibleParticipant = participantsById.get(String(responsibleId));
+                        setField("responsibleId", String(responsibleId));
+                        setField("responsible", responsibleParticipant?.name ?? "");
+                      }}
                     />
                   )}
 
@@ -188,11 +258,9 @@ function CriarEditarEvento({
         <ParticipantSelectionModal
           key={activeModal}
           mode={activeModal}
-          participants={users.map((user) => ({
-            id: user.id,
-            name: user.username,
-            email: user.username,
-          }))}
+          participants={participants.filter(
+            (participant) => String(participant.id) !== String(values.responsibleId ?? "")
+          )}
           participantLists={mockParticipantLists}
           onClose={() => setActiveModal(null)}
           onConfirm={handleAddSelectedItems}
