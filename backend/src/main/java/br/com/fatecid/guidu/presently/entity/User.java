@@ -3,7 +3,6 @@ package br.com.fatecid.guidu.presently.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -35,7 +34,7 @@ public class User {
     @Column(name = "role")
     private Set<String> roles = new HashSet<>();
 
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @OneToOne
     @JoinColumn(name = "participant_id", unique = true)
     private Participant participant;
 
