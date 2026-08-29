@@ -5,8 +5,8 @@ function StepParticipantes({ onOpenParticipants, onOpenParticipantLists }) {
   return (
     <div className="evt-step">
       <p className="evt-step__description">
-        Adicione participantes individuais ou aplique uma lista mockada. Os itens selecionados
-        aparecem na listagem da direita.
+        Adicione participantes individuais ou aplique uma lista. O participante escolhido como
+        responsável não aparece nessa seleção.
       </p>
 
       <div className="evt-step__actions-row">

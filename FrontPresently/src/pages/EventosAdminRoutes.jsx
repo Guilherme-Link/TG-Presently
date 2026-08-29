@@ -4,7 +4,7 @@ import EventosListagem from "./EventosListagem/EventosListagem";
 import CriarEditarEvento from "./CriarEditarEvento/CriarEditarEvento";
 import { deleteEvent, createEvent, listEvents, updateEvent } from "../services/eventsApi.js";
 import { listAmbients } from "../services/ambientsApi.js";
-import { listUsers } from "../services/usersApi.js";
+import { listParticipants } from "../services/participantsApi.js";
 import { apiFetch } from "../utils/api.js";
 import { hydrateEventFromApi } from "../data/eventsData";
 
@@ -23,8 +23,8 @@ function getStoredCurrentUser() {
 
 function EditEventRoute({
   events,
+  participantsById,
   ambientsById,
-  usersById,
   currentUser,
   loadingData,
   onCancel,
@@ -47,7 +47,7 @@ function EditEventRoute({
       key={eventToEdit?.id ?? "eventos-edit-loading"}
       eventToEdit={eventToEdit}
       ambients={Array.from(ambientsById.values())}
-      users={Array.from(usersById.values())}
+      participants={Array.from(participantsById.values())}
       currentUser={currentUser}
       loadingData={loadingData}
       onCancel={onCancel}
@@ -59,7 +59,7 @@ function EditEventRoute({
 function EventosAdminRoutes() {
   const [events, setEvents] = useState([]);
   const [ambients, setAmbients] = useState([]);
-  const [users, setUsers] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [currentUser, setCurrentUser] = useState(getStoredCurrentUser());
   const [loadingData, setLoadingData] = useState(true);
   const [dataError, setDataError] = useState(null);
@@ -71,14 +71,14 @@ function EventosAdminRoutes() {
     [ambients]
   );
 
-  const usersById = useMemo(
-    () => new Map(users.map((user) => [user.id, user])),
-    [users]
+  const participantsById = useMemo(
+    () => new Map(participants.map((participant) => [String(participant.id), participant])),
+    [participants]
   );
 
   const hydratedEvents = useMemo(
-    () => events.map((event) => hydrateEventFromApi(event, ambientsById, usersById)),
-    [ambientsById, events, usersById]
+    () => events.map((event) => hydrateEventFromApi(event, participantsById, ambientsById)),
+    [ambientsById, events, participantsById]
   );
 
   const reloadData = useCallback(async () => {
@@ -86,22 +86,22 @@ function EventosAdminRoutes() {
     setDataError(null);
 
     try {
-      const [eventsResponse, ambientsResponse, usersResponse, meResponse] = await Promise.all([
+      const [eventsResponse, ambientsResponse, participantsResponse, meResponse] = await Promise.all([
         listEvents(),
         listAmbients(),
-        listUsers(),
+        listParticipants(),
         apiFetch("/security/v1/me", { method: "GET" }),
       ]);
 
       setEvents(Array.isArray(eventsResponse) ? eventsResponse : []);
       setAmbients(Array.isArray(ambientsResponse) ? ambientsResponse : []);
-      setUsers(Array.isArray(usersResponse) ? usersResponse : []);
+      setParticipants(Array.isArray(participantsResponse) ? participantsResponse : []);
       setCurrentUser(meResponse ?? getStoredCurrentUser());
     } catch {
       setDataError("Nao foi possivel carregar os eventos cadastrados.");
       setEvents([]);
       setAmbients([]);
-      setUsers([]);
+      setParticipants([]);
     } finally {
       setLoadingData(false);
     }
@@ -179,7 +179,7 @@ function EventosAdminRoutes() {
           <CriarEditarEvento
             key="eventos-novo"
             ambients={ambients}
-            users={users}
+            participants={participants}
             currentUser={currentUser}
             loadingData={loadingData}
             dataError={dataError}
@@ -194,8 +194,8 @@ function EventosAdminRoutes() {
         element={
           <EditEventRoute
             events={hydratedEvents}
+            participantsById={participantsById}
             ambientsById={ambientsById}
-            usersById={usersById}
             currentUser={currentUser}
             loadingData={loadingData}
             onCancel={handleCancel}

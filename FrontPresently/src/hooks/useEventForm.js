@@ -78,6 +78,10 @@ function normalizeEvent(event) {
     ...event,
     eventType: event.eventType ?? event.type ?? "",
     intervalDays: event.intervalDays ?? createEmptyEvent().intervalDays,
+    responsibleId:
+      event.responsibleId !== null && event.responsibleId !== undefined
+        ? String(event.responsibleId)
+        : "",
     participants: normalizedParticipants,
   };
 }
@@ -96,7 +100,9 @@ export function useEventForm(initialEvent) {
     const nextErrors = {};
 
     if (!values.name.trim()) nextErrors.name = "Informe o nome do evento.";
-    if (!values.responsible.trim()) nextErrors.responsible = "Informe o responsavel.";
+    if (!String(values.responsibleId ?? "").trim()) {
+      nextErrors.responsibleId = "Selecione o responsável do evento.";
+    }
     if (!values.location.trim()) nextErrors.location = "Selecione o local do evento.";
 
     setErrors(nextErrors);
