@@ -22,10 +22,27 @@ public class ParticipantService {
         this.participantRepository = participantRepository;
     }
 
-    public List<ParticipantDTO> findAll() {
-        return participantRepository.findAll()
+    // Busca unificada por participantes, permitindo filtros por nome e possibilidade de ser responsável
+    public List<ParticipantDTO> findAll(Boolean canBeResponsible, String name) {
+
+        List<Participant> participants = new ArrayList<>();
+
+        if (canBeResponsible == null){
+            if(name == null) participants = participantRepository.findAll();
+            else participants = participantRepository.findByNameContainingIgnoreCase(name);
+        }
+        else if (canBeResponsible == true){
+            if(name == null) participants = participantRepository.findAllByCanBeResponsibleTrue();
+            else participants = participantRepository.findByCanBeResponsibleTrueAndNameContainingIgnoreCase(name);
+        }
+        else {
+            if(name == null) participants = participantRepository.findAllByCanBeResponsibleFalse();
+            else participants = participantRepository.findByCanBeResponsibleFalseAndNameContainingIgnoreCase(name);
+        }
+
+        return participants
                 .stream()
-                .map(this::toDTO)
+                .map(ParticipantDTO::new)
                 .toList();
     }
 
@@ -35,16 +52,22 @@ public class ParticipantService {
                         new RuntimeException("Participante não encontrado com o id: " + id)
                 );
 
-        return toDTO(participant);
+        return new ParticipantDTO(participant);
     }
 
-    public List<ParticipantDTO> searchByName(String name) {
-        List<Participant> participants =
-            participantRepository.findByNameContainingIgnoreCase(name);
+    // Encontra retorna o participante do ID fornecido caso ele esteja inativo
+    public Participant findInactiveById(Long id) {
 
-    return participants.stream()
-            .map(this::toDTO)
-            .toList();
+        Participant participant = participantRepository.findById(id)
+                .orElseThrow(() ->
+                    new IllegalArgumentException("ID de participante fornecido não existe")
+                );
+
+        if (participant.isActive()){
+            throw new IllegalArgumentException("O participante referenciado ainda está ativo");
+        }
+
+        return participant;
     }
 
     public ParticipantDTO create(ParticipantDTO dto) {
@@ -56,10 +79,11 @@ public class ParticipantService {
         Participant participant = new Participant();
 
         participant.setName(dto.getName());
+        participant.setCanBeResponsible(dto.isCanBeResponsible());
 
         Participant savedParticipant = participantRepository.save(participant);
 
-        return toDTO(savedParticipant);
+        return new ParticipantDTO(savedParticipant);
     }
 
     public ParticipantDTO update(Long id, ParticipantDTO dto) {
@@ -76,10 +100,11 @@ public class ParticipantService {
         }
 
         participant.setName(dto.getName());
+        participant.setCanBeResponsible(dto.isCanBeResponsible());
 
         Participant updatedParticipant = participantRepository.save(participant);
 
-        return toDTO(updatedParticipant);
+        return new ParticipantDTO(updatedParticipant);
     }
 
     // Retorna uma lista dos eventos pelos quais o participante é reponsável
@@ -113,11 +138,4 @@ public class ParticipantService {
         return lista;
     }
 
-    private ParticipantDTO toDTO(Participant participant) {
-        return new ParticipantDTO(
-                participant.getId(),
-                participant.getName(),
-                participant.getUser().getId()
-        );
-    }
 }

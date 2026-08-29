@@ -19,9 +19,12 @@ public class ParticipantController {
     }
 
     @GetMapping
-    public ResponseEntity<List<ParticipantDTO>> findAll() {
+    public ResponseEntity<List<ParticipantDTO>> findAll(
+        @RequestParam(required = false) Boolean responsible,
+        @RequestParam(required = false) String name
+    ) {
         return ResponseEntity.ok(
-                participantService.findAll()
+                participantService.findAll(responsible, name)
         );
     }
 
@@ -31,15 +34,6 @@ public class ParticipantController {
     ) {
         return ResponseEntity.ok(
                 participantService.findById(id)
-        );
-    }
-
-    @GetMapping("/search")
-    public ResponseEntity<List<ParticipantDTO>> searchByName(
-            @RequestParam String name
-    ) {
-        return ResponseEntity.ok(
-                participantService.searchByName(name)
         );
     }
 
