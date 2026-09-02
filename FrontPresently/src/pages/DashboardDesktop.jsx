@@ -1,4 +1,5 @@
 import "../styles/theme.css";
+import EmptyState from "../components/EmptyState/EmptyState.jsx";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
@@ -6,11 +7,12 @@ import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1)
 import AttendanceHeatmap from "../components/DashboardComponents/AttendenceHeatmap/AttendanceHeatmap.jsx";
 import {
   statistics,
-  classes,
   heatmapDays,
   heatmapMatrix,
   heatmapTitle,
 } from "../data/dashboardData";
+import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
+import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
 import "../styles/pages/Dashboard.css";
 
 function getCurrentDateLabel() {
@@ -25,7 +27,16 @@ function getCurrentDateLabel() {
 }
 
 function DashboardDesktop() {
+  const { currentUser, classes, loadingClasses, classesError } =
+    useStudentDashboardData();
+  const { items: attendanceItems } = useAttendanceToday(currentUser?.participantId);
   const dateLabel = getCurrentDateLabel();
+  const userName = currentUser?.username ?? "Aluno";
+  const confirmedAttendanceIds = new Set(
+    attendanceItems
+      .filter((item) => item.status === "confirmed")
+      .map((item) => String(item.eventId))
+  );
 
   return (
     <div className="dashboard dashboard--desktop">
@@ -33,7 +44,7 @@ function DashboardDesktop() {
 
       <div className="dashboard__content">
         <Header
-          userName="Aluno"
+          userName={userName}
           date={dateLabel}
           notificationCount={9}
           variant="desktop"
@@ -60,17 +71,31 @@ function DashboardDesktop() {
                 <h2 className="dashboard__section-title">Minhas aulas</h2>
               </div>
 
-              <div className="dashboard__classes-list">
-                {classes.map((item) => (
-                  <ClassCard
-                    key={item.id}
-                    time={item.time}
-                    subject={item.subject}
-                    room={item.room}
-                    professor={item.professor}
-                  />
-                ))}
-              </div>
+              {loadingClasses ? (
+                <div className="dashboard__state">Carregando suas aulas...</div>
+              ) : classesError ? (
+                <div className="dashboard__state dashboard__state--error" role="alert">
+                  {classesError}
+                </div>
+              ) : classes.length === 0 ? (
+                <EmptyState
+                  title="Nenhuma aula encontrada"
+                  description="Você ainda não está vinculado a eventos como participante ou responsável."
+                />
+              ) : (
+                <div className="dashboard__classes-list">
+                  {classes.map((item) => (
+                    <ClassCard
+                      key={item.id}
+                      time={item.time}
+                      subject={item.subject}
+                      room={item.room}
+                      professor={item.professor}
+                      attended={confirmedAttendanceIds.has(String(item.id))}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
 
             <section className="dashboard__heatmap-section">

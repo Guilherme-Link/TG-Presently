@@ -4,6 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Base64;
 
 import javax.crypto.Mac;
@@ -46,7 +47,7 @@ public class ValidationCodeService {
 
         
         // Cálculo do tempo de validade do QR code 
-        long counter = timestamp.toEpochSecond(null) / codeValidForSeconds;
+        long counter = timestamp.atZone(ZoneId.systemDefault()).toEpochSecond() / codeValidForSeconds;
         
         String code = new String();
 
@@ -81,6 +82,11 @@ public class ValidationCodeService {
 
         // TODO (Gui): Adicionar as outras validações; Também adicionar registro no banco
 
+        LocalDateTime validationTimestamp = validationDTO.getValidationTimestamp();
+        if (validationTimestamp == null) {
+            validationTimestamp = LocalDateTime.now();
+        }
+
         Event event = new Event();
 
         // Primeira validação: Verifica se o id de evento realmente corresponde a um evento cadastrado
@@ -92,12 +98,12 @@ public class ValidationCodeService {
         }
 
         // Segunda validação: Verifica se o evento está ativo
-        if(!event.isActive(validationDTO.getValidationTimestamp())){
+        if(!event.isActive(validationTimestamp)){
             return false;
         }
 
         // Terceira validação: Verifica se o código de evento ainda é válido
-        if (!generateValidationCode(event.getId(), validationDTO.getValidationTimestamp()).equals(validationDTO.getValidationCode())){
+        if (!generateValidationCode(event.getId(), validationTimestamp).equals(validationDTO.getValidationCode())){
             return false;
         }
 
@@ -116,7 +122,7 @@ public class ValidationCodeService {
         // Objeto de ocorrência de evento para armazenar histórico
         EventOccurrence occurrence = occurrenceService.getOrCreateOccurrence(
             event, 
-            validationDTO.getValidationTimestamp().toLocalDate()
+            validationTimestamp.toLocalDate()
         );
 
         // Verifica se a ocorrência está aberta
@@ -128,7 +134,7 @@ public class ValidationCodeService {
         occurrenceService.registerPresence(
             occurrence.getId(), 
             validationDTO.getParticipantId(),
-            validationDTO.getValidationTimestamp()
+            validationTimestamp
         );
 
         return true;

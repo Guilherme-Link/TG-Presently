@@ -9,7 +9,7 @@ import {
   Mail,
 } from "lucide-react";
 import FotoFoda from "../assets/FotoFoda.png";
-import { getApiBaseUrl, isFetchNetworkError } from "../utils/api.js";
+import { apiFetch, isFetchNetworkError } from "../utils/api.js";
 import "../styles/pages/PresentlyLogin.css";
 
 const COPY = [
@@ -55,8 +55,6 @@ function Blobs() {
   );
 }
 
-const API_BASE_URL = getApiBaseUrl();
-
 export default function PresencefyLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -73,48 +71,13 @@ export default function PresencefyLogin() {
     setSubmitting(true);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/security/v1/login`, {
+      const user = await apiFetch("/security/v1/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include", // essencial: manda/recebe o cookie de sessão
-
-
-        // *Comentario Edu:
-        // Toda requisição futura pro backend (buscar eventos, listar usuários, etc.) também precisa de credentials: "include" no fetch, senão o cookie de sessão não é enviado e o servidor trata como não autenticado.
-
-
         body: JSON.stringify({
           username: email,
           password: password,
         }),
       });
-
-      if (!response.ok) {
-        if (response.status === 401 || response.status === 403) {
-          setError({
-            kind: "credentials",
-            message: "Usuário ou senha incorretos.",
-          });
-          return;
-        }
-
-        if (response.status >= 500) {
-          setError({
-            kind: "server",
-            message:
-              "O servidor encontrou um problema. Tente novamente em instantes.",
-          });
-          return;
-        }
-
-        setError({
-          kind: "generic",
-          message: "Não foi possível realizar o login.",
-        });
-        return;
-      }
-
-      const user = await response.json();
 
       // Guarda só o essencial pra UI (o cookie de sessão já cuida da autenticação)
       localStorage.setItem(
@@ -131,6 +94,31 @@ export default function PresencefyLogin() {
         navigate("/dashboard");
       }
     } catch (err) {
+      if (err && typeof err === "object" && "status" in err) {
+        if (err.status === 401 || err.status === 403) {
+          setError({
+            kind: "credentials",
+            message: "Usuário ou senha incorretos.",
+          });
+          return;
+        }
+
+        if (err.status >= 500) {
+          setError({
+            kind: "server",
+            message:
+              "O servidor encontrou um problema. Tente novamente em instantes.",
+          });
+          return;
+        }
+
+        setError({
+          kind: "generic",
+          message: err.message || "Não foi possível realizar o login.",
+        });
+        return;
+      }
+
       if (isFetchNetworkError(err)) {
         setError({
           kind: "network",
