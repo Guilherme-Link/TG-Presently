@@ -9,6 +9,10 @@ export function getApiBaseUrl() {
     return "https://localhost:8443";
   }
 
+  if (window.location.port === "5173") {
+    return "";
+  }
+
   return `https://${window.location.hostname}:8443`;
 }
 

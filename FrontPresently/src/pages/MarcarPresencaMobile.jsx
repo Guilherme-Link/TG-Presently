@@ -1,7 +1,9 @@
 import { MdArrowBackIosNew, MdCameraAlt, MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { apiFetch } from "../utils/api.js";
+import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import "../styles/pages/MarcarPresencaMobile.css";
 
 function QRViewfinderGlyph() {
@@ -28,6 +30,15 @@ function QRViewfinderGlyph() {
 
 const SCANNER_ELEMENT_ID = "reader";
 
+function formatLocalDateTime(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+
+  return [
+    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`,
+  ].join("T");
+}
+
 function MarcarPresencaMobile({
   lesson = {
     subject: "Engenharia de Software II",
@@ -41,8 +52,81 @@ function MarcarPresencaMobile({
   const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState(null);
+  const [attendanceState, setAttendanceState] = useState({
+    status: "idle",
+    message: "",
+  });
 
+  const {
+    activeEvent,
+    currentUser,
+    loading: loadingActiveEvent,
+    error: activeEventError,
+  } = useCurrentActiveStudentEvent();
   const html5QrRef = useRef(null);
+  const scanHandledRef = useRef(false);
+
+  const resolvedEventId = activeEvent?.id ?? null;
+  const participantId = currentUser?.participantId ?? null;
+  const resolvedLesson = activeEvent ?? lesson;
+
+  const validateAttendance = useCallback(async (decodedText) => {
+    if (!resolvedEventId) {
+      throw new Error(
+        activeEventError || "Não existe um evento ativo para marcar presença agora."
+      );
+    }
+
+    if (!participantId) {
+      throw new Error("Não foi possível identificar o participante logado.");
+    }
+
+    const normalizedCode = String(decodedText ?? "").trim();
+
+    if (!normalizedCode) {
+      throw new Error("QR Code inválido.");
+    }
+
+    const location = await new Promise((resolve) => {
+      if (!navigator.geolocation) {
+        resolve(null);
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        () => {
+          resolve(null);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0,
+        }
+      );
+    });
+
+    const payload = {
+      eventId: Number(resolvedEventId),
+      participantId: Number(participantId),
+      validationCode: normalizedCode,
+      validationTimestamp: formatLocalDateTime(new Date()),
+      userLatitude: location?.latitude ?? 0,
+      userLongitude: location?.longitude ?? 0,
+    };
+
+    const response = await apiFetch("/api/v1/qrcode/validate", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    return response;
+  }, [activeEventError, participantId, resolvedEventId]);
 
   useEffect(() => {
     if (!isScanning) return undefined;
@@ -59,9 +143,35 @@ function MarcarPresencaMobile({
       .start(
         { facingMode: "environment" }, // força a câmera traseira
         config,
-        (decodedText) => {
+        async (decodedText) => {
+          if (scanHandledRef.current) {
+            return;
+          }
+
+          scanHandledRef.current = true;
           setScanResult(decodedText);
+          setCameraError(null);
+          setAttendanceState({
+            status: "validating",
+            message: "Validando presença...",
+          });
           setIsScanning(false); // dispara o cleanup abaixo, que já para a câmera
+
+          try {
+            await validateAttendance(decodedText);
+            setAttendanceState({
+              status: "success",
+              message: "Sua presença foi registrada no sistema com sucesso.",
+            });
+          } catch (error) {
+            setAttendanceState({
+              status: "error",
+              message:
+                error instanceof Error && error.message
+                  ? error.message
+                  : "Não foi possível marcar a presença.",
+            });
+          }
         },
         () => {
           // erro de frame sem QR (chamado a cada frame sem leitura) — ignorar
@@ -85,13 +195,19 @@ function MarcarPresencaMobile({
       }
       html5QrRef.current = null;
     };
-  }, [isScanning]);
+  }, [isScanning, validateAttendance]);
 
   const navigate = useNavigate();
   const handleBack = onBack ?? (() => navigate(-1));
 
   const handleOpenCamera = () => {
     setScanResult(null);
+    setCameraError(null);
+    setAttendanceState({
+      status: "idle",
+      message: "",
+    });
+    scanHandledRef.current = false;
     setIsScanning(true);
     onOpenCamera?.();
   };
@@ -115,18 +231,32 @@ function MarcarPresencaMobile({
       </header>
 
       <section className="mp-mobile__banner">
-        <strong className="mp-mobile__subject">{lesson.subject}</strong>
+        <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
         <span className="mp-mobile__meta">
-          {lesson.day} &middot; {lesson.time} &middot; {lesson.room}
+          {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
         </span>
       </section>
 
       <main className="mp-mobile__body">
-        {scanResult ? (
-          <>
-            <h2 className="mp-mobile__status-title">Presença confirmada!</h2>
-            <p className="mp-mobile__status-description">{scanResult}</p>
-          </>
+        {attendanceState.status === "success" ? (
+          <section className="mp-mobile__success" aria-live="polite">
+            <div className="mp-mobile__success-mark" aria-hidden="true">
+              ✓
+            </div>
+            <h2 className="mp-mobile__status-title">Presença confirmada</h2>
+            <p className="mp-mobile__status-description">
+              {attendanceState.message}
+            </p>
+            <div className="mp-mobile__success-summary">
+              <strong>{resolvedLesson.subject}</strong>
+              <span>
+                {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
+              </span>
+              {scanResult ? (
+                <small>Código validado: {scanResult}</small>
+              ) : null}
+            </div>
+          </section>
         ) : (
           <>
             <p className="mp-mobile__instruction">
@@ -141,19 +271,39 @@ function MarcarPresencaMobile({
               Aguardando o escaneamento
             </h2>
             <p className="mp-mobile__status-description">
-              Seu dispositivo precisa estar
+              {attendanceState.status === "validating"
+                ? attendanceState.message
+                : "Seu dispositivo precisa estar"}
               <br />
-              com a câmera autorizada
+              {attendanceState.status === "validating"
+                ? "Processando a marcação..."
+                : "com a câmera autorizada"}
             </p>
+
+            {loadingActiveEvent ? (
+              <p className="mp-mobile__error">Carregando evento atual...</p>
+            ) : activeEventError ? (
+              <p className="mp-mobile__error">{activeEventError}</p>
+            ) : null}
 
             {cameraError && (
               <p className="mp-mobile__error">{cameraError}</p>
+            )}
+
+            {attendanceState.status === "error" && (
+              <p className="mp-mobile__error">{attendanceState.message}</p>
             )}
 
             <button
               type="button"
               className="mp-mobile__button"
               onClick={handleOpenCamera}
+              disabled={
+                isScanning ||
+                loadingActiveEvent ||
+                !resolvedEventId ||
+                !participantId
+              }
             >
               <MdCameraAlt size={18} />
               Abrir câmera

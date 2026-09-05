@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.com.fatecid.guidu.presently.entity.AttendanceRecord;
 import br.com.fatecid.guidu.presently.entity.Event;
@@ -99,6 +100,7 @@ public class EventOccurrenceService {
     }
 
     // Valida a presença de um participante em uma instância da ocorrência pelo ID de participante
+    @Transactional
     public void registerPresence(long OccurrenceId, long participantId, LocalDateTime checkInTime){
         AttendanceRecord record = recordRepository.findByOccurrenceIdAndParticipantId(OccurrenceId, participantId)
             .orElseThrow(() -> 
@@ -106,6 +108,7 @@ public class EventOccurrenceService {
 
         record.setPresent(true);
         record.setCheckInTime(checkInTime);
+        recordRepository.save(record);
     }
 
     // Atualiza uma ocorrência existente.

@@ -25,3 +25,15 @@ export function deleteEvent(id) {
     method: "DELETE",
   });
 }
+
+export function listResponsibleEvents(participantId) {
+  return apiFetch(`/api/v1/events/responsible/${participantId}`, {
+    method: "GET",
+  });
+}
+
+export function listParticipatingEvents(participantId) {
+  return apiFetch(`/api/v1/events/participating/${participantId}`, {
+    method: "GET",
+  });
+}

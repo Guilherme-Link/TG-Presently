@@ -1,11 +1,13 @@
 import "../styles/theme.css";
 import { useNavigate } from "react-router-dom";
+import EmptyState from "../components/EmptyState/EmptyState.jsx";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
 import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
 import QuickAccessCard from "../components/DashboardComponents/QuickAccessCard/QuickAccessCard (1).jsx";
-import { statistics, classes, shortcuts } from "../data/dashboardData";
+import { statistics, shortcuts } from "../data/dashboardData";
+import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
 import "../styles/pages/Dashboard.css";
 
 function getCurrentDateLabel() {
@@ -21,13 +23,16 @@ function getCurrentDateLabel() {
 
 function DashboardMobile() {
   const navigate = useNavigate();
+  const { currentUser, classes, loadingClasses, classesError } =
+    useStudentDashboardData();
   const dateLabel = getCurrentDateLabel();
+  const userName = currentUser?.username ?? "Aluno";
 
   return (
     <div className="dashboard dashboard--mobile">
       <div className="dashboard__content">
         <Header
-          userName="Aluno"
+          userName={userName}
           date={dateLabel}
           notificationCount={9}
           variant="mobile"
@@ -70,17 +75,30 @@ function DashboardMobile() {
                 </button>
               </div>
 
-              <div className="dashboard__classes-list">
-                {classes.map((item) => (
-                  <ClassCard
-                    key={item.id}
-                    time={item.time}
-                    subject={item.subject}
-                    room={item.room}
-                    professor={item.professor}
-                  />
-                ))}
-              </div>
+              {loadingClasses ? (
+                <div className="dashboard__state">Carregando suas aulas...</div>
+              ) : classesError ? (
+                <div className="dashboard__state dashboard__state--error" role="alert">
+                  {classesError}
+                </div>
+              ) : classes.length === 0 ? (
+                <EmptyState
+                  title="Nenhuma aula encontrada"
+                  description="Você ainda não está vinculado a eventos como participante ou responsável."
+                />
+              ) : (
+                <div className="dashboard__classes-list">
+                  {classes.map((item) => (
+                    <ClassCard
+                      key={item.id}
+                      time={item.time}
+                      subject={item.subject}
+                      room={item.room}
+                      professor={item.professor}
+                    />
+                  ))}
+                </div>
+              )}
             </section>
           </div>
 

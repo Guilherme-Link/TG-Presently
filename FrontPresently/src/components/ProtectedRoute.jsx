@@ -1,20 +1,15 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-
-const API_BASE_URL = `https://${window.location.hostname}:8443`;
+import { apiFetch } from "../utils/api.js";
 
 export function ProtectedRoute({ children, requiredRole }) {
   const [status, setStatus] = useState("checking"); // "checking" | "authorized" | "unauthorized"
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/security/v1/me`, {
-      credentials: "include",
+    apiFetch("/security/v1/me", {
+      method: "GET",
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Sessão inválida");
-        return res.json();
-      })
       .then((data) => {
         setUser(data);
         localStorage.setItem("presently_auth", JSON.stringify(data));
