@@ -35,6 +35,7 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
         signatureRef.current = nextSignature;
       }
 
+      setError("");
       hasLoadedRef.current = true;
     } catch {
       if (!silent || !hasLoadedRef.current) {
