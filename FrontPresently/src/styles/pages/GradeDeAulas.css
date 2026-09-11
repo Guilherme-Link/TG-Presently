@@ -1,0 +1,24 @@
+.gda { --gda-red: #b0301b; --gda-red-dark: #7b1414; --gda-black: #2f2f2f; --gda-white: #fff; --gda-bg: #f1f1f1; --gda-text-secondary: #8a8a8a; --gda-border: #e7e7e7; min-height: 100%; padding: 24px 32px 40px; background: var(--gda-bg); }
+.gda *, .gda *::before, .gda *::after { box-sizing: border-box; }
+.gda-header { display: flex; flex-direction: column; gap: 4px; margin-bottom: 26px; }.gda-breadcrumb { color: var(--gda-text-secondary); font-size: 12px; }.gda-title-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }.gda-title { margin: 0; color: var(--gda-red); font-size: 21px; font-weight: 700; }.gda-week-actions { display: flex; flex-wrap: wrap; gap: 8px; }.gda-week-actions button { padding: 7px 11px; color: var(--gda-red-dark); background: var(--gda-white); border: 1px solid var(--gda-border); border-radius: 8px; cursor: pointer; font: inherit; font-size: 11px; }.gda-week-actions button:hover { border-color: var(--gda-red); }
+.gda-carousel { display: flex; max-width: 1100px; align-items: center; gap: 14px; margin: 0 auto; }.gda-nav { display: flex; width: 34px; height: 34px; flex-shrink: 0; align-items: center; justify-content: center; color: var(--gda-black); background: transparent; border: 0; border-radius: 50%; cursor: pointer; }.gda-nav:hover:not(:disabled) { background: #e6e6e6; }.gda-nav:disabled { color: #c7c7c7; cursor: not-allowed; }.gda-card { flex: 1; overflow: hidden; padding: 22px 24px 28px; background: var(--gda-white); border-radius: 16px; box-shadow: 0 2px 10px rgb(0 0 0 / 5%); }.gda-grid { display: grid; grid-template-columns: repeat(var(--gda-columns, 3), minmax(0, 1fr)); gap: 20px; }.gda-day { display: flex; min-width: 0; flex-direction: column; gap: 10px; }.gda-day__header { display: flex; flex-direction: column; padding: 11px 12px; color: var(--gda-white); background: var(--gda-red); border-radius: 10px; font-size: 13px; font-weight: 700; text-align: center; }.gda-day__header small { margin-top: 2px; font-size: 10px; font-weight: 400; opacity: .85; }.gda-day__slots { display: flex; min-height: 90px; flex-direction: column; gap: 10px; }.gda-slot { display: flex; min-height: 72px; flex-direction: column; justify-content: center; padding: 11px 12px; color: var(--gda-black); border: 1px solid var(--gda-border); border-radius: 10px; font-size: 12px; text-align: center; }.gda-slot strong { font-size: 12.5px; }.gda-slot span { margin-top: 5px; color: var(--gda-red); font-size: 11px; font-weight: 600; }.gda-slot small { margin-top: 3px; color: var(--gda-text-secondary); font-size: 10px; }.gda-slot:hover { border-color: var(--gda-red); box-shadow: 0 4px 12px rgb(0 0 0 / 5%); }.gda-slot--empty { color: var(--gda-text-secondary); font-size: 11px; }.gda-state { padding: 24px; color: var(--gda-text-secondary); background: var(--gda-white); border: 1px solid var(--gda-border); border-radius: 14px; text-align: center; }.gda-state--error { color: var(--gda-red-dark); }
+@media (max-width: 900px) { .gda-grid { grid-template-columns: repeat(var(--gda-columns, 3), minmax(160px, 1fr)); overflow-x: auto; } }.gda-page .dashboard__content { min-width: 0; }
+@media (max-width: 640px) { .gda { padding: 18px; }.gda-title-row { align-items: flex-start; flex-direction: column; }.gda-week-actions { width: 100%; }.gda-week-actions button { flex: 1; }.gda-carousel { gap: 6px; }.gda-card { padding: 16px; }.gda-day__header, .gda-slot { font-size: 11.5px; padding: 10px 8px; } }
+.gda-page--mobile { min-height: 100vh; flex-direction: column; background: var(--gda-bg); }
+.gda-mobile-topbar { display: flex; align-items: center; gap: 14px; margin: -2px 0 22px; color: var(--gda-black); font-size: 16px; font-weight: 700; }
+.gda-mobile-topbar button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; color: var(--gda-black); background: transparent; border: 0; cursor: pointer; }
+.gda-page--mobile .dashboard__content { min-width: 0; }
+.gda-page--mobile .gda { padding: 20px 14px calc(var(--bottomnav-height) + 24px); }
+.gda-page--mobile .gda-title-row { align-items: center; flex-wrap: wrap; }
+.gda-page--mobile .gda-week-actions { order: 3; width: 100%; }
+.gda-page--mobile .gda-week-actions button { flex: 1; }
+.gda-page--mobile .gda-carousel { gap: 4px; }
+.gda-page--mobile .gda-card { padding: 12px 8px 18px; }
+.gda-page--mobile .gda-grid { gap: 8px; }
+.gda-page--mobile .gda-day__header { padding: 9px 5px; font-size: 11px; }
+.gda-page--mobile .gda-day__slots { gap: 7px; }
+.gda-page--mobile .gda-slot { min-height: 82px; padding: 8px 5px; font-size: 10px; }
+.gda-page--mobile .gda-slot strong { font-size: 10px; }
+.gda-page--mobile .gda-slot span { font-size: 9px; }
+.gda-page--mobile .gda-slot small { font-size: 8px; }
+.gda-page--mobile .bottom-nav { display: flex; }

@@ -2,7 +2,9 @@ import {
   MdNotificationsNone,
   MdPerson,
   MdKeyboardArrowDown,
+  MdLogout,
 } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
 function Header({
@@ -11,7 +13,14 @@ function Header({
   notificationCount = 0,
   institution = "Fatec Indaiatuba",
   variant = "responsive",
+  showMobileLogout = false,
 }) {
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem("presently_auth");
+    navigate("/login", { replace: true });
+  }
   const showDesktopHeader = variant === "responsive" || variant === "desktop";
   const showMobileHeader = variant === "responsive" || variant === "mobile";
 
@@ -58,6 +67,16 @@ function Header({
                   <span className="header__badge">{notificationCount}</span>
                 )}
               </button>
+              {showMobileLogout && (
+                <button
+                  type="button"
+                  className="header__icon-btn header__icon-btn--logout"
+                  aria-label="Sair"
+                  onClick={handleLogout}
+                >
+                  <MdLogout size={20} />
+                </button>
+              )}
               <button
                 type="button"
                 className="header__icon-btn header__icon-btn--avatar"

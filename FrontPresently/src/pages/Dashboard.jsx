@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { MdPanTool } from "react-icons/md";
 import "../styles/theme.css";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
@@ -195,12 +196,7 @@ function Dashboard() {
               <div className="dashboard__classes-header">
                 <h2 className="dashboard__section-title">Minhas aulas</h2>
                 <button type="button" className="dashboard__attendance-btn">
-                  <span
-                    className="dashboard__attendance-emoji"
-                    aria-hidden="true"
-                  >
-                    🤚
-                  </span>
+                  <MdPanTool size={18} aria-hidden="true" />
                   Marcar presença
                 </button>
               </div>

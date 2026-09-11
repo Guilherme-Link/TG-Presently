@@ -6,9 +6,28 @@ import BottomNavigation from "../components/DashboardComponents/BottomNavigation
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
 import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
 import QuickAccessCard from "../components/DashboardComponents/QuickAccessCard/QuickAccessCard (1).jsx";
-import { statistics, shortcuts } from "../data/dashboardData";
+import { shortcuts } from "../data/dashboardData";
 import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
+import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
 import "../styles/pages/Dashboard.css";
+
+function AttendanceButtonIcon() {
+  return (
+    <svg
+      stroke="currentColor"
+      fill="currentColor"
+      strokeWidth="0"
+      viewBox="0 0 24 24"
+      height="18"
+      width="18"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+    >
+      <path fill="none" d="M0 0h24v24H0z" />
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2m0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z" />
+    </svg>
+  );
+}
 
 function getCurrentDateLabel() {
   const today = new Date();
@@ -23,8 +42,12 @@ function getCurrentDateLabel() {
 
 function DashboardMobile() {
   const navigate = useNavigate();
-  const { currentUser, classes, loadingClasses, classesError } =
+  const { currentUser, classes, loadingClasses, classesError, statistics } =
     useStudentDashboardData();
+  const { items: attendanceItems } = useAttendanceToday(currentUser?.participantId);
+  const confirmedAttendanceIds = new Set(
+    attendanceItems.filter((item) => item.status === "confirmed").map((item) => String(item.eventId)),
+  );
   const dateLabel = getCurrentDateLabel();
   const userName = currentUser?.username ?? "Aluno";
 
@@ -36,13 +59,12 @@ function DashboardMobile() {
           date={dateLabel}
           notificationCount={9}
           variant="mobile"
+          showMobileLogout
         />
 
         <main className="dashboard__main">
           <section className="dashboard__section">
-            <h2 className="dashboard__section-title dashboard__section-title--mobile-only">
-              Dados do semestre
-            </h2>
+            <h2 className="dashboard__section-title dashboard__section-title--mobile-only">Dados do semestre</h2>
             <div className="dashboard__stats-grid">
               {statistics.map((stat) => (
                 <StatisticCard
@@ -65,12 +87,7 @@ function DashboardMobile() {
                   className="dashboard__attendance-btn"
                   onClick={() => navigate("/presenca")}
                 >
-                  <span
-                    className="dashboard__attendance-emoji"
-                    aria-hidden="true"
-                  >
-                    🤚
-                  </span>
+                  <AttendanceButtonIcon />
                   Marcar presença
                 </button>
               </div>
@@ -95,6 +112,7 @@ function DashboardMobile() {
                       subject={item.subject}
                       room={item.room}
                       professor={item.professor}
+                      attended={confirmedAttendanceIds.has(String(item.id))}
                     />
                   ))}
                 </div>
@@ -112,6 +130,7 @@ function DashboardMobile() {
                   key={shortcut.id}
                   label={shortcut.label}
                   icon={shortcut.icon}
+                  onClick={() => navigate(shortcut.id === "relatorio-faltas" ? "/relatorio" : "/grade")}
                 />
               ))}
             </div>
