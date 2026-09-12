@@ -1,4 +1,5 @@
 import { MdHome, MdQrCodeScanner, MdPerson } from "react-icons/md";
+import { NavLink } from "react-router-dom";
 import { bottomNavItems } from "../../../data/dashboardData";
 import "./BottomNavigation.css";
 
@@ -17,9 +18,9 @@ function BottomNavigation({ activeId = "dashboard" }) {
         const isScan = id === "scan";
 
         return (
-          <a
+          <NavLink
             key={id}
-            href="#"
+            to={isScan ? "/presenca" : id === "dashboard" ? "/dashboard" : "/perfil"}
             className={`bottom-nav__item ${isActive ? "bottom-nav__item--active" : ""} ${
               isScan ? "bottom-nav__item--scan" : ""
             }`}
@@ -28,7 +29,7 @@ function BottomNavigation({ activeId = "dashboard" }) {
               <Icon size={isScan ? 22 : 20} />
             </span>
             <span className="bottom-nav__label">{label}</span>
-          </a>
+          </NavLink>
         );
       })}
     </nav>

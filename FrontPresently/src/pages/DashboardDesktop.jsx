@@ -5,12 +5,7 @@ import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
 import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
 import AttendanceHeatmap from "../components/DashboardComponents/AttendenceHeatmap/AttendanceHeatmap.jsx";
-import {
-  statistics,
-  heatmapDays,
-  heatmapMatrix,
-  heatmapTitle,
-} from "../data/dashboardData";
+import { heatmapDays } from "../data/dashboardData";
 import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
 import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
 import "../styles/pages/Dashboard.css";
@@ -27,7 +22,7 @@ function getCurrentDateLabel() {
 }
 
 function DashboardDesktop() {
-  const { currentUser, classes, loadingClasses, classesError } =
+  const { currentUser, classes, loadingClasses, classesError, statistics, heatmapMatrix } =
     useStudentDashboardData();
   const { items: attendanceItems } = useAttendanceToday(currentUser?.participantId);
   const dateLabel = getCurrentDateLabel();
@@ -100,7 +95,7 @@ function DashboardDesktop() {
 
             <section className="dashboard__heatmap-section">
               <AttendanceHeatmap
-                title={heatmapTitle}
+                title="Mapa de presença · últimas semanas"
                 days={heatmapDays}
                 matrix={heatmapMatrix}
               />

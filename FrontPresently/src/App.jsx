@@ -5,6 +5,10 @@ import DashboardDesktop from "./pages/DashboardDesktop.jsx";
 import DashboardMobile from "./pages/DashboardMobile.jsx";
 import MarcarPresencaMobile from "./pages/MarcarPresencaMobile.jsx";
 import MarcarPresencaDesktop from "./pages/MarcarPresencaDesktop.jsx";
+import RelatorioDeFaltasAluno from "./pages/RelatorioDeFaltasAluno.jsx";
+import GradeDeAulas from "./pages/GradeDeAulas.jsx";
+import RelatorioDeFaltasAlunoMobile from "./pages/RelatorioDeFaltasAlunoMobile.jsx";
+import GradeDeAulasMobile from "./pages/GradeDeAulasMobile.jsx";
 import DashboardDesktopAdmin from "./pages/DashboardDesktopAdmin.jsx"
 import GerenciarUsuarioDesktopAdmin from "./pages/GerenciarUsuarioDesktopAdmin.jsx"
 import GerenciamentoDeSalas from "./pages/GerenciamentoDeSalas.jsx"
@@ -100,6 +104,14 @@ function PresencaRoute() {
   );
 }
 
+function RelatorioRoute() {
+  return <ResponsiveRoute mobileComponent={RelatorioDeFaltasAlunoMobile} desktopComponent={RelatorioDeFaltasAluno} />;
+}
+
+function GradeRoute() {
+  return <ResponsiveRoute mobileComponent={GradeDeAulasMobile} desktopComponent={GradeDeAulas} />;
+}
+
 function App() {
 
   return (
@@ -114,6 +126,8 @@ function App() {
       <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
 
       <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
+      <Route path="/relatorio" element={<ProtectedRoute><RelatorioRoute /></ProtectedRoute>} />
+      <Route path="/grade" element={<ProtectedRoute><GradeRoute /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

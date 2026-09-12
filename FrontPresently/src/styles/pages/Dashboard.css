@@ -37,6 +37,15 @@
   display: block;
 }
 
+.dashboard__mobile-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header__icon-btn--logout { color: var(--color-primary); }
+
 @media (min-width: 1024px) {
   .dashboard__section-title--mobile-only {
     display: none;
