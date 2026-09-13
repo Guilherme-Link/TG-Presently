@@ -80,6 +80,13 @@ export const sidebarNavAluno = [
   { id: "grade", label: "Grade de aulas", icon: "calendar", path: "/grade" },
 ];
 
+export const sidebarNavResponsavel = [
+  { id: "dashboard", label: "Dashboard", icon: "dashboard", path: "/dashboard" },
+  { id: "presenca", label: "Verificar presença", icon: "check", path: "/presenca" },
+  { id: "relatorio", label: "Histórico de eventos", icon: "report", path: "/relatorio" },
+  { id: "grade", label: "Grade de aulas", icon: "calendar", path: "/grade" },
+];
+
 export const sidebarNavConta = [
   { id: "perfil", label: "Perfil", icon: "user", path: "/perfil" },
   { id: "sair", label: "Sair", icon: "logout", path: "/logout" },

@@ -7,6 +7,7 @@ import EventsTable from "../../components/EventsTable/EventsTable";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import EventDetailModal from "../../components/EventDetailModal/EventDetailModal";
+import EventParticipantsModal from "../../components/EventParticipantsModal/EventParticipantsModal";
 import "../../styles/theme.css";
 import "../../styles/pages/EventosListagem/EventosListagem.css";
 
@@ -22,6 +23,7 @@ function EventosListagem({
 }) {
   const [search, setSearch] = useState("");
   const [eventToView, setEventToView] = useState(null);
+  const [eventParticipants, setEventParticipants] = useState(null);
   const [eventToDelete, setEventToDelete] = useState(null);
 
   const filteredEvents = useMemo(() => {
@@ -111,6 +113,7 @@ function EventosListagem({
               <EventsTable
                 events={filteredEvents}
                 onView={setEventToView}
+                onParticipants={setEventParticipants}
                 onEdit={onEditEvent}
                 onDelete={setEventToDelete}
               />
@@ -121,6 +124,10 @@ function EventosListagem({
 
       {eventToView && (
         <EventDetailModal event={eventToView} onClose={() => setEventToView(null)} />
+      )}
+
+      {eventParticipants && (
+        <EventParticipantsModal event={eventParticipants} onClose={() => setEventParticipants(null)} />
       )}
 
       {eventToDelete && (

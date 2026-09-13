@@ -53,10 +53,12 @@ function CriarEditarEvento({
 
   const responsibleOptions = useMemo(
     () =>
-      participants.map((participant) => ({
+      participants
+        .filter((participant) => participant.canBeResponsible)
+        .map((participant) => ({
         label: participant.name,
         value: String(participant.id),
-      })),
+        })),
     [participants]
   );
 
@@ -88,7 +90,7 @@ function CriarEditarEvento({
     const fallbackKey = String(fallbackResponsibleId);
     const fallbackParticipant = participantsById.get(fallbackKey);
 
-    if (!fallbackParticipant) {
+    if (!fallbackParticipant?.canBeResponsible) {
       return;
     }
 

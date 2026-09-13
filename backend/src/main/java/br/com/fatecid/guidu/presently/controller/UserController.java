@@ -1,6 +1,7 @@
 package br.com.fatecid.guidu.presently.controller;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
 import br.com.fatecid.guidu.presently.service.UserService;
 
@@ -56,8 +57,6 @@ public class UserController {
         }
     }
 
-    // TODO (Gui): criar um método para editar um perfil usuário / adicionar biometria
-    /*
     // Edita um usuário pelo ID
     @PutMapping("/{id}")
     public UserResponse update(
@@ -69,5 +68,4 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_CONTENT, e.getMessage());
         }
     }
-    */
 }

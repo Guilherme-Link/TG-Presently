@@ -535,6 +535,14 @@
   background: var(--gua-red);
 }
 
+.gua-profile-badge--responsible {
+  color: #E87800;
+}
+
+.gua-profile-badge--responsible .gua-profile-badge__dot {
+  background: #E87800;
+}
+
 .gua-table__email {
   font-size: 12px;
   font-weight: 400;

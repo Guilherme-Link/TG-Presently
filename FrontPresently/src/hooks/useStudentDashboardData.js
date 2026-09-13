@@ -152,6 +152,9 @@ export function useStudentDashboardData() {
   const [classesError, setClassesError] = useState("");
   const [statistics, setStatistics] = useState([]);
   const [heatmapMatrix, setHeatmapMatrix] = useState(() => Array.from({ length: 5 }, () => Array(7).fill(0)));
+  const [isResponsible, setIsResponsible] = useState(() =>
+    getStoredCurrentUser()?.roles?.includes("ROLE_RESPONSIBLE") ?? false
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -168,6 +171,9 @@ export function useStudentDashboardData() {
         }
 
         setCurrentUser(me ?? getStoredCurrentUser());
+        const currentUser = me ?? getStoredCurrentUser();
+        const userIsResponsible = currentUser?.roles?.includes("ROLE_RESPONSIBLE") ?? false;
+        setIsResponsible(userIsResponsible);
 
         const participantId = me?.participantId;
         if (!participantId) {
@@ -200,8 +206,11 @@ export function useStudentDashboardData() {
           ])
         );
         const mergedEvents = new Map();
+        const dashboardEvents = userIsResponsible
+          ? responsibleEvents
+          : [...(Array.isArray(responsibleEvents) ? responsibleEvents : []), ...(Array.isArray(participatingEvents) ? participatingEvents : [])];
 
-        [...(Array.isArray(responsibleEvents) ? responsibleEvents : []), ...(Array.isArray(participatingEvents) ? participatingEvents : [])].forEach(
+        (Array.isArray(dashboardEvents) ? dashboardEvents : []).forEach(
           (event) => {
             if (!event?.id || mergedEvents.has(event.id)) {
               return;
@@ -219,10 +228,20 @@ export function useStudentDashboardData() {
             me ?? getStoredCurrentUser()
           )
         );
-        const eventsForSummary = (Array.isArray(participatingEvents) ? participatingEvents : []).map((event) => ({ ...event, __participantId: participantId }));
-        const summary = await buildRealStatistics(eventsForSummary);
-        setStatistics(summary.statistics);
-        setHeatmapMatrix(summary.heatmapMatrix);
+        if (userIsResponsible) {
+          const responsibleClasses = Array.isArray(responsibleEvents) ? responsibleEvents : [];
+          const classesToday = responsibleClasses.filter((event) => isScheduledOn(event, new Date())).length;
+          setStatistics([
+            { id: "responsible-classes", title: "Aulas como responsável", value: responsibleClasses.length, description: "eventos vinculados", valueColor: "var(--color-primary)" },
+            { id: "classes-today", title: "Aulas hoje", value: classesToday, description: formatLocalDate(new Date()), valueColor: "var(--color-text)" },
+          ]);
+          setHeatmapMatrix(Array.from({ length: 5 }, () => Array(7).fill(0)));
+        } else {
+          const eventsForSummary = (Array.isArray(participatingEvents) ? participatingEvents : []).map((event) => ({ ...event, __participantId: participantId }));
+          const summary = await buildRealStatistics(eventsForSummary);
+          setStatistics(summary.statistics);
+          setHeatmapMatrix(summary.heatmapMatrix);
+        }
       } catch {
         if (!cancelled) {
           setClasses([]);
@@ -251,5 +270,6 @@ export function useStudentDashboardData() {
     classesError,
     statistics,
     heatmapMatrix,
+    isResponsible,
   };
 }
