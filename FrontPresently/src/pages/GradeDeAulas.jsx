@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
 import { listAmbients } from "../services/ambientsApi.js";
-import { listParticipatingEvents } from "../services/eventsApi.js";
+import { listParticipatingEvents, listResponsibleEvents } from "../services/eventsApi.js";
 import { listParticipants } from "../services/participantsApi.js";
 import { apiFetch } from "../utils/api.js";
 import "../styles/theme.css";
@@ -106,6 +106,7 @@ export default function GradeDeAulas({ mobile = false }) {
   const [startIndex, setStartIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isResponsible, setIsResponsible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,15 +117,19 @@ export default function GradeDeAulas({ mobile = false }) {
       try {
         const me = await apiFetch("/security/v1/me", { method: "GET" });
         if (!me?.participantId) throw new Error("missing-participant");
+        const userIsResponsible = me.roles?.includes("ROLE_RESPONSIBLE") ?? false;
 
         const [eventResponse, participantsResponse, ambientsResponse] = await Promise.all([
-          listParticipatingEvents(me.participantId),
+          userIsResponsible
+            ? listResponsibleEvents(me.participantId)
+            : listParticipatingEvents(me.participantId),
           listParticipants(),
           listAmbients(),
         ]);
 
         if (cancelled) return;
         setEvents(Array.isArray(eventResponse) ? eventResponse : []);
+        setIsResponsible(userIsResponsible);
         setParticipants(Array.isArray(participantsResponse) ? participantsResponse : []);
         setAmbients(Array.isArray(ambientsResponse) ? ambientsResponse : []);
       } catch {
@@ -168,7 +173,7 @@ export default function GradeDeAulas({ mobile = false }) {
               <div className="gda-title-row"><h1 className="gda-title">Grade de aulas</h1><div className="gda-week-actions"><button type="button" onClick={() => moveWeek(-1)}>Semana anterior</button><button type="button" onClick={() => { setWeekStart(startOfWeek(new Date())); setStartIndex(0); }}>Semana atual</button><button type="button" onClick={() => moveWeek(1)}>Próxima semana</button></div></div>
             </header>
           )}
-          {loading ? <div className="gda-state">Carregando sua grade...</div> : error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : !events.length ? <div className="gda-state">Nenhuma aula encontrada para este aluno.</div> : (
+          {loading ? <div className="gda-state">Carregando sua grade...</div> : error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : !events.length ? <div className="gda-state">{isResponsible ? "Nenhuma aula encontrada sob sua responsabilidade." : "Nenhuma aula encontrada para este aluno."}</div> : (
             <div className="gda-carousel">
               <button type="button" className="gda-nav" onClick={() => setStartIndex((index) => Math.max(index - 1, 0))} disabled={startIndex === 0} aria-label="Dias anteriores"><MdChevronLeft size={22} /></button>
               <div className="gda-card"><div className="gda-grid" style={{ "--gda-columns": VISIBLE_DAYS }}>{visibleDays.map((day) => <DayColumn key={day.id} day={day} />)}</div></div>

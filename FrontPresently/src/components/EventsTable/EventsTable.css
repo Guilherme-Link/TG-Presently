@@ -5,7 +5,7 @@
 
 .evt-table__head {
   display: grid;
-  grid-template-columns: 1fr 90px 70px 70px;
+  grid-template-columns: 1fr 90px 110px 70px 70px;
   gap: 8px;
   padding: 0 6px 12px;
   border-bottom: 1px solid var(--evt-border);
@@ -13,7 +13,7 @@
 
 .evt-table__head,
 .evt-table__row {
-  min-width: 420px;
+  min-width: 520px;
 }
 
 .evt-table__col {
@@ -33,7 +33,7 @@
 
 .evt-table__row {
   display: grid;
-  grid-template-columns: 1fr 90px 70px 70px;
+  grid-template-columns: 1fr 90px 110px 70px 70px;
   gap: 8px;
   align-items: center;
   padding: 16px 6px;
@@ -92,6 +92,6 @@
 @media (max-width: 640px) {
   .evt-table__head,
   .evt-table__row {
-    min-width: 360px;
+    min-width: 520px;
   }
 }

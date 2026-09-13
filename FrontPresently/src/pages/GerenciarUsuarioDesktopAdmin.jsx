@@ -16,13 +16,18 @@ import { deleteUser, listUsers, registerUser, updateUser } from "../services/use
 
 const USER_TYPE_OPTIONS = [
   { label: "Aluno", value: "user" },
+  { label: "Responsável", value: "responsible" },
   { label: "Administrador", value: "admin" },
 ];
 
 const DEFAULT_USER_TYPE = USER_TYPE_OPTIONS[0].value;
 
 function getRoleValueFromRoles(roles = []) {
-  return roles.includes("ROLE_ADMIN") ? "admin" : "user";
+  if (roles.includes("ROLE_ADMIN")) {
+    return "admin";
+  }
+
+  return roles.includes("ROLE_RESPONSIBLE") ? "responsible" : "user";
 }
 
 function DropdownSelect({ label, options, selected, onSelect, id }) {
@@ -51,17 +56,27 @@ function DropdownSelect({ label, options, selected, onSelect, id }) {
 }
 
 function getUserProfileLabel(roles = []) {
-  return roles.includes("ROLE_ADMIN") ? "Administrador" : "Aluno";
+  if (roles.includes("ROLE_ADMIN")) {
+    return "Administrador";
+  }
+
+  return roles.includes("ROLE_RESPONSIBLE") ? "Responsável" : "Aluno";
 }
 
 function getUserProfileClass(roles = []) {
-  return roles.includes("ROLE_ADMIN")
-    ? "gua-profile-badge--admin"
+  if (roles.includes("ROLE_ADMIN")) {
+    return "gua-profile-badge--admin";
+  }
+
+  return roles.includes("ROLE_RESPONSIBLE")
+    ? "gua-profile-badge--responsible"
     : "gua-profile-badge--student";
 }
 
 function normalizeUserType(role) {
-  return role === "admin" ? "admin" : "user";
+  return USER_TYPE_OPTIONS.some((option) => option.value === role)
+    ? role
+    : DEFAULT_USER_TYPE;
 }
 
 function getFriendlyErrorMessage(error, fallbackMessage) {
@@ -454,7 +469,7 @@ function UserListCard({ users, loading, error, onRetry }) {
       return;
     }
 
-    if (!payload.email) {
+    if (!payload.username?.trim()) {
       setEditError("Informe o e-mail do aluno.");
       return;
     }

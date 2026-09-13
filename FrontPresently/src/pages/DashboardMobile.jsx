@@ -42,14 +42,16 @@ function getCurrentDateLabel() {
 
 function DashboardMobile() {
   const navigate = useNavigate();
-  const { currentUser, classes, loadingClasses, classesError, statistics } =
+  const { currentUser, classes, loadingClasses, classesError, statistics, isResponsible } =
     useStudentDashboardData();
-  const { items: attendanceItems } = useAttendanceToday(currentUser?.participantId);
+  const { items: attendanceItems } = useAttendanceToday(
+    isResponsible ? null : currentUser?.participantId
+  );
   const confirmedAttendanceIds = new Set(
     attendanceItems.filter((item) => item.status === "confirmed").map((item) => String(item.eventId)),
   );
   const dateLabel = getCurrentDateLabel();
-  const userName = currentUser?.username ?? "Aluno";
+  const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
 
   return (
     <div className="dashboard dashboard--mobile">
@@ -82,14 +84,16 @@ function DashboardMobile() {
             <section className="dashboard__classes">
               <div className="dashboard__classes-header">
                 <h2 className="dashboard__section-title">Minhas aulas</h2>
-                <button
-                  type="button"
-                  className="dashboard__attendance-btn"
-                  onClick={() => navigate("/presenca")}
-                >
-                  <AttendanceButtonIcon />
-                  Marcar presença
-                </button>
+                {!isResponsible && (
+                  <button
+                    type="button"
+                    className="dashboard__attendance-btn"
+                    onClick={() => navigate("/presenca")}
+                  >
+                    <AttendanceButtonIcon />
+                    Marcar presença
+                  </button>
+                )}
               </div>
 
               {loadingClasses ? (
@@ -101,7 +105,9 @@ function DashboardMobile() {
               ) : classes.length === 0 ? (
                 <EmptyState
                   title="Nenhuma aula encontrada"
-                  description="Você ainda não está vinculado a eventos como participante ou responsável."
+                  description={isResponsible
+                    ? "Você ainda não é responsável por nenhuma aula."
+                    : "Você ainda não está vinculado a eventos como participante ou responsável."}
                 />
               ) : (
                 <div className="dashboard__classes-list">
@@ -120,7 +126,7 @@ function DashboardMobile() {
             </section>
           </div>
 
-          <section className="dashboard__shortcuts">
+          {!isResponsible && <section className="dashboard__shortcuts">
             <h2 className="dashboard__section-title dashboard__section-title--mobile-only">
               Atalhos
             </h2>
@@ -134,7 +140,7 @@ function DashboardMobile() {
                 />
               ))}
             </div>
-          </section>
+          </section>}
         </main>
       </div>
 

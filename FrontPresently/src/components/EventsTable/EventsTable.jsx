@@ -1,12 +1,13 @@
-import { MdDeleteOutline, MdEdit, MdInfoOutline } from "react-icons/md";
+import { MdDeleteOutline, MdEdit, MdInfoOutline, MdPeople } from "react-icons/md";
 import "./EventsTable.css";
 
-function EventsTable({ events, onView, onEdit, onDelete }) {
+function EventsTable({ events, onView, onParticipants, onEdit, onDelete }) {
   return (
     <div className="evt-table">
       <div className="evt-table__head">
         <span className="evt-table__col evt-table__col--name">Nome do evento</span>
         <span className="evt-table__col evt-table__col--action">Ver evento</span>
+        <span className="evt-table__col evt-table__col--action">Participantes</span>
         <span className="evt-table__col evt-table__col--action">Editar</span>
         <span className="evt-table__col evt-table__col--action">Excluir</span>
       </div>
@@ -23,6 +24,15 @@ function EventsTable({ events, onView, onEdit, onDelete }) {
               onClick={() => onView(event)}
             >
               <MdInfoOutline size={17} />
+            </button>
+
+            <button
+              type="button"
+              className="evt-icon-btn evt-icon-btn--neutral"
+              aria-label={`Ver participantes do evento ${event.name}`}
+              onClick={() => onParticipants(event)}
+            >
+              <MdPeople size={18} />
             </button>
 
             <button

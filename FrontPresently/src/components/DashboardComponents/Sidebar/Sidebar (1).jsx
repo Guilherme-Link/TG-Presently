@@ -11,7 +11,11 @@ import {
   MdKeyboardArrowDown,
 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
-import { sidebarNavAluno, sidebarNavConta } from "../../../data/dashboardData";
+import {
+  sidebarNavAluno,
+  sidebarNavConta,
+  sidebarNavResponsavel,
+} from "../../../data/dashboardData";
 import "./Sidebar.css";
 
 const ICONS = {
@@ -55,6 +59,14 @@ function Sidebar({ institution = "Fatec Indaiatuba" }) {
   const [isMobile, setIsMobile] = useState(() =>
     window.matchMedia("(max-width: 768px)").matches,
   );
+  const [isResponsible] = useState(() => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("presently_auth") ?? "null");
+      return currentUser?.roles?.includes("ROLE_RESPONSIBLE") ?? false;
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -143,7 +155,11 @@ function Sidebar({ institution = "Fatec Indaiatuba" }) {
           <MdKeyboardArrowDown size={18} />
         </button>
 
-        <NavGroup title="Aluno" items={sidebarNavAluno} onNavigate={closeMenu} />
+        <NavGroup
+          title={isResponsible ? "Responsável" : "Aluno"}
+          items={isResponsible ? sidebarNavResponsavel : sidebarNavAluno}
+          onNavigate={closeMenu}
+        />
         <NavGroup title="Conta" items={sidebarNavConta} onNavigate={closeMenu} />
       </div>
     </aside>

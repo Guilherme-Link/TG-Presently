@@ -55,3 +55,21 @@ export function listTodayAttendance(participantId, date = formatLocalDate()) {
     }
   ).then((response) => (Array.isArray(response) ? response.map(toAttendanceItem) : []));
 }
+
+export function listDailyAttendanceReport(date = formatLocalDate(), responsibleId) {
+  const params = new URLSearchParams({ date });
+
+  if (responsibleId) {
+    params.set("responsibleId", String(responsibleId));
+  }
+
+  return apiFetch(`/api/v1/attendanceReport/report?${params.toString()}`, {
+    method: "GET",
+  });
+}
+
+export function getAttendanceOccurrence(occurrenceId) {
+  return apiFetch(`/api/v1/attendanceReport/${occurrenceId}`, {
+    method: "GET",
+  });
+}
