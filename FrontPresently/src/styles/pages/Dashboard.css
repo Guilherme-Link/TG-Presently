@@ -142,6 +142,12 @@
   transform: translateY(-1px);
 }
 
+.dashboard__attendance-btn:disabled {
+  cursor: not-allowed;
+  background: #8d8d8d;
+  transform: none;
+}
+
 .dashboard__attendance-emoji {
   font-size: 14px;
 }

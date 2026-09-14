@@ -1,9 +1,11 @@
-import { MdArrowBackIosNew, MdCameraAlt, MdClose } from "react-icons/md";
+import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdRefresh } from "react-icons/md";
+import { IoCheckmarkSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { apiFetch } from "../utils/api.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
+import { listTodayAttendance } from "../services/attendanceApi.js";
 import "../styles/pages/MarcarPresencaMobile.css";
 
 function QRViewfinderGlyph() {
@@ -39,6 +41,13 @@ function formatLocalDateTime(date = new Date()) {
   ].join("T");
 }
 
+function formatLocalDate(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
 function MarcarPresencaMobile({
   lesson = {
     subject: "Engenharia de Software II",
@@ -49,7 +58,6 @@ function MarcarPresencaMobile({
   onBack,
   onOpenCamera,
 }) {
-  const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [attendanceState, setAttendanceState] = useState({
@@ -120,12 +128,31 @@ function MarcarPresencaMobile({
       userLongitude: location?.longitude ?? 0,
     };
 
-    const response = await apiFetch("/api/v1/qrcode/validate", {
+    await apiFetch("/api/v1/qrcode/validate", {
       method: "POST",
       body: JSON.stringify(payload),
     });
 
-    return response;
+    // A 2xx only acknowledges the validation endpoint. Confirm that the
+    // persisted attendance report contains this student's presence before
+    // allowing the success state to be shown.
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const attendances = await listTodayAttendance(participantId, formatLocalDate());
+      const isConfirmed = attendances.some(
+        (attendance) =>
+          String(attendance.eventId) === String(resolvedEventId) && attendance.present
+      );
+
+      if (isConfirmed) {
+        return;
+      }
+
+      if (attempt < 2) {
+        await wait(500);
+      }
+    }
+
+    throw new Error("Não foi possível confirmar o registro da presença.");
   }, [activeEventError, participantId, resolvedEventId]);
 
   useEffect(() => {
@@ -149,7 +176,6 @@ function MarcarPresencaMobile({
           }
 
           scanHandledRef.current = true;
-          setScanResult(decodedText);
           setCameraError(null);
           setAttendanceState({
             status: "validating",
@@ -199,9 +225,10 @@ function MarcarPresencaMobile({
 
   const navigate = useNavigate();
   const handleBack = onBack ?? (() => navigate(-1));
+  const isResultScreen =
+    attendanceState.status === "success" || attendanceState.status === "error";
 
   const handleOpenCamera = () => {
-    setScanResult(null);
     setCameraError(null);
     setAttendanceState({
       status: "idle",
@@ -230,32 +257,46 @@ function MarcarPresencaMobile({
         <span className="mp-mobile__topbar-title">Marcar Presença</span>
       </header>
 
-      <section className="mp-mobile__banner">
-        <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
-        <span className="mp-mobile__meta">
-          {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
-        </span>
-      </section>
+      {!isResultScreen && (
+        <section className="mp-mobile__banner">
+          <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
+          <span className="mp-mobile__meta">
+            {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
+          </span>
+        </section>
+      )}
 
       <main className="mp-mobile__body">
-        {attendanceState.status === "success" ? (
-          <section className="mp-mobile__success" aria-live="polite">
-            <div className="mp-mobile__success-mark" aria-hidden="true">
-              ✓
-            </div>
-            <h2 className="mp-mobile__status-title">Presença confirmada</h2>
-            <p className="mp-mobile__status-description">
-              {attendanceState.message}
-            </p>
-            <div className="mp-mobile__success-summary">
-              <strong>{resolvedLesson.subject}</strong>
-              <span>
+        {isResultScreen ? (
+          <section
+            className={`mp-mobile__result mp-mobile__result--${attendanceState.status}`}
+            aria-live="polite"
+          >
+            <div className="mp-mobile__result-event">
+              <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
+              <span className="mp-mobile__meta">
                 {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
               </span>
-              {scanResult ? (
-                <small>Código validado: {scanResult}</small>
-              ) : null}
             </div>
+            <div className="mp-mobile__result-mark" aria-hidden="true">
+              {attendanceState.status === "success" ? <IoCheckmarkSharp /> : <MdClose />}
+            </div>
+            <h2 className="mp-mobile__result-title">
+              {attendanceState.status === "success" ? "Presença confirmada!" : "Erro inesperado!"}
+            </h2>
+            <p className="mp-mobile__result-description">
+              {attendanceState.status === "success"
+                ? "Volte e aproveite sua aula :)"
+                : "Tente marcar sua presença novamente."}
+            </p>
+            <button
+              type="button"
+              className="mp-mobile__result-button"
+              onClick={attendanceState.status === "success" ? () => navigate("/dashboard") : handleOpenCamera}
+            >
+              {attendanceState.status === "success" ? <MdArrowBackIosNew size={14} /> : <MdRefresh size={18} />}
+              {attendanceState.status === "success" ? "Voltar" : "Tentar novamente"}
+            </button>
           </section>
         ) : (
           <>

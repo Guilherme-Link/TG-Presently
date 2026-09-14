@@ -65,3 +65,12 @@
 .bottom-nav__item--scan {
   color: var(--color-primary);
 }
+
+.bottom-nav__item--disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+.bottom-nav__item--disabled:hover .bottom-nav__icon {
+  transform: none;
+}

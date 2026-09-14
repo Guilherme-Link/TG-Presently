@@ -43,15 +43,14 @@ public class QrCodeController {
 
     // Valida uma leitura de código qr
     @PostMapping("/validate")
-    public HttpStatus register(@RequestBody QrCodeValidationDTO validationDTO) {
+    public ResponseEntity<Void> register(@RequestBody QrCodeValidationDTO validationDTO) {
+        if (validationService.validateCode(validationDTO)) {
+            return ResponseEntity.ok().build();
+        }
 
-        if(validationService.validateCode(validationDTO)){
-            return HttpStatus.OK;
-        }
-        else{
-            return HttpStatus.PRECONDITION_FAILED;
-        }
-    
+        // Returning HttpStatus as a response body still produces HTTP 200.  The
+        // client needs a real non-2xx status to distinguish a rejected code.
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
     }
 
-}   
+}

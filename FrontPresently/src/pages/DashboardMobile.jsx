@@ -9,6 +9,7 @@ import QuickAccessCard from "../components/DashboardComponents/QuickAccessCard/Q
 import { shortcuts } from "../data/dashboardData";
 import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
 import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
+import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import "../styles/pages/Dashboard.css";
 
 function AttendanceButtonIcon() {
@@ -47,8 +48,12 @@ function DashboardMobile() {
   const { items: attendanceItems } = useAttendanceToday(
     isResponsible ? null : currentUser?.participantId
   );
+  const { activeEvent } = useCurrentActiveStudentEvent();
   const confirmedAttendanceIds = new Set(
     attendanceItems.filter((item) => item.status === "confirmed").map((item) => String(item.eventId)),
+  );
+  const hasConfirmedActiveAttendance = Boolean(
+    activeEvent?.id && confirmedAttendanceIds.has(String(activeEvent.id))
   );
   const dateLabel = getCurrentDateLabel();
   const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
@@ -89,9 +94,10 @@ function DashboardMobile() {
                     type="button"
                     className="dashboard__attendance-btn"
                     onClick={() => navigate("/presenca")}
+                    disabled={hasConfirmedActiveAttendance}
                   >
                     <AttendanceButtonIcon />
-                    Marcar presença
+                    {hasConfirmedActiveAttendance ? "Presença registrada" : "Marcar presença"}
                   </button>
                 )}
               </div>
@@ -144,7 +150,7 @@ function DashboardMobile() {
         </main>
       </div>
 
-      <BottomNavigation activeId="dashboard" />
+      <BottomNavigation activeId="dashboard" scanDisabled={hasConfirmedActiveAttendance} />
     </div>
   );
 }
