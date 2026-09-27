@@ -2,16 +2,20 @@
   display: flex;
   flex-direction: column;
   gap: 0;
-  width: clamp(240px, 20vw, 280px);
+  width: var(--sidebar-width);
   flex-shrink: 0;
-  background: linear-gradient(165deg, var(--color-primary) 0%, var(--color-primary) 55%, var(--color-primary-dark) 150%);
+  background: var(--color-primary);
   color: #fff;
   padding: 24px 18px;
   min-height: 100vh;
   position: sticky;
   top: 0;
   overflow: hidden;
-  transition: height 0.28s ease, transform 0.28s ease, box-shadow 0.28s ease;
+  box-sizing: border-box;
+  transition:
+    height 0.28s ease,
+    transform 0.28s ease,
+    box-shadow 0.28s ease;
 }
 
 .sidebar-admin * {
@@ -27,6 +31,7 @@
   flex-direction: column;
   gap: 22px;
   min-height: 0;
+  box-sizing: border-box;
 }
 
 .sidebar-admin__brand,
@@ -59,27 +64,6 @@
 
 .sidebar-admin__toggle {
   display: none;
-}
-
-.sidebar-admin__institution {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  border: none;
-  color: #fff;
-  font-family: var(--font-family);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.sidebar-admin__institution:hover {
-  background: rgba(255, 255, 255, 0.22);
 }
 
 .sidebar-admin__group {
@@ -160,7 +144,7 @@
     width: 100vw;
     height: 72px;
     min-height: 0;
-    padding: 0;
+    padding: 2px 20px;
     z-index: 1000;
     border-radius: 0;
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
@@ -178,6 +162,18 @@
     min-height: 72px;
     padding: 0 18px 0 16px;
     flex-shrink: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .sidebar-admin__brand {
+    min-width: 0;
+  }
+
+  .sidebar-admin__logo-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .sidebar-admin__toggle {
@@ -203,8 +199,13 @@
     visibility: hidden;
     pointer-events: none;
     transform: translateY(-8px);
-    transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
-    overflow: hidden;
+    transition:
+      opacity 0.22s ease,
+      transform 0.22s ease,
+      visibility 0.22s ease;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .sidebar-admin--open .sidebar-admin__menu {
@@ -221,20 +222,29 @@
   .sidebar-admin__group {
     min-height: 0;
     gap: 8px;
+    align-items: center;
+    width: 100%;
+  }
+
+  .sidebar-admin__group-title {
+    text-align: center;
   }
 
   .sidebar-admin__nav {
     min-height: 0;
     gap: 6px;
-  }
-
-  .sidebar-admin__institution {
+    align-items: center;
     width: 100%;
-    padding: 12px 14px;
   }
 
   .sidebar-admin__link {
     min-height: 44px;
+    justify-content: center;
+    width: min(100%, 360px);
+  }
+
+  .sidebar-admin__link-label {
+    flex: 0 1 auto;
   }
 }
 

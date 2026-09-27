@@ -8,7 +8,6 @@ import {
   MdLogout,
   MdMenu,
   MdClose,
-  MdKeyboardArrowDown,
 } from "react-icons/md";
 import { NavLink } from "react-router-dom";
 import {
@@ -54,14 +53,16 @@ function NavGroup({ title, items, onNavigate }) {
   );
 }
 
-function Sidebar({ institution = "Fatec Indaiatuba" }) {
+function Sidebar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(() =>
-    window.matchMedia("(max-width: 768px)").matches,
+  const [isMobile, setIsMobile] = useState(
+    () => window.matchMedia("(max-width: 768px)").matches,
   );
   const [isResponsible] = useState(() => {
     try {
-      const currentUser = JSON.parse(localStorage.getItem("presently_auth") ?? "null");
+      const currentUser = JSON.parse(
+        localStorage.getItem("presently_auth") ?? "null",
+      );
       return currentUser?.roles?.includes("ROLE_RESPONSIBLE") ?? false;
     } catch {
       return false;
@@ -126,7 +127,10 @@ function Sidebar({ institution = "Fatec Indaiatuba" }) {
   }
 
   return (
-    <aside className={`sidebar${isMenuOpen ? " sidebar--open" : ""}`} aria-label="Menu principal">
+    <aside
+      className={`sidebar${isMenuOpen ? " sidebar--open" : ""}`}
+      aria-label="Menu principal"
+    >
       <div className="sidebar__mobile-header">
         <div className="sidebar__brand">
           <span className="sidebar__logo-mark">P</span>
@@ -150,17 +154,16 @@ function Sidebar({ institution = "Fatec Indaiatuba" }) {
           <span className="sidebar__logo-text">presently</span>
         </div>
 
-        <button type="button" className="sidebar__institution">
-          <span>{institution}</span>
-          <MdKeyboardArrowDown size={18} />
-        </button>
-
         <NavGroup
           title={isResponsible ? "Responsável" : "Aluno"}
           items={isResponsible ? sidebarNavResponsavel : sidebarNavAluno}
           onNavigate={closeMenu}
         />
-        <NavGroup title="Conta" items={sidebarNavConta} onNavigate={closeMenu} />
+        <NavGroup
+          title="Conta"
+          items={sidebarNavConta}
+          onNavigate={closeMenu}
+        />
       </div>
     </aside>
   );

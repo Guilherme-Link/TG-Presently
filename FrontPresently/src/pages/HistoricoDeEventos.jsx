@@ -12,6 +12,7 @@ import { listDailyAttendanceReport, getAttendanceOccurrence } from "../services/
 import { listEvents, listResponsibleEvents } from "../services/eventsApi.js";
 import { apiFetch } from "../utils/api.js";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
+import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
 import "../styles/theme.css";
 import "../styles/pages/Dashboard.css";
 import "../styles/pages/HistoricoDeEventos.css";
@@ -176,6 +177,14 @@ export default function HistoricoDeEventos() {
   const [sortAscending, setSortAscending] = useState(false);
   const [page, setPage] = useState(1);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isAdminViewer, setIsAdminViewer] = useState(() => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("presently_auth") ?? "null");
+      return currentUser?.roles?.includes("ROLE_ADMIN") ?? false;
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     let cancelled = false;
@@ -185,6 +194,7 @@ export default function HistoricoDeEventos() {
         const isAdmin = currentUser?.roles?.includes("ROLE_ADMIN");
         const isResponsible = currentUser?.roles?.includes("ROLE_RESPONSIBLE");
         if (!isAdmin && !isResponsible) throw new Error("forbidden");
+        setIsAdminViewer(Boolean(isAdmin));
 
         const sourceEvents = await (isAdmin ? listEvents() : listResponsibleEvents(currentUser.participantId));
         const eventList = Array.isArray(sourceEvents) ? sourceEvents : [];
@@ -213,19 +223,21 @@ export default function HistoricoDeEventos() {
   const totalPages = Math.max(1, Math.ceil(filteredEvents.length / PAGE_SIZE));
   const visibleEvents = filteredEvents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  useEffect(() => { setPage(1); }, [search, sortAscending]);
-
   return (
     <div className="dashboard hde-page">
-      <Sidebar />
+      {isAdminViewer ? (
+        <SidebarAdmin activeItem="historico-eventos-link" />
+      ) : (
+        <Sidebar />
+      )}
       <div className="dashboard__content">
       <main className="hde">
       <header className="hde-header"><span className="hde-breadcrumb">Início &gt; Histórico de eventos</span><h1 className="hde-title">Histórico de eventos</h1></header>
       <section className="hde-card" aria-busy={loading}>
-        <div className="hde-card__toolbar"><h2 className="hde-card__title">Histórico de eventos</h2><label className="hde-search"><MdSearch size={16} aria-hidden="true" /><input type="search" placeholder="Pesquisar evento" value={search} onChange={(changeEvent) => setSearch(changeEvent.target.value)} disabled={loading || Boolean(error)} /></label></div>
+        <div className="hde-card__toolbar"><h2 className="hde-card__title">Histórico de eventos</h2><label className="hde-search"><MdSearch size={16} aria-hidden="true" /><input type="search" placeholder="Pesquisar evento" value={search} onChange={(changeEvent) => { setSearch(changeEvent.target.value); setPage(1); }} disabled={loading || Boolean(error)} /></label></div>
         {loading ? <div className="hde-state">Carregando histórico...</div>
           : error ? <div className="hde-state hde-state--error" role="alert">{error}</div>
-            : <><div className="hde-table"><div className="hde-table__head"><span className="hde-table__col">Nome</span><button type="button" className="hde-table__sort" onClick={() => setSortAscending((value) => !value)}>Data <MdSwapVert size={14} /></button><span className="hde-table__col hde-table__col--action">Verificar</span></div><div className="hde-table__body">
+            : <><div className="hde-table"><div className="hde-table__head"><span className="hde-table__col">Nome</span><button type="button" className="hde-table__sort" onClick={() => { setSortAscending((value) => !value); setPage(1); }}>Data <MdSwapVert size={14} /></button><span className="hde-table__col hde-table__col--action">Verificar</span></div><div className="hde-table__body">
               {visibleEvents.map((event) => <div key={event.occurrenceId} className="hde-table__row"><span className="hde-table__name">{event.eventName ?? "Evento"}</span><span className="hde-table__date">{formatDate(event.eventDate)}</span><button type="button" className="hde-icon-btn" aria-label={`Verificar participantes de ${event.eventName}`} onClick={() => setSelectedEvent(event)}><MdDescription size={17} /></button></div>)}
               {!visibleEvents.length && <p className="hde-table__empty">Nenhum evento com presença registrada foi encontrado.</p>}
             </div></div>{totalPages > 1 && <div className="hde-pagination"><button type="button" className="hde-pagination__nav" onClick={() => setPage((value) => value - 1)} disabled={page === 1}><MdChevronLeft size={16} />Anterior</button><span className="hde-pagination__count">Página {page} de {totalPages}</span><button type="button" className="hde-pagination__nav" onClick={() => setPage((value) => value + 1)} disabled={page === totalPages}>Próximo<MdChevronRight size={16} /></button></div>}</>}
