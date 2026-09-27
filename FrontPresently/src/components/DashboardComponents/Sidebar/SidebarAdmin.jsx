@@ -10,7 +10,6 @@ import {
   MdLogout,
   MdMenu,
   MdClose,
-  MdKeyboardArrowDown,
 } from "react-icons/md";
 import { adminSidebarSections } from "../../../data/dashboardDataAdmin";
 import "./SidebarAdmin.css";
@@ -56,7 +55,6 @@ function NavGroup({ title, items, activeItem, onNavigate }) {
 }
 
 function SidebarAdmin({
-  institution = "Fatec Indaiatuba",
   sections = adminSidebarSections,
   activeItem = "painel-geral-link",
 }) {
@@ -152,11 +150,6 @@ function SidebarAdmin({
           <span className="sidebar-admin__logo-mark">P</span>
           <span className="sidebar-admin__logo-text">presently admin</span>
         </div>
-
-        <button type="button" className="sidebar-admin__institution">
-          <span>{institution}</span>
-          <MdKeyboardArrowDown size={18} />
-        </button>
 
         {sections.map((section) => (
           <NavGroup

@@ -44,7 +44,9 @@
   gap: 12px;
 }
 
-.header__icon-btn--logout { color: var(--color-primary); }
+.header__icon-btn--logout {
+  color: var(--color-primary);
+}
 
 @media (min-width: 1024px) {
   .dashboard__section-title--mobile-only {
@@ -133,7 +135,9 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: background var(--transition-fast), transform var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast);
   white-space: nowrap;
 }
 
@@ -266,31 +270,6 @@
   overflow-x: hidden;
 }
 
-.dashboard--desktop .sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(16px, 1.8vw, 22px);
-  width: clamp(210px, 18vw, var(--sidebar-width));
-  flex-shrink: 0;
-  background: var(--color-primary);
-  color: #fff;
-  padding: clamp(18px, 2vw, 24px) clamp(14px, 1.6vw, 20px);
-  min-height: 100vh;
-}
-
-.dashboard--desktop .sidebar__logo-text {
-  font-size: clamp(14px, 1.25vw, 17px);
-}
-
-.dashboard--desktop .sidebar__institution,
-.dashboard--desktop .sidebar__link {
-  font-size: clamp(11.5px, 1vw, 13.5px);
-}
-
-.dashboard--desktop .sidebar__link {
-  gap: clamp(8px, 1vw, 12px);
-  padding: 10px clamp(9px, 1vw, 12px);
-}
 
 .dashboard--desktop .header--desktop {
   display: flex;
@@ -412,39 +391,6 @@
 @media (max-width: 1023px) {
   .dashboard--desktop {
     flex-direction: column;
-  }
-
-  .dashboard--desktop .sidebar {
-    width: 100%;
-    min-height: auto;
-    flex-direction: row;
-    align-items: flex-start;
-    flex-wrap: wrap;
-    gap: 14px;
-    padding: 16px 20px;
-  }
-
-  .dashboard--desktop .sidebar__brand {
-    flex: 0 0 auto;
-  }
-
-  .dashboard--desktop .sidebar__institution {
-    flex: 1 1 220px;
-  }
-
-  .dashboard--desktop .sidebar__group {
-    flex: 1 1 300px;
-    min-width: 0;
-  }
-
-  .dashboard--desktop .sidebar__nav {
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .dashboard--desktop .sidebar__link {
-    flex: 1 1 130px;
-    justify-content: center;
   }
 
   .dashboard--desktop .header--desktop {

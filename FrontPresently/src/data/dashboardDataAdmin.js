@@ -42,10 +42,10 @@ export const adminSidebarSections = [
         to: "dashboardAdmin",
       },
       {
-        id: "detalhes-falta-link",
-        label: "Detalhes de falta",
+        id: "historico-eventos-link",
+        label: "Histórico de eventos",
         icon: "report",
-        to: "#detalhes-falta",
+        to: "/relatorio",
       },
       {
         id: "tendencias-link",

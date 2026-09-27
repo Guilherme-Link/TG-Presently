@@ -22,114 +22,11 @@
   box-sizing: border-box;
 }
 
-/* ---------- Sidebar ---------- */
-.mpd-sidebar {
-  width: 250px;
-  flex-shrink: 0;
-  background: var(--mpd-red);
-  color: #fff;
-  padding: 22px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.sidebar {
+  overflow-x: hidden;
+  padding: 15px 25px;
 }
 
-.mpd-sidebar__brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 2px 4px 6px;
-}
-
-.mpd-sidebar__logo-mark {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: #fff;
-  color: var(--mpd-red);
-  font-weight: 700;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mpd-sidebar__logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  font-style: italic;
-}
-
-.mpd-sidebar__institution {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  border: none;
-  color: #fff;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 500;
-  padding: 9px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.18s ease;
-}
-
-.mpd-sidebar__institution:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.mpd-sidebar__group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.mpd-sidebar__group-title {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
-  padding: 0 10px;
-}
-
-.mpd-sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.mpd-sidebar__link {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 9px 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.88);
-  text-decoration: none;
-  font-size: 13px;
-  font-weight: 500;
-  transition:
-    background 0.18s ease,
-    color 0.18s ease;
-}
-
-.mpd-sidebar__link:hover {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-.mpd-sidebar__link--active {
-  background: #fff;
-  color: var(--mpd-red);
-  font-weight: 600;
-}
-
-.mpd-sidebar__link--active:hover {
-  background: #fff;
-}
 
 /* ---------- Content ---------- */
 .mpd-content {

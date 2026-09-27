@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
-import { MdArrowBackIosNew } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight, MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
@@ -12,8 +11,7 @@ import "../styles/theme.css";
 import "../styles/pages/Dashboard.css";
 import "../styles/pages/GradeDeAulas.css";
 
-const VISIBLE_DAYS = 3;
-const WEEKDAY_NAMES = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+const WEEKDAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 
 function parseLocalDate(value) {
   if (!value) return null;
@@ -22,16 +20,7 @@ function parseLocalDate(value) {
 }
 
 function formatDate(date) {
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-function startOfWeek(date) {
-  const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const day = result.getDay();
-  const daysFromMonday = day === 0 ? 6 : day - 1;
-  result.setDate(result.getDate() - daysFromMonday);
-  return result;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
 }
 
 function isEventScheduledOn(event, date) {
@@ -39,7 +28,6 @@ function isEventScheduledOn(event, date) {
   const endDate = parseLocalDate(event?.endDate);
   if (!startDate || !endDate || date < startDate || date > endDate) return false;
   if (event.eventType !== "RECURRING") return true;
-
   const intervalDays = Number(event.intervalDays);
   if (!Number.isFinite(intervalDays) || intervalDays <= 0) return false;
   const startUtc = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
@@ -51,66 +39,112 @@ function formatTime(value) {
   return value ? String(value).slice(0, 5) : "";
 }
 
-function getDateLabel(date) {
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit" }).format(date);
+function formatLongDate(date) {
+  return new Intl.DateTimeFormat("pt-BR", { weekday: "long", day: "2-digit", month: "long" }).format(date);
 }
 
-function buildDays(weekStart, events, participantsById, ambientsById) {
-  return WEEKDAY_NAMES.map((label, index) => {
-    const date = new Date(weekStart);
-    date.setDate(date.getDate() + index);
-    const slots = events
-      .filter((event) => isEventScheduledOn(event, date))
-      .map((event) => ({
-        id: `${event.id}-${formatDate(date)}`,
-        subject: event.name ?? "Evento",
-        time: formatTime(event.startTime) && formatTime(event.endTime)
-          ? `${formatTime(event.startTime)} - ${formatTime(event.endTime)}`
-          : formatTime(event.startTime) || formatTime(event.endTime) || "Horário não informado",
-        room: ambientsById.get(String(event.ambientId ?? ""))?.name ?? "Sala não informada",
-        professor: participantsById.get(String(event.responsibleId ?? ""))?.name ?? "Responsável não informado",
-        startTime: String(event.startTime ?? ""),
-      }))
-      .sort((left, right) => left.startTime.localeCompare(right.startTime));
+function getEventsForDate(date, events, participantsById, ambientsById) {
+  return events
+    .filter((event) => isEventScheduledOn(event, date))
+    .map((event) => ({
+      id: `${event.id}-${formatDate(date)}`,
+      subject: event.name ?? "Aula",
+      time: formatTime(event.startTime) && formatTime(event.endTime)
+        ? `${formatTime(event.startTime)} – ${formatTime(event.endTime)}`
+        : formatTime(event.startTime) || formatTime(event.endTime) || "Horário não informado",
+      room: ambientsById.get(String(event.ambientId ?? ""))?.name,
+      professor: participantsById.get(String(event.responsibleId ?? ""))?.name,
+      startTime: String(event.startTime ?? ""),
+    }))
+    .sort((a, b) => a.startTime.localeCompare(b.startTime));
+}
 
-    return { id: formatDate(date), label, dateLabel: getDateLabel(date), slots };
+function buildCalendarDays(monthDate) {
+  const firstDay = new Date(monthDate.getFullYear(), monthDate.getMonth(), 1);
+  const gridStart = new Date(firstDay);
+  gridStart.setDate(firstDay.getDate() - firstDay.getDay());
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(gridStart);
+    date.setDate(gridStart.getDate() + index);
+    return date;
   });
 }
 
-function DayColumn({ day }) {
+function Calendar({ monthDate, selectedDate, today, events, participantsById, ambientsById, onSelectDate, onMoveMonth }) {
+  const monthLabel = new Intl.DateTimeFormat("pt-BR", { month: "long", year: "numeric" }).format(monthDate);
   return (
-    <div className="gda-day">
-      <div className="gda-day__header">
-        <span>{day.label}</span>
-        <small>{day.dateLabel}</small>
+    <section className="gda-calendar" aria-label="Calendário mensal">
+      <div className="gda-calendar__heading">
+        <button type="button" className="gda-calendar__arrow" onClick={() => onMoveMonth(-1)} aria-label="Mês anterior"><MdChevronLeft /></button>
+        <h2>{monthLabel}</h2>
+        <button type="button" className="gda-calendar__arrow" onClick={() => onMoveMonth(1)} aria-label="Próximo mês"><MdChevronRight /></button>
       </div>
-      <div className="gda-day__slots">
-        {day.slots.length ? day.slots.map((slot) => (
-          <div key={slot.id} className="gda-slot" title={`${slot.subject} · ${slot.room}`}>
-            <strong>{slot.subject}</strong>
-            <span>{slot.time}</span>
-            <small>{slot.room}</small>
-          </div>
-        )) : <div className="gda-slot gda-slot--empty">Nenhuma aula</div>}
+      <div className="gda-calendar__grid">
+        {WEEKDAYS.map((day) => <span className="gda-calendar__weekday" key={day}>{day}</span>)}
+        {buildCalendarDays(monthDate).map((date) => {
+          const dateKey = formatDate(date);
+          const dayEvents = getEventsForDate(date, events, participantsById, ambientsById);
+          const selected = dateKey === formatDate(selectedDate);
+          return (
+            <button
+              type="button"
+              key={dateKey}
+              className={`gda-calendar__day${date.getMonth() !== monthDate.getMonth() ? " is-outside" : ""}${selected ? " is-selected" : ""}${dateKey === formatDate(today) ? " is-today" : ""}${dayEvents.length ? " has-events" : ""}`}
+              onClick={() => onSelectDate(date)}
+              aria-label={`${formatLongDate(date)}${dayEvents.length ? `, ${dayEvents.length} ${dayEvents.length === 1 ? "aula" : "aulas"}` : ""}`}
+              aria-pressed={selected}
+            >
+              <span>{date.getDate()}</span>
+              {dayEvents.length > 0 && <i aria-hidden="true" />}
+            </button>
+          );
+        })}
       </div>
-    </div>
+    </section>
+  );
+}
+
+function WeeklyUpcoming({ selectedDate, events, participantsById, ambientsById }) {
+  const upcoming = Array.from({ length: 7 }, (_, index) => {
+    const date = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate() + index);
+    return { date, items: getEventsForDate(date, events, participantsById, ambientsById) };
+  }).flatMap(({ date, items }) => items.map((item) => ({ ...item, date })));
+
+  return (
+    <section className="gda-upcoming" aria-live="polite">
+      <div className="gda-upcoming__heading">
+        <div><span className="gda-eyebrow">Sua semana</span><h2>Próximas aulas</h2></div>
+        <span className="gda-upcoming__range">7 dias a partir de {new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(selectedDate)}</span>
+      </div>
+      {upcoming.length ? (
+        <ul className="gda-upcoming__list">
+          {upcoming.map((item) => (
+            <li className="gda-upcoming__item" key={item.id}>
+              <span className="gda-upcoming__marker" aria-hidden="true" />
+              <div className="gda-upcoming__date"><strong>{new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(item.date).replace(".", "")}</strong><span>{new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(item.date)}</span></div>
+              <div className="gda-upcoming__details"><strong>{item.subject}</strong><span>{item.room || item.professor || "Aula"}</span></div>
+              <span className="gda-upcoming__time">{item.time}</span>
+            </li>
+          ))}
+        </ul>
+      ) : <div className="gda-upcoming__empty">Nenhuma aula nos próximos 7 dias.</div>}
+    </section>
   );
 }
 
 export default function GradeDeAulas({ mobile = false }) {
   const navigate = useNavigate();
+  const today = useMemo(() => new Date(), []);
   const [events, setEvents] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [ambients, setAmbients] = useState([]);
-  const [weekStart, setWeekStart] = useState(() => startOfWeek(new Date()));
-  const [startIndex, setStartIndex] = useState(0);
+  const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const [monthDate, setMonthDate] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [isResponsible, setIsResponsible] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-
     async function load() {
       setLoading(true);
       setError("");
@@ -118,18 +152,13 @@ export default function GradeDeAulas({ mobile = false }) {
         const me = await apiFetch("/security/v1/me", { method: "GET" });
         if (!me?.participantId) throw new Error("missing-participant");
         const userIsResponsible = me.roles?.includes("ROLE_RESPONSIBLE") ?? false;
-
         const [eventResponse, participantsResponse, ambientsResponse] = await Promise.all([
-          userIsResponsible
-            ? listResponsibleEvents(me.participantId)
-            : listParticipatingEvents(me.participantId),
+          userIsResponsible ? listResponsibleEvents(me.participantId) : listParticipatingEvents(me.participantId),
           listParticipants(),
           listAmbients(),
         ]);
-
         if (cancelled) return;
         setEvents(Array.isArray(eventResponse) ? eventResponse : []);
-        setIsResponsible(userIsResponsible);
         setParticipants(Array.isArray(participantsResponse) ? participantsResponse : []);
         setAmbients(Array.isArray(ambientsResponse) ? ambientsResponse : []);
       } catch {
@@ -138,23 +167,22 @@ export default function GradeDeAulas({ mobile = false }) {
         if (!cancelled) setLoading(false);
       }
     }
-
     void load();
     return () => { cancelled = true; };
   }, []);
 
   const participantsById = useMemo(() => new Map(participants.map((item) => [String(item.id), item])), [participants]);
   const ambientsById = useMemo(() => new Map(ambients.map((item) => [String(item.id), item])), [ambients]);
-  const days = useMemo(() => buildDays(weekStart, events, participantsById, ambientsById), [weekStart, events, participantsById, ambientsById]);
-  const visibleDays = days.slice(startIndex, startIndex + VISIBLE_DAYS);
 
-  function moveWeek(amount) {
-    setWeekStart((current) => {
-      const next = new Date(current);
-      next.setDate(next.getDate() + amount * 7);
-      return next;
-    });
-    setStartIndex(0);
+  function moveMonth(amount) {
+    setMonthDate((current) => new Date(current.getFullYear(), current.getMonth() + amount, 1));
+  }
+
+  function selectDate(date) {
+    setSelectedDate(date);
+    if (date.getMonth() !== monthDate.getMonth() || date.getFullYear() !== monthDate.getFullYear()) {
+      setMonthDate(new Date(date.getFullYear(), date.getMonth(), 1));
+    }
   }
 
   return (
@@ -163,21 +191,14 @@ export default function GradeDeAulas({ mobile = false }) {
       <div className="dashboard__content">
         <main className="gda">
           {mobile ? (
-            <header className="gda-mobile-topbar">
-              <button type="button" onClick={() => navigate(-1)} aria-label="Voltar"><MdArrowBackIosNew size={15} /></button>
-              <span>Grade de aulas</span>
-            </header>
+            <header className="gda-mobile-topbar"><button type="button" onClick={() => navigate(-1)} aria-label="Voltar"><MdArrowBackIosNew size={15} /></button><span>Grade de aulas</span></header>
           ) : (
-            <header className="gda-header">
-              <span className="gda-breadcrumb">Início &gt; Grade de aulas</span>
-              <div className="gda-title-row"><h1 className="gda-title">Grade de aulas</h1><div className="gda-week-actions"><button type="button" onClick={() => moveWeek(-1)}>Semana anterior</button><button type="button" onClick={() => { setWeekStart(startOfWeek(new Date())); setStartIndex(0); }}>Semana atual</button><button type="button" onClick={() => moveWeek(1)}>Próxima semana</button></div></div>
-            </header>
+            <header className="gda-header"><span className="gda-breadcrumb">Início &gt; Grade de aulas</span><h1 className="gda-title">Grade de aulas</h1></header>
           )}
-          {loading ? <div className="gda-state">Carregando sua grade...</div> : error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : !events.length ? <div className="gda-state">{isResponsible ? "Nenhuma aula encontrada sob sua responsabilidade." : "Nenhuma aula encontrada para este aluno."}</div> : (
-            <div className="gda-carousel">
-              <button type="button" className="gda-nav" onClick={() => setStartIndex((index) => Math.max(index - 1, 0))} disabled={startIndex === 0} aria-label="Dias anteriores"><MdChevronLeft size={22} /></button>
-              <div className="gda-card"><div className="gda-grid" style={{ "--gda-columns": VISIBLE_DAYS }}>{visibleDays.map((day) => <DayColumn key={day.id} day={day} />)}</div></div>
-              <button type="button" className="gda-nav" onClick={() => setStartIndex((index) => Math.min(index + 1, days.length - VISIBLE_DAYS))} disabled={startIndex + VISIBLE_DAYS >= days.length} aria-label="Próximos dias"><MdChevronRight size={22} /></button>
+          {error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : (
+            <div className="gda-content">
+              <Calendar monthDate={monthDate} selectedDate={selectedDate} today={today} events={events} participantsById={participantsById} ambientsById={ambientsById} onSelectDate={selectDate} onMoveMonth={moveMonth} />
+              {loading ? <div className="gda-state">Carregando suas aulas...</div> : <WeeklyUpcoming selectedDate={selectedDate} events={events} participantsById={participantsById} ambientsById={ambientsById} />}
             </div>
           )}
         </main>

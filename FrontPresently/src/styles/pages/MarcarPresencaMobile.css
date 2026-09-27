@@ -17,33 +17,6 @@
   box-sizing: border-box;
 }
 
-/* ---------- Top bar ---------- */
-.mp-mobile__topbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 16px 18px;
-  background: #E9E9E9;
-}
-
-.mp-mobile__back {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border: none;
-  background: transparent;
-  color: var(--mp-text);
-  cursor: pointer;
-  padding: 0;
-}
-
-.mp-mobile__topbar-title {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--mp-text);
-}
 
 /* ---------- Lesson banner ---------- */
 .mp-mobile__banner {
