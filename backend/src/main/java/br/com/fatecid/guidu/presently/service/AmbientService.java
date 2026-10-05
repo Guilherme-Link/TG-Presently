@@ -39,11 +39,11 @@ public class AmbientService {
     }
 
     // Encontra um ambiente pelo ID
-    public AmbientDTO findById(Long id) {
+    public Ambient findById(Long id) {
         Ambient ambient = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Ambiente não encontrado."));
 
-        return new AmbientDTO(ambient);
+        return ambient;
     }
 
     // Verifica se a latitude a longitude fornecidas estão dentro de um determinado ambiente
