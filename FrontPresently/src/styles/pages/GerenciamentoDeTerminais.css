@@ -341,7 +341,7 @@
 }
 
 .gt-btn--primary:hover {
-  background: var(--gt-red-dark);
+  background: #7B1F10;
   transform: translateY(-1px);
 }
 
@@ -363,7 +363,10 @@
 }
 
 .gt-btn--outline:hover {
-  background: #FDECEB;
+  background: var(--gt-red-dark);
+  border-color: var(--gt-red-dark);
+  color: var(--gt-white);
+  transform: translateY(-1px);
 }
 
 .gt-btn--small {
