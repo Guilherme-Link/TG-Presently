@@ -17,7 +17,6 @@
   box-sizing: border-box;
 }
 
-
 /* ---------- Lesson banner ---------- */
 .mp-mobile__banner {
   display: flex;
@@ -265,6 +264,9 @@
   display: grid;
   place-items: center;
   background: #fff;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
   color: var(--mp-red);
   animation: mp-mobile-pop-in 280ms ease-out both;
 }
@@ -272,6 +274,9 @@
 .mp-mobile__result-mark svg {
   width: 66%;
   height: 66%;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
   stroke-width: 1.35;
 }
 
@@ -285,6 +290,17 @@
   margin: 2px 0 12px;
   font-size: 11px;
   font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.mp-mobile__result--error .mp-mobile__result-description--summary {
+  display: none;
+}
+
+.mp-mobile__result-description--detail {
+  max-width: 420px;
+  overflow-wrap: anywhere;
 }
 
 .mp-mobile__result-button {

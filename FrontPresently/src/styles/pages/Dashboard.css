@@ -244,6 +244,10 @@
   gap: 14px;
 }
 
+.dashboard--mobile-responsible .dashboard__stats-grid > * {
+  display: flex;
+}
+
 .dashboard--mobile .dashboard__body-grid {
   grid-template-columns: 1fr;
   gap: 20px;

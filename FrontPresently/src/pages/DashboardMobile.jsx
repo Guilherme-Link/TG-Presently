@@ -57,9 +57,16 @@ function DashboardMobile() {
   );
   const dateLabel = getCurrentDateLabel();
   const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
+  const mobileShortcuts = isResponsible
+    ? [
+        { id: "presenca", label: "Verificar presença", icon: "check" },
+        { id: "historico-eventos", label: "Histórico de eventos", icon: "report" },
+        { id: "grade-aulas", label: "Grade de aulas", icon: "calendar" },
+      ]
+    : shortcuts;
 
   return (
-    <div className="dashboard dashboard--mobile">
+    <div className={`dashboard dashboard--mobile${isResponsible ? " dashboard--mobile-responsible" : ""}`}>
       <div className="dashboard__content">
         <Header
           userName={userName}
@@ -132,21 +139,27 @@ function DashboardMobile() {
             </section>
           </div>
 
-          {!isResponsible && <section className="dashboard__shortcuts">
+          <section className="dashboard__shortcuts">
             <h2 className="dashboard__section-title dashboard__section-title--mobile-only">
-              Atalhos
+              {isResponsible ? "Acessos rápidos" : "Atalhos"}
             </h2>
             <div className="dashboard__shortcuts-grid">
-              {shortcuts.map((shortcut) => (
+              {mobileShortcuts.map((shortcut) => (
                 <QuickAccessCard
                   key={shortcut.id}
                   label={shortcut.label}
                   icon={shortcut.icon}
-                  onClick={() => navigate(shortcut.id === "relatorio-faltas" ? "/relatorio" : "/grade")}
+                  onClick={() => navigate(
+                    shortcut.id === "presenca"
+                      ? "/presenca"
+                      : shortcut.id === "historico-eventos" || shortcut.id === "relatorio-faltas"
+                        ? "/relatorio"
+                        : "/grade"
+                  )}
                 />
               ))}
             </div>
-          </section>}
+          </section>
         </main>
       </div>
 

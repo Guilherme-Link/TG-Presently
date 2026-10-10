@@ -1,0 +1,129 @@
+.page-header--mobile-only {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .gds-content,
+  .gua-content,
+  .el-content,
+  .cee-content,
+  .dashboard-admin__content,
+  .dashboard:has(> .sidebar-admin) > .dashboard__content {
+    padding-top: var(--mobile-nav-height, 72px);
+  }
+
+  header.page-header[class] {
+    display: flex;
+    min-height: 100px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    width: 100%;
+    margin: 0;
+    padding: 16px 18px;
+    color: #2f2f2f;
+    background: #fff;
+    border-bottom: 1px solid #e7e7e7;
+    box-sizing: border-box;
+  }
+
+  header.page-header[class] .page-header__breadcrumb {
+    color: #8a8a8a;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+
+  header.page-header[class] .page-header__title {
+    margin: 0;
+    color: #ff1e1e;
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  header.page-header--with-back[class] {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .page-header__back {
+    display: inline-flex;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #2f2f2f;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+
+  .page-header__copy {
+    min-width: 0;
+  }
+
+  header.page-header--mobile-only {
+    display: flex;
+  }
+
+  .hde header.page-header[class] {
+    margin: -24px -32px 18px;
+    width: calc(100% + 64px);
+  }
+
+  .rfa header.page-header[class] {
+    margin: -20px -18px 14px;
+    width: calc(100% + 36px);
+  }
+
+  .vp header.page-header[class] {
+    margin: -24px -32px 18px;
+    width: calc(100% + 64px);
+  }
+
+  .gt header.page-header[class] {
+    margin: 0 -32px 18px;
+    width: calc(100% + 64px);
+  }
+
+  .gt {
+    padding: 0 32px 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .vp .page-header {
+    margin: -24px -16px 18px;
+    width: calc(100% + 32px);
+  }
+
+  .hde header.page-header[class] {
+    margin: -18px -16px 18px;
+    width: calc(100% + 32px);
+  }
+
+  .rfa header.page-header[class] {
+    margin-right: -18px;
+    margin-left: -18px;
+    width: calc(100% + 36px);
+  }
+
+  .gt header.page-header[class] {
+    margin: 0 -18px 18px;
+    width: calc(100% + 36px);
+  }
+
+  .gt {
+    padding: 0 18px 18px;
+  }
+
+  .vp header.page-header[class] {
+    margin-right: -12px;
+    margin-left: -12px;
+    width: calc(100% + 24px);
+  }
+}

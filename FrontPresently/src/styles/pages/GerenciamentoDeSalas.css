@@ -206,6 +206,206 @@
   min-height: 108px;
 }
 
+.gds-location-field {
+  margin: 0 0 18px;
+  padding: 14px;
+  border: 1px solid var(--gds-border);
+  border-radius: 12px;
+  background: #fcfcfc;
+}
+
+.gds-location-field__help,
+.gds-location-field__saved {
+  margin: -2px 0 12px;
+  color: var(--gds-text-secondary);
+  font-size: 11.5px;
+  line-height: 1.45;
+}
+
+.gds-location-field__saved {
+  margin: 10px 0 0;
+}
+
+.gds-map-picker {
+  overflow: hidden;
+  border: 1px solid var(--gds-border);
+  border-radius: 10px;
+  background: var(--gds-white);
+}
+
+.gds-map-picker__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+}
+
+.gds-map-picker__hint {
+  color: var(--gds-text-secondary);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.gds-map-picker__tools {
+  display: flex;
+  flex-shrink: 0;
+  gap: 5px;
+}
+
+.gds-map-picker__tools button,
+.gds-map-picker__points li button {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gds-border);
+  border-radius: 8px;
+  background: var(--gds-white);
+  color: var(--gds-black);
+  cursor: pointer;
+}
+
+.gds-map-picker__tools button:hover,
+.gds-map-picker__points li button:hover {
+  border-color: var(--gds-red);
+  color: var(--gds-red);
+}
+
+.gds-map {
+  position: relative;
+  height: 340px;
+  overflow: hidden;
+  background: #e8e7e2;
+  cursor: crosshair;
+  touch-action: none;
+  user-select: none;
+}
+
+.gds-map:active {
+  cursor: grabbing;
+}
+
+.gds-map__tile {
+  position: absolute;
+  width: 256px;
+  height: 256px;
+  max-width: none;
+  pointer-events: none;
+}
+
+.gds-map__drawing {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.gds-map__drawing polygon {
+  fill: rgba(255, 14, 24, 0.18);
+  stroke: var(--gds-red);
+  stroke-width: 3px;
+  vector-effect: non-scaling-stroke;
+}
+
+.gds-map__point {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--gds-white);
+  border-radius: 50% 50% 50% 0;
+  background: var(--gds-red);
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.35);
+  color: var(--gds-white);
+  rotate: -45deg;
+  pointer-events: none;
+}
+
+.gds-map__point span {
+  rotate: 45deg;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.gds-map__loading,
+.gds-map__message {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--gds-black);
+  font-size: 11px;
+}
+
+.gds-map__attribution {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding: 3px 6px;
+  background: rgba(255, 255, 255, 0.85);
+  color: #333;
+  font-size: 10px;
+  text-decoration: none;
+}
+
+.gds-map-picker__points {
+  padding: 10px;
+  color: var(--gds-text-secondary);
+  font-size: 11px;
+}
+
+.gds-map-picker__points > strong {
+  color: var(--gds-black);
+}
+
+.gds-map-picker__clear {
+  margin-left: 10px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gds-red);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gds-map-picker__points ol {
+  display: grid;
+  gap: 4px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gds-map-picker__points li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
+.gds-map-picker__points li span {
+  overflow-wrap: anywhere;
+}
+
+.gds-map-picker__points li button {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
 .gds-form__actions {
   display: flex;
   align-items: center;
@@ -537,14 +737,6 @@
 }
 
 @media (max-width: 768px) {
-  .gds-content {
-    padding-top: 72px;
-  }
-
-  .gds-header {
-    padding: 16px 16px 0;
-  }
-
   .gds-main {
     padding: 16px;
     gap: 16px;
@@ -552,10 +744,6 @@
 }
 
 @media (max-width: 640px) {
-  .gds-header {
-    padding: 16px 18px;
-  }
-
   .gds-main {
     padding: 18px;
     gap: 16px;

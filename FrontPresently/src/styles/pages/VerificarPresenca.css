@@ -20,6 +20,9 @@
   gap: 2px;
   margin-bottom: 22px;
 }
+.vp-header .page-header__back {
+  display: none;
+}
 .vp-breadcrumb,
 .vp-card__subtitle {
   color: #8a8a8a;
@@ -168,15 +171,56 @@
   color: #8a8a8a;
   font-size: 11.5px;
 }
-@media (max-width: 768px) {
-  .vp {
-    padding: 88px 16px 24px;
+@media (max-width: 1023px) {
+  .vp-page {
+    min-height: 100dvh;
+    flex-direction: column;
   }
+  .vp-page > .sidebar {
+    display: none;
+  }
+  .vp {
+    width: 100%;
+    padding: 0 16px calc(var(--bottomnav-height) + 24px);
+  }
+  main.vp header.vp-header[class] {
+    display: flex;
+    min-height: 100px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    width: calc(100% + 32px);
+    margin: 0 -16px 18px;
+    padding: 16px 18px;
+    background: #fff;
+    border-bottom: 1px solid #e7e7e7;
+  }
+  .vp-header .page-header__back {
+    display: inline-flex;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #2f2f2f;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+}
+@media (max-width: 768px) {
   .vp-card {
     padding: 18px;
   }
 }
 @media (max-width: 640px) {
+  main.vp header.vp-header[class] {
+    width: calc(100% + 24px);
+    margin-right: -12px;
+    margin-left: -12px;
+  }
   .vp-card__toolbar {
     flex-direction: column;
     align-items: stretch;
@@ -185,12 +229,34 @@
     width: 100%;
     min-width: 0;
   }
-  .vp-table {
-    overflow-x: auto;
+  .vp-table__head,
+  .vp-table__row {
+    grid-template-columns: minmax(0, 1fr) 100px;
+    gap: 8px;
+  }
+  .vp-table__name {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .vp-status {
+    gap: 5px;
+    font-size: 11.5px;
+  }
+  .vp-state {
+    padding: 20px 12px;
+  }
+}
+@media (max-width: 380px) {
+  .vp {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  .vp-card {
+    padding: 14px;
   }
   .vp-table__head,
   .vp-table__row {
-    min-width: 280px;
-    grid-template-columns: 1fr 110px;
+    grid-template-columns: minmax(0, 1fr) 88px;
+    gap: 6px;
   }
 }

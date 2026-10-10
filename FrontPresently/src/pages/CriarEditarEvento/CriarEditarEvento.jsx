@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import SidebarAdmin from "../../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../../components/PageHeader/PageHeader.jsx";
 import { adminSidebarSections } from "../../data/dashboardDataAdmin";
 import Button from "../../components/Button/Button";
 import Stepper from "../../components/Stepper/Stepper";
@@ -172,10 +173,7 @@ function CriarEditarEvento({
       <SidebarAdmin institution="Fatec Indaiatuba" sections={adminSidebarSections} activeItem="eventos-link" />
 
       <div className="cee-content">
-        <header className="cee-header">
-          <span className="cee-breadcrumb">Início &gt; Eventos</span>
-          <h1 className="cee-title">{isEditing ? "Editar evento" : "Criar evento"}</h1>
-        </header>
+        <PageHeader breadcrumb="Início › Eventos" title={isEditing ? "Editar evento" : "Criar evento"} className="cee-header" breadcrumbClassName="cee-breadcrumb" titleClassName="cee-title" />
 
         <main className="cee-main">
           <div className={`cee-card ${step === 3 ? "cee-card--wide" : ""}`}>

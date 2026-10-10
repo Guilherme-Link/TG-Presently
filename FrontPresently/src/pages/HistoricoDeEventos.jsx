@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   MdChevronLeft,
   MdChevronRight,
@@ -13,6 +14,8 @@ import { listEvents, listResponsibleEvents } from "../services/eventsApi.js";
 import { apiFetch } from "../utils/api.js";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import "../styles/theme.css";
 import "../styles/pages/Dashboard.css";
 import "../styles/pages/HistoricoDeEventos.css";
@@ -170,6 +173,7 @@ function ParticipantsModal({ event, onClose }) {
 }
 
 export default function HistoricoDeEventos() {
+  const navigate = useNavigate();
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -224,7 +228,7 @@ export default function HistoricoDeEventos() {
   const visibleEvents = filteredEvents.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
-    <div className="dashboard hde-page">
+    <div className={`dashboard hde-page${isAdminViewer ? "" : " hde-page--responsible"}`}>
       {isAdminViewer ? (
         <SidebarAdmin activeItem="historico-eventos-link" />
       ) : (
@@ -232,7 +236,7 @@ export default function HistoricoDeEventos() {
       )}
       <div className="dashboard__content">
       <main className="hde">
-      <header className="hde-header"><span className="hde-breadcrumb">Início &gt; Histórico de eventos</span><h1 className="hde-title">Histórico de eventos</h1></header>
+      <PageHeader breadcrumb="Início › Histórico de eventos" title="Histórico de eventos" className="hde-header" breadcrumbClassName="hde-breadcrumb" titleClassName="hde-title" onBack={() => navigate(-1)} />
       <section className="hde-card" aria-busy={loading}>
         <div className="hde-card__toolbar"><h2 className="hde-card__title">Histórico de eventos</h2><label className="hde-search"><MdSearch size={16} aria-hidden="true" /><input type="search" placeholder="Pesquisar evento" value={search} onChange={(changeEvent) => { setSearch(changeEvent.target.value); setPage(1); }} disabled={loading || Boolean(error)} /></label></div>
         {loading ? <div className="hde-state">Carregando histórico...</div>
@@ -245,6 +249,7 @@ export default function HistoricoDeEventos() {
       {selectedEvent && <ParticipantsModal event={selectedEvent} onClose={() => setSelectedEvent(null)} />}
       </main>
       </div>
+      {!isAdminViewer && <BottomNavigation activeId="history" />}
     </div>
   );
 }
