@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
-import { MdArrowBackIosNew } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { listParticipatingEvents } from "../services/eventsApi.js";
 import { apiFetch } from "../utils/api.js";
 import "../styles/theme.css";
@@ -222,17 +222,7 @@ export default function RelatorioDeFaltasAluno({ mobile = false }) {
       {!mobile && <Sidebar activeId="relatorio" />}
       <div className="dashboard__content">
         <main className="rfa">
-          {mobile ? (
-            <header className="rfa-mobile-topbar">
-              <button type="button" onClick={() => navigate(-1)} aria-label="Voltar"><MdArrowBackIosNew size={15} /></button>
-              <span>Relatório de faltas</span>
-            </header>
-          ) : (
-            <header className="rfa-header">
-              <span className="rfa-breadcrumb">Início &gt; Relatório de faltas</span>
-              <h1 className="rfa-title">Relatório de faltas</h1>
-            </header>
-          )}
+          <PageHeader breadcrumb="Início › Relatório de faltas" title="Relatório de faltas" className={mobile ? "" : "rfa-header"} breadcrumbClassName="rfa-breadcrumb" titleClassName="rfa-title" onBack={mobile ? () => navigate(-1) : undefined} />
           {loading ? <div className="rfa-state">Carregando seu relatório...</div> : error ? <div className="rfa-state rfa-state--error" role="alert">{error}</div> : (
             <>
               <section className="rfa-summary">{summary.map((item) => <SummaryCard key={item.id} {...item} />)}</section>

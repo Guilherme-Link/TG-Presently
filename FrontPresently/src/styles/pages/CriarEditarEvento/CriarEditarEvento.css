@@ -197,17 +197,7 @@
   }
 }
 
-@media (max-width: 768px) {
-  .cee-content {
-    padding-top: 72px;
-  }
-}
-
 @media (max-width: 640px) {
-  .cee-header {
-    padding: 16px 18px;
-  }
-
   .cee-main {
     padding: 18px;
   }

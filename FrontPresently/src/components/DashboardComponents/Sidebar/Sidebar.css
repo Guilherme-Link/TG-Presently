@@ -2,7 +2,7 @@
   gap: 0;
   inset: 0 auto auto 0;
   width: 100vw;
-  height: 72px;
+  height: var(--mobile-nav-height, 72px);
   background: var(--color-primary);
   color: #fff;
   padding: 0;

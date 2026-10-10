@@ -3,6 +3,7 @@ import "../styles/pages/DashboardDesktopAdmin.css";
 import { useCallback, useEffect, useState } from "react";
 import Header from "../components/DashboardComponents/Header/Header.jsx";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import AttendanceHeatmap from "../components/DashboardComponents/AttendenceHeatmap/AttendanceHeatmap.jsx";
 import { adminSidebarSections } from "../data/dashboardDataAdmin";
 import { getAttendanceOccurrence, listDailyAttendanceReport } from "../services/attendanceApi.js";
@@ -107,6 +108,7 @@ export default function DashboardDesktopAdmin({ institution = "Fatec Indaiatuba"
   return <div className="dashboard-admin">
     <SidebarAdmin institution={institution} sections={adminSidebarSections} activeItem="painel-geral-link" />
     <div className="dashboard-admin__content"><Header userName="Administrador" date={dateLabel} notificationCount={9} variant="desktop" />
+      <PageHeader breadcrumb="Início › Painel geral" title="Painel geral" mobileOnly />
       <main className="dashboard-admin__main">
         {loading ? <div className="dashboard-admin__state">Carregando dados reais do sistema...</div> : null}
         {error ? <div className="dashboard-admin__state dashboard-admin__state--error" role="alert">{error}<button type="button" onClick={load}>Tentar novamente</button></div> : null}

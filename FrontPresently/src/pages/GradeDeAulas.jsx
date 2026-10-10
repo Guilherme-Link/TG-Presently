@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { MdChevronLeft, MdChevronRight, MdArrowBackIosNew } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import BottomNavigation from "../components/DashboardComponents/BottomNavigation/BottomNavigation (1).jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { listAmbients } from "../services/ambientsApi.js";
 import { listParticipatingEvents, listResponsibleEvents } from "../services/eventsApi.js";
 import { listParticipants } from "../services/participantsApi.js";
@@ -190,11 +191,7 @@ export default function GradeDeAulas({ mobile = false }) {
       {!mobile && <Sidebar activeId="grade" />}
       <div className="dashboard__content">
         <main className="gda">
-          {mobile ? (
-            <header className="gda-mobile-topbar"><button type="button" onClick={() => navigate(-1)} aria-label="Voltar"><MdArrowBackIosNew size={15} /></button><span>Grade de aulas</span></header>
-          ) : (
-            <header className="gda-header"><span className="gda-breadcrumb">Início &gt; Grade de aulas</span><h1 className="gda-title">Grade de aulas</h1></header>
-          )}
+          <PageHeader breadcrumb="Início › Grade de aulas" title="Grade de aulas" className={mobile ? "" : "gda-header"} breadcrumbClassName="gda-breadcrumb" titleClassName="gda-title" onBack={mobile ? () => navigate(-1) : undefined} />
           {error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : (
             <div className="gda-content">
               <Calendar monthDate={monthDate} selectedDate={selectedDate} today={today} events={events} participantsById={participantsById} ambientsById={ambientsById} onSelectDate={selectDate} onMoveMonth={moveMonth} />

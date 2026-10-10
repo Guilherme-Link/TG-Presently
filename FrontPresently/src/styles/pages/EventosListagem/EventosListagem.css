@@ -130,14 +130,6 @@
 }
 
 @media (max-width: 768px) {
-  .el-content {
-    padding-top: 72px;
-  }
-
-  .el-header {
-    padding: 16px 16px 0;
-  }
-
   .el-main {
     padding: 16px;
     gap: 16px;
@@ -145,10 +137,6 @@
 }
 
 @media (max-width: 640px) {
-  .el-header {
-    padding: 16px 18px;
-  }
-
   .el-main {
     padding: 18px;
   }

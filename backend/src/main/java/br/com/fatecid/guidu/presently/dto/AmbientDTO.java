@@ -64,11 +64,15 @@ public class AmbientDTO {
         this.description = description;
     }
 
-    public Polygon getArea() {
-        return GeoJsonMapper.toPolygon(area);
+    public GeoJsonPolygonDTO getArea() {
+        return area;
     }
 
-    public void setArea(Polygon area) {
-        this.area = GeoJsonMapper.fromPolygon(area);
+    public void setArea(GeoJsonPolygonDTO area) {
+        this.area = area;
+    }
+
+    public Polygon toPolygon() {
+        return GeoJsonMapper.toPolygon(area);
     }
 }

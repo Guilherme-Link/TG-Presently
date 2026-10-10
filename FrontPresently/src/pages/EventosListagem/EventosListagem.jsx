@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { MdAdd, MdRefresh, MdSearch } from "react-icons/md";
 import SidebarAdmin from "../../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../../components/PageHeader/PageHeader.jsx";
 import { adminSidebarSections } from "../../data/dashboardDataAdmin";
 import Button from "../../components/Button/Button";
 import EventsTable from "../../components/EventsTable/EventsTable";
@@ -51,10 +52,7 @@ function EventosListagem({
       <SidebarAdmin institution="Fatec Indaiatuba" sections={adminSidebarSections} activeItem="eventos-link" />
 
       <div className="el-content">
-        <header className="el-header">
-          <span className="el-breadcrumb">Início &gt; Eventos</span>
-          <h1 className="el-title">Eventos</h1>
-        </header>
+        <PageHeader breadcrumb="Início › Eventos" title="Eventos" className="el-header" breadcrumbClassName="el-breadcrumb" titleClassName="el-title" />
 
         <main className="el-main">
           <section className="el-card">

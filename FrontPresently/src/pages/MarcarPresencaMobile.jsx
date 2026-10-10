@@ -1,11 +1,11 @@
-import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdRefresh } from "react-icons/md";
+import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdError, MdRefresh } from "react-icons/md";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { apiFetch } from "../utils/api.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
-import { listTodayAttendance } from "../services/attendanceApi.js";
 import "../styles/pages/MarcarPresencaMobile.css";
 
 function QRViewfinderGlyph() {
@@ -31,22 +31,6 @@ function QRViewfinderGlyph() {
 }
 
 const SCANNER_ELEMENT_ID = "reader";
-
-function formatLocalDateTime(date = new Date()) {
-  const pad = (value) => String(value).padStart(2, "0");
-
-  return [
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
-    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`,
-  ].join("T");
-}
-
-function formatLocalDate(date = new Date()) {
-  const pad = (value) => String(value).padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
-}
-
-const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
 function MarcarPresencaMobile({
   lesson = {
@@ -119,40 +103,31 @@ function MarcarPresencaMobile({
       );
     });
 
+    if (!location) {
+      throw new Error("Permita o acesso à localização para validar sua presença dentro da sala.");
+    }
+
     const payload = {
       eventId: Number(resolvedEventId),
       participantId: Number(participantId),
       validationCode: normalizedCode,
-      validationTimestamp: formatLocalDateTime(new Date()),
-      userLatitude: location?.latitude ?? 0,
-      userLongitude: location?.longitude ?? 0,
+      userLatitude: location.latitude,
+      userLongitude: location.longitude,
     };
 
-    await apiFetch("/api/v1/qrcode/validate", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
-
-    // A 2xx only acknowledges the validation endpoint. Confirm that the
-    // persisted attendance report contains this student's presence before
-    // allowing the success state to be shown.
-    for (let attempt = 0; attempt < 3; attempt += 1) {
-      const attendances = await listTodayAttendance(participantId, formatLocalDate());
-      const isConfirmed = attendances.some(
-        (attendance) =>
-          String(attendance.eventId) === String(resolvedEventId) && attendance.present
-      );
-
-      if (isConfirmed) {
-        return;
+    try {
+      await apiFetch("/api/v1/qrcode/validate", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (error?.status === 412) {
+        throw new Error("Presença recusada. O QR Code pode ter expirado ou sua localização pode estar fora da área permitida. Peça um novo código e tente novamente no local da aula.");
       }
-
-      if (attempt < 2) {
-        await wait(500);
-      }
+      throw error;
     }
 
-    throw new Error("Não foi possível confirmar o registro da presença.");
+    // O endpoint só responde 2xx após validar o código e registrar a presença.
   }, [activeEventError, participantId, resolvedEventId]);
 
   useEffect(() => {
@@ -245,17 +220,7 @@ function MarcarPresencaMobile({
 
   return (
     <div className="mp-mobile">
-      <header className="mp-mobile__topbar">
-        <button
-          type="button"
-          className="mp-mobile__back"
-          onClick={handleBack}
-          aria-label="Voltar"
-        >
-          <MdArrowBackIosNew size={15} />
-        </button>
-        <span className="mp-mobile__topbar-title">Marcar Presença</span>
-      </header>
+      <PageHeader breadcrumb="Início › Marcar Presença" title="Marcar Presença" onBack={handleBack} />
 
       {!isResultScreen && (
         <section className="mp-mobile__banner">
@@ -278,17 +243,18 @@ function MarcarPresencaMobile({
                 {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
               </span>
             </div>
-            <div className="mp-mobile__result-mark" aria-hidden="true">
-              {attendanceState.status === "success" ? <IoCheckmarkSharp /> : <MdClose />}
+            <div className={`mp-mobile__result-mark mp-mobile__result-mark--${attendanceState.status}`} aria-hidden="true">
+              {attendanceState.status === "success" ? <IoCheckmarkSharp /> : <MdError />}
             </div>
             <h2 className="mp-mobile__result-title">
               {attendanceState.status === "success" ? "Presença confirmada!" : "Erro inesperado!"}
             </h2>
-            <p className="mp-mobile__result-description">
+            <p className="mp-mobile__result-description mp-mobile__result-description--summary">
               {attendanceState.status === "success"
                 ? "Volte e aproveite sua aula :)"
                 : "Tente marcar sua presença novamente."}
             </p>
+            {attendanceState.status === "error" && <p className="mp-mobile__result-description mp-mobile__result-description--detail">{attendanceState.message}</p>}
             <button
               type="button"
               className="mp-mobile__result-button"

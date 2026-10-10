@@ -11,6 +11,7 @@ import {
 } from "react-icons/md";
 import "../styles/pages/GerenciarUsuarioDesktopAdmin.css";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { isFetchNetworkError } from "../utils/api.js";
 import { deleteUser, listUsers, registerUser, updateUser } from "../services/usersApi.js";
 
@@ -625,10 +626,7 @@ function GerenciarUsuarioDesktopAdmin({
       />
 
       <div className="gua-content">
-        <header className="gua-header">
-          <span className="gua-breadcrumb">Início &gt; Usuários</span>
-          <h1 className="gua-title">Usuários</h1>
-        </header>
+        <PageHeader breadcrumb="Início › Usuários" title="Usuários" className="gua-header" breadcrumbClassName="gua-breadcrumb" titleClassName="gua-title" />
 
         <main className="gua-main">
           <RegisterUserCard onRegistered={loadUsers} />

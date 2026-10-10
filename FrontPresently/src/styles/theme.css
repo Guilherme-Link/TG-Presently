@@ -25,6 +25,7 @@
   --transition-base: 0.28s ease;
 
   --sidebar-width: 260px;
+  --mobile-nav-height: 72px;
   --header-height-desktop: 76px;
   --bottomnav-height: 68px;
 }

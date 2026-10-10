@@ -1,7 +1,6 @@
 import {
   MdNotificationsNone,
   MdPerson,
-  MdKeyboardArrowDown,
   MdLogout,
 } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,6 @@ function Header({
   userName = "Aluno",
   date,
   notificationCount = 0,
-  institution = "Fatec Indaiatuba",
   variant = "responsive",
   showMobileLogout = false,
 }) {
@@ -52,10 +50,10 @@ function Header({
       {showMobileHeader && (
         <header className="header header--mobile">
           <div className="header__top-row">
-            <button type="button" className="header__institution">
-              <span>{institution}</span>
-              <MdKeyboardArrowDown size={16} />
-            </button>
+            <div className="header__brand" aria-label="presently">
+              <span className="header__logo-mark" aria-hidden="true">P</span>
+              <span className="header__logo-text">presently</span>
+            </div>
             <div className="header__mobile-actions">
               <button
                 type="button"

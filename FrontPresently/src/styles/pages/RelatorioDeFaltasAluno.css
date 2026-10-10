@@ -200,8 +200,6 @@
   }
 }
 .rfa-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.rfa-mobile-topbar { display: flex; align-items: center; gap: 14px; margin: -2px 0 22px; color: var(--rfa-black); font-size: 16px; font-weight: 700; }
-.rfa-mobile-topbar button { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0; color: var(--rfa-black); background: transparent; border: 0; cursor: pointer; }
 .rfa-page--mobile { min-height: 100vh; flex-direction: column; background: var(--color-bg); }
 .rfa-page--mobile .dashboard__content { min-width: 0; }
 .rfa-page--mobile .rfa { padding: 20px 18px calc(var(--bottomnav-height) + 24px); }

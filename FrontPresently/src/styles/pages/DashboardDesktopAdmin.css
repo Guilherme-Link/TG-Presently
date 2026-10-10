@@ -490,10 +490,6 @@
 }
 
 @media (max-width: 768px) {
-  .dashboard-admin__content {
-    padding-top: 72px;
-  }
-
   .dashboard-admin__header {
     padding: 16px 16px 0;
   }

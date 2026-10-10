@@ -12,6 +12,7 @@ import GradeDeAulasMobile from "./pages/GradeDeAulasMobile.jsx";
 import DashboardDesktopAdmin from "./pages/DashboardDesktopAdmin.jsx"
 import GerenciarUsuarioDesktopAdmin from "./pages/GerenciarUsuarioDesktopAdmin.jsx"
 import GerenciamentoDeSalas from "./pages/GerenciamentoDeSalas.jsx"
+import GerenciamentoDeTerminais from "./pages/GerenciamentoDeTerminais.jsx";
 import EventosAdminRoutes from "./pages/EventosAdminRoutes.jsx";
 import VerificarPresenca from "./pages/VerificarPresenca.jsx";
 import HistoricoDeEventos from "./pages/HistoricoDeEventos.jsx";
@@ -151,6 +152,7 @@ function App() {
       <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
       <Route path="/usuarios" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciarUsuarioDesktopAdmin></GerenciarUsuarioDesktopAdmin></ProtectedRoute>} />
       <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas></GerenciamentoDeSalas></ProtectedRoute>} />
+      <Route path="/terminais" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeTerminais /></ProtectedRoute>} />
       <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
 
       <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />

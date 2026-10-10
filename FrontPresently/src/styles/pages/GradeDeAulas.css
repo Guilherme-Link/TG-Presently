@@ -56,8 +56,6 @@
 .gda-upcoming__empty, .gda-state { padding: 20px; color: var(--gda-muted); background: #fbfafc; border-radius: 12px; font-size: 13px; text-align: center; }
 .gda-state { width: min(100% - 64px, 1020px); margin: 24px auto; }
 .gda-state--error { color: #991b1b; background: #fff1f2; }
-.gda-mobile-topbar { display: flex; min-height: 58px; align-items: center; gap: 12px; padding: 0 16px; color: var(--gda-ink); background: #fff; border-bottom: 1px solid var(--gda-line); font-size: 16px; font-weight: 700; }
-.gda-mobile-topbar button { display: inline-flex; width: 32px; height: 32px; align-items: center; justify-content: center; padding: 0; color: var(--gda-ink); background: transparent; border: 0; cursor: pointer; }
 .gda-page--mobile { min-height: 100vh; flex-direction: column; background: #f8f8fa; }
 .gda-page--mobile .dashboard__content { min-width: 0; }
 .gda-page--mobile .gda { padding-bottom: calc(var(--bottomnav-height) + 24px); }
