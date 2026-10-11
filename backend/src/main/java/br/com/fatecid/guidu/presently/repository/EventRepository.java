@@ -1,5 +1,6 @@
 package br.com.fatecid.guidu.presently.repository;
 
+import br.com.fatecid.guidu.presently.entity.Ambient;
 import br.com.fatecid.guidu.presently.entity.Event;
 
 import java.time.LocalDate;
@@ -31,14 +32,14 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     SELECT e
     FROM Event e
     WHERE
-        e.ambient = :ambient_id
+        e.ambient = :ambient
     AND e.startDate <= :date
     AND e.endDate >= :date
     AND e.startTime <= :time
     AND e.endTime >= :time
     """)
-    List<Event> findCandidateActiveEventsByAmbient(
-            long ambient_id,
+    List<Event> findCandidateActiveEventsByAmbientId(
+            Ambient ambient,
             LocalDate date,
             LocalTime time);
 

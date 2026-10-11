@@ -13,14 +13,17 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class EventService {
 
+    private final AmbientService ambientService;
     private final EventRepository eventRepository;
     private final ParticipantRepository participantRepository;
     private final AmbientRepository ambientRepository;
@@ -28,11 +31,12 @@ public class EventService {
     public EventService(
             EventRepository eventRepository,
             ParticipantRepository participantRepository,
-            AmbientRepository ambientRepository) {
+            AmbientRepository ambientRepository, AmbientService ambientService) {
 
         this.eventRepository = eventRepository;
         this.participantRepository = participantRepository;
         this.ambientRepository = ambientRepository;
+        this.ambientService = ambientService;
     }
 
     public List<EventDTO> findAll() {
@@ -50,6 +54,39 @@ public class EventService {
 
         return event;
     }
+
+    // Retorna o evento ativo no ambiente, caso exista algum
+    // Também já considera a regra de precedência de um evento único sobre um recorrente
+    public Optional<Event> findActiveEvent(
+            Long ambientId,
+            LocalDateTime dateTime) {
+
+        Ambient ambient = ambientService.findById(ambientId);
+                
+        List<Event> candidates =
+                eventRepository.findCandidateActiveEventsByAmbientId(
+                        ambient,
+                        dateTime.toLocalDate(),
+                        dateTime.toLocalTime()
+                );
+
+        // Primeiro verifica se existe um evento único ativo.
+        Optional<Event> singleEvent = candidates.stream()
+                .filter(event -> event.getEventType() == Event.EventType.SINGLE)
+                .filter(event -> event.isActive(dateTime))
+                .findFirst();
+
+        if (singleEvent.isPresent()) {
+            return singleEvent;
+        }
+
+        // Caso não exista SINGLE ativo, procura um recorrente.
+        return candidates.stream()
+                .filter(event -> event.getEventType() == Event.EventType.RECURRING)
+                .filter(event -> event.isActive(dateTime))
+                .findFirst();
+    }
+
 
     public String getSecretKeyById(Long id) {
 
