@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { MdArrowBackIosNew, MdCheck, MdAccessTime, MdClose } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import { apiFetch } from "../utils/api.js";
@@ -56,6 +57,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
   const [qrCodeData, setQrCodeData] = useState(null);
   const [qrLoading, setQrLoading] = useState(false);
   const [qrError, setQrError] = useState("");
+  const [qrRefreshKey, setQrRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -70,6 +72,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
 
       setQrLoading(true);
       setQrError("");
+      setQrCodeData(null);
 
       try {
         const payload = await apiFetch(`/api/v1/qrcode/${resolvedEventId}`, {
@@ -99,7 +102,19 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
     return () => {
       cancelled = true;
     };
-  }, [isCurrentEventConfirmed, resolvedEventId]);
+  }, [isCurrentEventConfirmed, qrRefreshKey, resolvedEventId]);
+
+  useEffect(() => {
+    if (!shouldShowQr || !qrCodeData?.expirationTime) {
+      return undefined;
+    }
+
+    const expiresAt = Number(qrCodeData.expirationTime) * 1000;
+    const refreshDelay = Math.max(expiresAt - Date.now() - 3000, 1000);
+    const timer = window.setTimeout(() => setQrRefreshKey((value) => value + 1), refreshDelay);
+
+    return () => window.clearTimeout(timer);
+  }, [qrCodeData, shouldShowQr]);
 
   useEffect(() => {
     if (!resolvedEventId) {
@@ -126,10 +141,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
       <Sidebar institution={institution} />
 
       <div className="mpd-content">
-        <div className="mpd-content__header">
-          <span className="mpd-breadcrumb">Início &gt; Marcar Presença</span>
-          <h1 className="mpd-title">Marcar Presença</h1>
-        </div>
+        <PageHeader breadcrumb="Início › Marcar Presença" title="Marcar Presença" className="mpd-content__header" breadcrumbClassName="mpd-breadcrumb" titleClassName="mpd-title" />
 
         <main className="mpd-main">
           <section

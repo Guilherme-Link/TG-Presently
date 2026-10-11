@@ -22,116 +22,6 @@
   box-sizing: border-box;
 }
 
-/* ================= Sidebar ================= */
-.gua-sidebar {
-  width: 250px;
-  flex-shrink: 0;
-  background: var(--gua-red);
-  color: var(--gua-white);
-  padding: 22px 16px 24px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.gua-sidebar__brand {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 2px 6px 8px;
-}
-
-.gua-sidebar__logo-mark {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  background: var(--gua-white);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.gua-sidebar__logo-text {
-  font-size: 15.5px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
-.gua-sidebar__institution {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.16);
-  border: none;
-  color: var(--gua-white);
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 500;
-  padding: 9px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.18s ease;
-}
-
-.gua-sidebar__institution:hover {
-  background: rgba(255, 255, 255, 0.24);
-}
-
-.gua-sidebar__group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.gua-sidebar__group--bottom {
-  margin-top: auto;
-}
-
-.gua-sidebar__group-title {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.65);
-  padding: 4px 10px 0;
-}
-
-.gua-sidebar__nav {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-}
-
-.gua-sidebar__link {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.92);
-  text-decoration: none;
-  font-size: 13.5px;
-  font-weight: 500;
-  transition: background 0.18s ease, color 0.18s ease;
-  white-space: nowrap;
-}
-
-.gua-sidebar__link:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.gua-sidebar__link--active {
-  background: var(--gua-red-dark);
-  color: var(--gua-white);
-  font-weight: 600;
-}
-
-.gua-sidebar__link--active:hover {
-  background: var(--gua-red-dark);
-}
-
 /* ================= Content ================= */
 .gua-content {
   flex: 1;
@@ -535,6 +425,14 @@
   background: var(--gua-red);
 }
 
+.gua-profile-badge--responsible {
+  color: #E87800;
+}
+
+.gua-profile-badge--responsible .gua-profile-badge__dot {
+  background: #E87800;
+}
+
 .gua-table__email {
   font-size: 12px;
   font-weight: 400;
@@ -749,24 +647,6 @@
 }
 
 @media (max-width: 980px) {
-  .gua-sidebar {
-    width: 84px;
-    padding: 20px 12px;
-    align-items: center;
-  }
-
-  .gua-sidebar__logo-text,
-  .gua-sidebar__institution span,
-  .gua-sidebar__group-title,
-  .gua-sidebar__link span {
-    display: none;
-  }
-
-  .gua-sidebar__brand,
-  .gua-sidebar__institution,
-  .gua-sidebar__link {
-    justify-content: center;
-  }
 
   .gua-main {
     grid-template-columns: 1fr;
@@ -774,14 +654,6 @@
 }
 
 @media (max-width: 768px) {
-  .gua-content {
-    padding-top: 72px;
-  }
-
-  .gua-header {
-    padding: 16px 16px 0;
-  }
-
   .gua-main {
     padding: 16px;
     gap: 16px;
@@ -789,10 +661,6 @@
 }
 
 @media (max-width: 640px) {
-  .gua-header {
-    padding: 16px 18px;
-  }
-
   .gua-main {
     padding: 18px;
     gap: 16px;

@@ -1,6 +1,7 @@
 package br.com.fatecid.guidu.presently.service;
 
 import br.com.fatecid.guidu.presently.dto.RegisterUserRequest;
+import br.com.fatecid.guidu.presently.dto.UpdateUserRequest;
 import br.com.fatecid.guidu.presently.dto.UserResponse;
 import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.entity.User;
@@ -106,6 +107,22 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public UserResponse update(Long id, UpdateUserRequest request) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        String username = request.getUsername().trim();
+        if (!username.equals(user.getUsername()) && repository.existsByUsername(username)) {
+            throw new IllegalArgumentException("Nome de usuário já está em uso");
+        }
+
+        user.setUsername(username);
+        resolveRoles(user, request.getRole());
+
+        return new UserResponse(repository.save(user));
+    }
+
+    @Transactional
     public void delete(Long id) {
         User user = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
@@ -124,17 +141,23 @@ public class UserService implements UserDetailsService {
         if (role.equals("user")) {
             // Define o usuário somente como user
             user.setRoles(Set.of("ROLE_USER"));
-            user.getParticipant().setCanBeResponsible(false);
+            if (user.getParticipant() != null) {
+                user.getParticipant().setCanBeResponsible(false);
+            }
         }
         else if (role.equals("responsible")){
             // Dá privilégios de responsável por evento
             user.setRoles(Set.of("ROLE_RESPONSIBLE", "ROLE_USER"));
-            user.getParticipant().setCanBeResponsible(true);
+            if (user.getParticipant() != null) {
+                user.getParticipant().setCanBeResponsible(true);
+            }
         }
         else if (role.equals("admin")){
             // Dá privilégios de admin
             user.setRoles(Set.of("ROLE_ADMIN", "ROLE_RESPONSIBLE", "ROLE_USER"));
-            user.getParticipant().setCanBeResponsible(true);
+            if (user.getParticipant() != null) {
+                user.getParticipant().setCanBeResponsible(true);
+            }
         }
         else {
             // Erro de role inválido

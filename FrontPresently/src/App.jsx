@@ -5,10 +5,17 @@ import DashboardDesktop from "./pages/DashboardDesktop.jsx";
 import DashboardMobile from "./pages/DashboardMobile.jsx";
 import MarcarPresencaMobile from "./pages/MarcarPresencaMobile.jsx";
 import MarcarPresencaDesktop from "./pages/MarcarPresencaDesktop.jsx";
+import RelatorioDeFaltasAluno from "./pages/RelatorioDeFaltasAluno.jsx";
+import GradeDeAulas from "./pages/GradeDeAulas.jsx";
+import RelatorioDeFaltasAlunoMobile from "./pages/RelatorioDeFaltasAlunoMobile.jsx";
+import GradeDeAulasMobile from "./pages/GradeDeAulasMobile.jsx";
 import DashboardDesktopAdmin from "./pages/DashboardDesktopAdmin.jsx"
 import GerenciarUsuarioDesktopAdmin from "./pages/GerenciarUsuarioDesktopAdmin.jsx"
 import GerenciamentoDeSalas from "./pages/GerenciamentoDeSalas.jsx"
+import GerenciamentoDeTerminais from "./pages/GerenciamentoDeTerminais.jsx";
 import EventosAdminRoutes from "./pages/EventosAdminRoutes.jsx";
+import VerificarPresenca from "./pages/VerificarPresenca.jsx";
+import HistoricoDeEventos from "./pages/HistoricoDeEventos.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
@@ -92,12 +99,46 @@ function DashboardRoute() {
 }
 
 function PresencaRoute() {
+  let isResponsible = false;
+
+  try {
+    const currentUser = JSON.parse(localStorage.getItem("presently_auth") ?? "null");
+    isResponsible = currentUser?.roles?.includes("ROLE_RESPONSIBLE") ?? false;
+  } catch {
+    // A rota protegida atualizará os dados de autenticação antes de renderizar a página.
+  }
+
+  if (isResponsible) {
+    return <VerificarPresenca />;
+  }
+
   return (
     <ResponsiveRoute
       mobileComponent={MarcarPresencaMobile}
       desktopComponent={MarcarPresencaDesktop}
     />
   );
+}
+
+function RelatorioRoute() {
+  try {
+    const currentUser = JSON.parse(localStorage.getItem("presently_auth") ?? "null");
+    const hasHistoryAccess = currentUser?.roles?.some((role) =>
+      role === "ROLE_ADMIN" || role === "ROLE_RESPONSIBLE"
+    );
+
+    if (hasHistoryAccess) {
+      return <HistoricoDeEventos />;
+    }
+  } catch {
+    // A rota protegida atualizará os dados de autenticação antes de renderizar a página.
+  }
+
+  return <ResponsiveRoute mobileComponent={RelatorioDeFaltasAlunoMobile} desktopComponent={RelatorioDeFaltasAluno} />;
+}
+
+function GradeRoute() {
+  return <ResponsiveRoute mobileComponent={GradeDeAulasMobile} desktopComponent={GradeDeAulas} />;
 }
 
 function App() {
@@ -111,9 +152,12 @@ function App() {
       <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
       <Route path="/usuarios" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciarUsuarioDesktopAdmin></GerenciarUsuarioDesktopAdmin></ProtectedRoute>} />
       <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas></GerenciamentoDeSalas></ProtectedRoute>} />
+      <Route path="/terminais" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeTerminais /></ProtectedRoute>} />
       <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
 
       <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
+      <Route path="/relatorio" element={<ProtectedRoute><RelatorioRoute /></ProtectedRoute>} />
+      <Route path="/grade" element={<ProtectedRoute><GradeRoute /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>
   );

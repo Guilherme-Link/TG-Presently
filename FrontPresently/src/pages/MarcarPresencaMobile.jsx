@@ -1,7 +1,9 @@
-import { MdArrowBackIosNew, MdCameraAlt, MdClose } from "react-icons/md";
+import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdError, MdRefresh } from "react-icons/md";
+import { IoCheckmarkSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { apiFetch } from "../utils/api.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import "../styles/pages/MarcarPresencaMobile.css";
@@ -30,15 +32,6 @@ function QRViewfinderGlyph() {
 
 const SCANNER_ELEMENT_ID = "reader";
 
-function formatLocalDateTime(date = new Date()) {
-  const pad = (value) => String(value).padStart(2, "0");
-
-  return [
-    `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`,
-    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`,
-  ].join("T");
-}
-
 function MarcarPresencaMobile({
   lesson = {
     subject: "Engenharia de Software II",
@@ -49,7 +42,6 @@ function MarcarPresencaMobile({
   onBack,
   onOpenCamera,
 }) {
-  const [scanResult, setScanResult] = useState(null);
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [attendanceState, setAttendanceState] = useState({
@@ -111,21 +103,31 @@ function MarcarPresencaMobile({
       );
     });
 
+    if (!location) {
+      throw new Error("Permita o acesso à localização para validar sua presença dentro da sala.");
+    }
+
     const payload = {
       eventId: Number(resolvedEventId),
       participantId: Number(participantId),
       validationCode: normalizedCode,
-      validationTimestamp: formatLocalDateTime(new Date()),
-      userLatitude: location?.latitude ?? 0,
-      userLongitude: location?.longitude ?? 0,
+      userLatitude: location.latitude,
+      userLongitude: location.longitude,
     };
 
-    const response = await apiFetch("/api/v1/qrcode/validate", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    try {
+      await apiFetch("/api/v1/qrcode/validate", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      });
+    } catch (error) {
+      if (error?.status === 412) {
+        throw new Error("Presença recusada. O QR Code pode ter expirado ou sua localização pode estar fora da área permitida. Peça um novo código e tente novamente no local da aula.");
+      }
+      throw error;
+    }
 
-    return response;
+    // O endpoint só responde 2xx após validar o código e registrar a presença.
   }, [activeEventError, participantId, resolvedEventId]);
 
   useEffect(() => {
@@ -149,7 +151,6 @@ function MarcarPresencaMobile({
           }
 
           scanHandledRef.current = true;
-          setScanResult(decodedText);
           setCameraError(null);
           setAttendanceState({
             status: "validating",
@@ -199,9 +200,10 @@ function MarcarPresencaMobile({
 
   const navigate = useNavigate();
   const handleBack = onBack ?? (() => navigate(-1));
+  const isResultScreen =
+    attendanceState.status === "success" || attendanceState.status === "error";
 
   const handleOpenCamera = () => {
-    setScanResult(null);
     setCameraError(null);
     setAttendanceState({
       status: "idle",
@@ -218,44 +220,49 @@ function MarcarPresencaMobile({
 
   return (
     <div className="mp-mobile">
-      <header className="mp-mobile__topbar">
-        <button
-          type="button"
-          className="mp-mobile__back"
-          onClick={handleBack}
-          aria-label="Voltar"
-        >
-          <MdArrowBackIosNew size={15} />
-        </button>
-        <span className="mp-mobile__topbar-title">Marcar Presença</span>
-      </header>
+      <PageHeader breadcrumb="Início › Marcar Presença" title="Marcar Presença" onBack={handleBack} />
 
-      <section className="mp-mobile__banner">
-        <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
-        <span className="mp-mobile__meta">
-          {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
-        </span>
-      </section>
+      {!isResultScreen && (
+        <section className="mp-mobile__banner">
+          <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
+          <span className="mp-mobile__meta">
+            {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
+          </span>
+        </section>
+      )}
 
       <main className="mp-mobile__body">
-        {attendanceState.status === "success" ? (
-          <section className="mp-mobile__success" aria-live="polite">
-            <div className="mp-mobile__success-mark" aria-hidden="true">
-              ✓
-            </div>
-            <h2 className="mp-mobile__status-title">Presença confirmada</h2>
-            <p className="mp-mobile__status-description">
-              {attendanceState.message}
-            </p>
-            <div className="mp-mobile__success-summary">
-              <strong>{resolvedLesson.subject}</strong>
-              <span>
+        {isResultScreen ? (
+          <section
+            className={`mp-mobile__result mp-mobile__result--${attendanceState.status}`}
+            aria-live="polite"
+          >
+            <div className="mp-mobile__result-event">
+              <strong className="mp-mobile__subject">{resolvedLesson.subject}</strong>
+              <span className="mp-mobile__meta">
                 {resolvedLesson.day} &middot; {resolvedLesson.time} &middot; {resolvedLesson.room}
               </span>
-              {scanResult ? (
-                <small>Código validado: {scanResult}</small>
-              ) : null}
             </div>
+            <div className={`mp-mobile__result-mark mp-mobile__result-mark--${attendanceState.status}`} aria-hidden="true">
+              {attendanceState.status === "success" ? <IoCheckmarkSharp /> : <MdError />}
+            </div>
+            <h2 className="mp-mobile__result-title">
+              {attendanceState.status === "success" ? "Presença confirmada!" : "Erro inesperado!"}
+            </h2>
+            <p className="mp-mobile__result-description mp-mobile__result-description--summary">
+              {attendanceState.status === "success"
+                ? "Volte e aproveite sua aula :)"
+                : "Tente marcar sua presença novamente."}
+            </p>
+            {attendanceState.status === "error" && <p className="mp-mobile__result-description mp-mobile__result-description--detail">{attendanceState.message}</p>}
+            <button
+              type="button"
+              className="mp-mobile__result-button"
+              onClick={attendanceState.status === "success" ? () => navigate("/dashboard") : handleOpenCamera}
+            >
+              {attendanceState.status === "success" ? <MdArrowBackIosNew size={14} /> : <MdRefresh size={18} />}
+              {attendanceState.status === "success" ? "Voltar" : "Tentar novamente"}
+            </button>
           </section>
         ) : (
           <>

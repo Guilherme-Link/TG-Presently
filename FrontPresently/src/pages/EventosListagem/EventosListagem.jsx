@@ -1,12 +1,14 @@
 import { useMemo, useState } from "react";
 import { MdAdd, MdRefresh, MdSearch } from "react-icons/md";
 import SidebarAdmin from "../../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../../components/PageHeader/PageHeader.jsx";
 import { adminSidebarSections } from "../../data/dashboardDataAdmin";
 import Button from "../../components/Button/Button";
 import EventsTable from "../../components/EventsTable/EventsTable";
 import EmptyState from "../../components/EmptyState/EmptyState";
 import ConfirmDeleteModal from "../../components/ConfirmDeleteModal/ConfirmDeleteModal";
 import EventDetailModal from "../../components/EventDetailModal/EventDetailModal";
+import EventParticipantsModal from "../../components/EventParticipantsModal/EventParticipantsModal";
 import "../../styles/theme.css";
 import "../../styles/pages/EventosListagem/EventosListagem.css";
 
@@ -22,6 +24,7 @@ function EventosListagem({
 }) {
   const [search, setSearch] = useState("");
   const [eventToView, setEventToView] = useState(null);
+  const [eventParticipants, setEventParticipants] = useState(null);
   const [eventToDelete, setEventToDelete] = useState(null);
 
   const filteredEvents = useMemo(() => {
@@ -49,10 +52,7 @@ function EventosListagem({
       <SidebarAdmin institution="Fatec Indaiatuba" sections={adminSidebarSections} activeItem="eventos-link" />
 
       <div className="el-content">
-        <header className="el-header">
-          <span className="el-breadcrumb">Início &gt; Eventos</span>
-          <h1 className="el-title">Eventos</h1>
-        </header>
+        <PageHeader breadcrumb="Início › Eventos" title="Eventos" className="el-header" breadcrumbClassName="el-breadcrumb" titleClassName="el-title" />
 
         <main className="el-main">
           <section className="el-card">
@@ -111,6 +111,7 @@ function EventosListagem({
               <EventsTable
                 events={filteredEvents}
                 onView={setEventToView}
+                onParticipants={setEventParticipants}
                 onEdit={onEditEvent}
                 onDelete={setEventToDelete}
               />
@@ -121,6 +122,10 @@ function EventosListagem({
 
       {eventToView && (
         <EventDetailModal event={eventToView} onClose={() => setEventToView(null)} />
+      )}
+
+      {eventParticipants && (
+        <EventParticipantsModal event={eventParticipants} onClose={() => setEventParticipants(null)} />
       )}
 
       {eventToDelete && (

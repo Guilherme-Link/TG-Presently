@@ -57,7 +57,7 @@ public class AmbientService {
         Ambient ambient = new Ambient();
         ambient.setName(dto.getName());
         ambient.setDescription(dto.getDescription());
-        ambient.setArea(dto.getArea());
+        ambient.setArea(dto.toPolygon());
 
         Ambient saved = repository.save(ambient);
 
@@ -72,7 +72,7 @@ public class AmbientService {
 
         ambient.setName(dto.getName());
         ambient.setDescription(dto.getDescription());
-        ambient.setArea(dto.getArea());
+        ambient.setArea(dto.toPolygon());
 
         Ambient updated = repository.save(ambient);
 

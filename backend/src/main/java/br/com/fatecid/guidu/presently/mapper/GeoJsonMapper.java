@@ -9,7 +9,8 @@ import br.com.fatecid.guidu.presently.dto.GeoJsonPolygonDTO;
 
 public class GeoJsonMapper {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+    private static final GeometryFactory GEOMETRY_FACTORY =
+        new GeometryFactory(new PrecisionModel(), 4326);
 
     // Converte um objeto de geometria polygon para o DTO de polygon
     public static Polygon toPolygon(GeoJsonPolygonDTO dto) {

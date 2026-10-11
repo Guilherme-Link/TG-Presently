@@ -42,10 +42,10 @@ export const adminSidebarSections = [
         to: "dashboardAdmin",
       },
       {
-        id: "detalhes-falta-link",
-        label: "Detalhes de falta",
+        id: "historico-eventos-link",
+        label: "Histórico de eventos",
         icon: "report",
-        to: "#detalhes-falta",
+        to: "/relatorio",
       },
       {
         id: "tendencias-link",
@@ -54,6 +54,7 @@ export const adminSidebarSections = [
         to: "#tendencias",
       },
       { id: "salas-link", label: "Salas", icon: "rooms", to: "salas" },
+      { id: "terminais-link", label: "Terminais / Quiosques", icon: "devices", to: "terminais" },
       { id: "eventos-link", label: "Eventos", icon: "calendar", to: "eventos" },
       {
         id: "usuarios-link",

@@ -1,17 +1,24 @@
 import {
   MdNotificationsNone,
   MdPerson,
-  MdKeyboardArrowDown,
+  MdLogout,
 } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 import "./Header.css";
 
 function Header({
   userName = "Aluno",
   date,
   notificationCount = 0,
-  institution = "Fatec Indaiatuba",
   variant = "responsive",
+  showMobileLogout = false,
 }) {
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    localStorage.removeItem("presently_auth");
+    navigate("/login", { replace: true });
+  }
   const showDesktopHeader = variant === "responsive" || variant === "desktop";
   const showMobileHeader = variant === "responsive" || variant === "mobile";
 
@@ -43,10 +50,10 @@ function Header({
       {showMobileHeader && (
         <header className="header header--mobile">
           <div className="header__top-row">
-            <button type="button" className="header__institution">
-              <span>{institution}</span>
-              <MdKeyboardArrowDown size={16} />
-            </button>
+            <div className="header__brand" aria-label="presently">
+              <span className="header__logo-mark" aria-hidden="true">P</span>
+              <span className="header__logo-text">presently</span>
+            </div>
             <div className="header__mobile-actions">
               <button
                 type="button"
@@ -58,6 +65,16 @@ function Header({
                   <span className="header__badge">{notificationCount}</span>
                 )}
               </button>
+              {showMobileLogout && (
+                <button
+                  type="button"
+                  className="header__icon-btn header__icon-btn--logout"
+                  aria-label="Sair"
+                  onClick={handleLogout}
+                >
+                  <MdLogout size={20} />
+                </button>
+              )}
               <button
                 type="button"
                 className="header__icon-btn header__icon-btn--avatar"

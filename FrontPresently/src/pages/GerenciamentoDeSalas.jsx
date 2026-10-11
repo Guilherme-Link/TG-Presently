@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   MdDeleteOutline,
   MdDesktopWindows,
@@ -6,9 +6,14 @@ import {
   MdNotes,
   MdRefresh,
   MdRoom,
+  MdMyLocation,
+  MdZoomIn,
+  MdZoomOut,
+  MdClose,
 } from "react-icons/md";
 import "../styles/pages/GerenciamentoDeSalas.css";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
+import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { adminSidebarSections } from "../data/dashboardDataAdmin";
 import {
   createAmbient,
@@ -17,6 +22,183 @@ import {
   updateAmbient,
 } from "../services/ambientsApi.js";
 import { isFetchNetworkError } from "../utils/api.js";
+
+const MAX_MERCATOR_LATITUDE = 85.05112878;
+const TILE_SIZE = 256;
+
+function getGeoFencePoints(area) {
+  const ring = area?.type === "Polygon" ? area.coordinates?.[0] : null;
+  if (!Array.isArray(ring) || ring.length < 4) return [];
+  const points = ring.slice(0, -1).filter((point) => Array.isArray(point) && point.length >= 2);
+  return points.filter((point) => Number.isFinite(Number(point[0])) && Number.isFinite(Number(point[1])));
+}
+
+function createGeoFence(points) {
+  const ring = points.map(([longitude, latitude]) => [longitude, latitude]);
+  ring.push([...ring[0]]);
+  return { type: "Polygon", coordinates: [ring] };
+}
+
+function toWorldPoint(latitude, longitude, zoom) {
+  const scale = TILE_SIZE * 2 ** zoom;
+  const clampedLatitude = Math.max(-MAX_MERCATOR_LATITUDE, Math.min(MAX_MERCATOR_LATITUDE, latitude));
+  const sinLatitude = Math.sin(clampedLatitude * Math.PI / 180);
+  return {
+    x: (longitude + 180) / 360 * scale,
+    y: (0.5 - Math.log((1 + sinLatitude) / (1 - sinLatitude)) / (4 * Math.PI)) * scale,
+  };
+}
+
+function fromWorldPoint(x, y, zoom) {
+  const scale = TILE_SIZE * 2 ** zoom;
+  const longitude = x / scale * 360 - 180;
+  const n = Math.PI - 2 * Math.PI * y / scale;
+  const latitude = 180 / Math.PI * Math.atan(Math.sinh(n));
+  return { latitude, longitude };
+}
+
+function pointsCenter(points) {
+  if (!points.length) return null;
+  return {
+    latitude: points.reduce((sum, point) => sum + Number(point[1]), 0) / points.length,
+    longitude: points.reduce((sum, point) => sum + Number(point[0]), 0) / points.length,
+  };
+}
+
+function AmbientLocationPicker({ points, onChange }) {
+  const mapRef = useRef(null);
+  const dragRef = useRef(null);
+  const [center, setCenter] = useState(() => pointsCenter(points));
+  const hasInitialCenter = useRef(Boolean(pointsCenter(points)));
+  const [size, setSize] = useState({ width: 0, height: 0 });
+  const [zoom, setZoom] = useState(17);
+  const [mapError, setMapError] = useState("");
+
+  useEffect(() => {
+    if (!mapRef.current) return undefined;
+    const observer = new ResizeObserver(([entry]) => setSize({
+      width: entry.contentRect.width,
+      height: entry.contentRect.height,
+    }));
+    observer.observe(mapRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const locateCurrentPosition = useCallback(() => {
+    if (!navigator.geolocation) {
+      setMapError("Este navegador não permite obter a localização. Você ainda pode navegar pelo mapa.");
+      setCenter((value) => value ?? { latitude: 0, longitude: 0 });
+      return;
+    }
+    setMapError("Obtendo sua localização...");
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        setCenter({ latitude: coords.latitude, longitude: coords.longitude });
+        setZoom(17);
+        setMapError("");
+      },
+      () => {
+        setMapError("Não foi possível obter sua localização. Arraste o mapa até a sala.");
+        setCenter((value) => value ?? { latitude: 0, longitude: 0 });
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!hasInitialCenter.current) locateCurrentPosition();
+  }, [locateCurrentPosition]);
+
+  const mapLayout = useMemo(() => {
+    if (!center || !size.width || !size.height) return { tiles: [], projectedPoints: [] };
+    const worldCenter = toWorldPoint(center.latitude, center.longitude, zoom);
+    const originX = worldCenter.x - size.width / 2;
+    const originY = worldCenter.y - size.height / 2;
+    const firstTileX = Math.floor(originX / TILE_SIZE);
+    const lastTileX = Math.floor((originX + size.width) / TILE_SIZE);
+    const firstTileY = Math.floor(originY / TILE_SIZE);
+    const lastTileY = Math.floor((originY + size.height) / TILE_SIZE);
+    const tileCount = 2 ** zoom;
+    const tiles = [];
+
+    for (let y = firstTileY; y <= lastTileY; y += 1) {
+      if (y < 0 || y >= tileCount) continue;
+      for (let x = firstTileX; x <= lastTileX; x += 1) {
+        const wrappedX = ((x % tileCount) + tileCount) % tileCount;
+        tiles.push({
+          key: `${zoom}-${x}-${y}`,
+          url: `https://tile.openstreetmap.org/${zoom}/${wrappedX}/${y}.png`,
+          left: x * TILE_SIZE - originX,
+          top: y * TILE_SIZE - originY,
+        });
+      }
+    }
+
+    const projectedPoints = points.map(([longitude, latitude]) => {
+      const point = toWorldPoint(Number(latitude), Number(longitude), zoom);
+      return { x: point.x - originX, y: point.y - originY };
+    });
+    return { tiles, projectedPoints };
+  }, [center, points, size, zoom]);
+
+  function handlePointerDown(event) {
+    if (event.button !== 0 || !center || event.target.closest("button, a")) return;
+    const worldCenter = toWorldPoint(center.latitude, center.longitude, zoom);
+    dragRef.current = { pointerId: event.pointerId, startX: event.clientX, startY: event.clientY, worldCenter, moved: false };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+    if (Math.abs(deltaX) + Math.abs(deltaY) > 4) drag.moved = true;
+    if (drag.moved) setCenter(fromWorldPoint(drag.worldCenter.x - deltaX, drag.worldCenter.y - deltaY, zoom));
+  }
+
+  function handlePointerUp(event) {
+    const drag = dragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    if (!drag.moved && mapRef.current) {
+      const bounds = mapRef.current.getBoundingClientRect();
+      const centerWorld = toWorldPoint(center.latitude, center.longitude, zoom);
+      const worldX = centerWorld.x + event.clientX - bounds.left - bounds.width / 2;
+      const worldY = centerWorld.y + event.clientY - bounds.top - bounds.height / 2;
+      const point = fromWorldPoint(worldX, worldY, zoom);
+      onChange([...points, [point.longitude, point.latitude]]);
+    }
+    dragRef.current = null;
+  }
+
+  const polygonPoints = mapLayout.projectedPoints.map(({ x, y }) => `${x},${y}`).join(" ");
+
+  return (
+    <div className="gds-map-picker">
+      <div className="gds-map-picker__toolbar">
+        <span className="gds-map-picker__hint">Arraste o mapa e clique para marcar cada vértice da área.</span>
+        <div className="gds-map-picker__tools">
+          <button type="button" onClick={locateCurrentPosition} aria-label="Centralizar na localização atual" title="Minha localização"><MdMyLocation size={17} /></button>
+          <button type="button" onClick={() => setZoom((value) => Math.min(value + 1, 19))} aria-label="Aumentar zoom"><MdZoomIn size={19} /></button>
+          <button type="button" onClick={() => setZoom((value) => Math.max(value - 1, 3))} aria-label="Diminuir zoom"><MdZoomOut size={19} /></button>
+        </div>
+      </div>
+      <div ref={mapRef} className="gds-map" onPointerDown={handlePointerDown} onPointerMove={handlePointerMove} onPointerUp={handlePointerUp} onPointerCancel={() => { dragRef.current = null; }}>
+        {mapLayout.tiles.map((tile) => <img key={tile.key} className="gds-map__tile" src={tile.url} alt="" draggable="false" style={{ left: tile.left, top: tile.top }} />)}
+        {mapLayout.projectedPoints.length > 2 && <svg className="gds-map__drawing" aria-hidden="true"><polygon points={polygonPoints} /></svg>}
+        {mapLayout.projectedPoints.map((point, index) => <span key={`${index}-${points[index]?.join(",")}`} className="gds-map__point" style={{ left: point.x, top: point.y }} aria-hidden="true"><span>{index + 1}</span></span>)}
+        {!center && <div className="gds-map__loading">Carregando localização do mapa...</div>}
+        {mapError && <div className="gds-map__message" role="status">{mapError}</div>}
+        <a className="gds-map__attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
+      </div>
+      <div className="gds-map-picker__points">
+        <strong>{points.length} ponto(s) marcado(s)</strong>
+        {points.length > 0 && <button type="button" className="gds-map-picker__clear" onClick={() => onChange([])}>Limpar área</button>}
+        {points.length > 0 && <ol>{points.map(([longitude, latitude], index) => <li key={`${index}-${longitude}-${latitude}`}><span>Ponto {index + 1}: {Number(latitude).toFixed(6)}, {Number(longitude).toFixed(6)}</span><button type="button" onClick={() => onChange(points.filter((_, pointIndex) => pointIndex !== index))} aria-label={`Remover ponto ${index + 1}`}><MdClose size={15} /></button></li>)}</ol>}
+      </div>
+    </div>
+  );
+}
 
 function getFriendlyErrorMessage(error, fallbackMessage) {
   if (isFetchNetworkError(error)) {
@@ -63,6 +245,8 @@ function AmbientFormCard({
 }) {
   const [name, setName] = useState(ambient?.name ?? "");
   const [description, setDescription] = useState(ambient?.description ?? "");
+  const [areaPoints, setAreaPoints] = useState(() => getGeoFencePoints(ambient?.area));
+  const [areaChanged, setAreaChanged] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
   async function handleSubmit(event) {
@@ -81,11 +265,22 @@ function AmbientFormCard({
       return;
     }
 
+    if ((!ambient?.area || areaChanged) && areaPoints.length < 3) {
+      setFeedback({ kind: "error", message: "Marque pelo menos três pontos no mapa para delimitar a área da sala." });
+      return;
+    }
+
+    payload.area = areaChanged
+      ? createGeoFence(areaPoints)
+      : ambient?.area ?? null;
+
     setFeedback(null);
     await onSubmit(payload, {
       resetForm: () => {
         setName("");
         setDescription("");
+        setAreaPoints([]);
+        setAreaChanged(false);
       },
       setLocalFeedback: setFeedback,
     });
@@ -146,6 +341,13 @@ function AmbientFormCard({
           />
         </div>
 
+        <div className="gds-location-field">
+          <span className="gds-field-label">Área geográfica da sala</span>
+          <p className="gds-location-field__help">O mapa parte da sua localização atual. Arraste para navegar até outro local e marque pelo menos três pontos para fechar a área permitida para registrar presença.</p>
+          <AmbientLocationPicker points={areaPoints} onChange={(points) => { setAreaPoints(points); setAreaChanged(true); }} />
+          {!areaChanged && ambient?.area && <p className="gds-location-field__saved" role="status">A área cadastrada será mantida. Marque novos pontos para substituí-la.</p>}
+        </div>
+
         <div className="gds-form__actions">
           <button
             type="submit"
@@ -171,6 +373,8 @@ function AmbientFormCard({
               onClick={() => {
                 setName("");
                 setDescription("");
+                setAreaPoints([]);
+                setAreaChanged(false);
                 setFeedback(null);
               }}
               disabled={loading || saving}
@@ -459,10 +663,7 @@ function GerenciamentoDeSalas({ institution = "Fatec Indaiatuba" }) {
       />
 
       <div className="gds-content">
-        <header className="gds-header">
-          <span className="gds-breadcrumb">Início &gt; Salas</span>
-          <h1 className="gds-title">Salas</h1>
-        </header>
+        <PageHeader breadcrumb="Início › Salas" title="Salas" className="gds-header" breadcrumbClassName="gds-breadcrumb" titleClassName="gds-title" />
 
         <main className="gds-main">
           <AmbientFormCard

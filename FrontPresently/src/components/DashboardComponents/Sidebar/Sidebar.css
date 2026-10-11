@@ -1,19 +1,18 @@
 .sidebar {
-  display: flex;
-  flex-direction: column;
   gap: 0;
-  position: fixed;
   inset: 0 auto auto 0;
   width: 100vw;
-  height: 72px;
-  flex-shrink: 0;
+  height: var(--mobile-nav-height, 72px);
   background: var(--color-primary);
   color: #fff;
   padding: 0;
   min-height: 0;
   overflow: hidden;
   z-index: 1000;
-  transition: height 0.28s ease, box-shadow 0.28s ease, transform 0.28s ease;
+  transition:
+    height 0.28s ease,
+    box-shadow 0.28s ease,
+    transform 0.28s ease;
 }
 
 .sidebar--open {
@@ -25,24 +24,26 @@
   align-items: center;
   justify-content: space-between;
   gap: 14px;
-  min-height: 72px;
-  padding: 0 18px 0 16px;
-  flex-shrink: 0;
+  width: 100%;
 }
 
 .sidebar__menu {
   display: flex;
   flex-direction: column;
   gap: 22px;
+  width: 100%;
   min-height: 0;
-  flex: 1;
-  padding: 18px 16px 22px;
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s ease;
-  overflow: hidden;
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease,
+    visibility 0.22s ease;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .sidebar--open .sidebar__menu {
@@ -95,32 +96,10 @@
   flex-shrink: 0;
 }
 
-.sidebar__institution {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.14);
-  border: none;
-  color: #fff;
-  font-family: var(--font-family);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: background var(--transition-fast);
-}
-
-.sidebar__institution:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
 .sidebar__group {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 0;
 }
 
 .sidebar__group-title {
@@ -135,6 +114,7 @@
 .sidebar__nav {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 4px;
   min-height: 0;
 }
@@ -149,7 +129,9 @@
   text-decoration: none;
   font-size: 13.5px;
   font-weight: 500;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
 }
 
 .sidebar__link:hover {
@@ -166,11 +148,27 @@
   background: #fff;
 }
 
-.sidebar__institution {
+.sidebar__group {
+  align-items: center;
   width: 100%;
 }
 
-@media (min-width: 1024px) {
+.sidebar__group-title {
+  width: min(100%, 360px);
+  text-align: center;
+}
+
+.sidebar__nav {
+  align-items: center;
+  width: 100%;
+}
+
+.sidebar__link {
+  justify-content: center;
+  width: min(100%, 360px);
+}
+
+@media (min-width: 769px) {
   .sidebar {
     position: static;
     inset: auto;
@@ -193,6 +191,27 @@
     padding: 0;
     overflow: visible;
     gap: 22px;
+  }
+
+  .sidebar__group {
+    align-items: stretch;
+  }
+
+  .sidebar__group-title,
+  .sidebar__link {
+    width: auto;
+  }
+
+  .sidebar__group-title {
+    text-align: left;
+  }
+
+  .sidebar__nav {
+    align-items: stretch;
+  }
+
+  .sidebar__link {
+    justify-content: flex-start;
   }
 
   .sidebar__desktop-brand {

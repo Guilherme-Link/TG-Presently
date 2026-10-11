@@ -5,12 +5,7 @@ import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import StatisticCard from "../components/DashboardComponents/StatisticCard/StatisticCard (1).jsx";
 import ClassCard from "../components/DashboardComponents/ClassCard/ClassCard (1).jsx";
 import AttendanceHeatmap from "../components/DashboardComponents/AttendenceHeatmap/AttendanceHeatmap.jsx";
-import {
-  statistics,
-  heatmapDays,
-  heatmapMatrix,
-  heatmapTitle,
-} from "../data/dashboardData";
+import { heatmapDays } from "../data/dashboardData";
 import { useAttendanceToday } from "../hooks/useAttendanceToday.js";
 import { useStudentDashboardData } from "../hooks/useStudentDashboardData.js";
 import "../styles/pages/Dashboard.css";
@@ -27,11 +22,13 @@ function getCurrentDateLabel() {
 }
 
 function DashboardDesktop() {
-  const { currentUser, classes, loadingClasses, classesError } =
+  const { currentUser, classes, loadingClasses, classesError, statistics, heatmapMatrix, isResponsible } =
     useStudentDashboardData();
-  const { items: attendanceItems } = useAttendanceToday(currentUser?.participantId);
+  const { items: attendanceItems } = useAttendanceToday(
+    isResponsible ? null : currentUser?.participantId
+  );
   const dateLabel = getCurrentDateLabel();
-  const userName = currentUser?.username ?? "Aluno";
+  const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
   const confirmedAttendanceIds = new Set(
     attendanceItems
       .filter((item) => item.status === "confirmed")
@@ -80,7 +77,9 @@ function DashboardDesktop() {
               ) : classes.length === 0 ? (
                 <EmptyState
                   title="Nenhuma aula encontrada"
-                  description="Você ainda não está vinculado a eventos como participante ou responsável."
+                  description={isResponsible
+                    ? "Você ainda não é responsável por nenhuma aula."
+                    : "Você ainda não está vinculado a eventos como participante ou responsável."}
                 />
               ) : (
                 <div className="dashboard__classes-list">
@@ -98,13 +97,15 @@ function DashboardDesktop() {
               )}
             </section>
 
-            <section className="dashboard__heatmap-section">
-              <AttendanceHeatmap
-                title={heatmapTitle}
-                days={heatmapDays}
-                matrix={heatmapMatrix}
-              />
-            </section>
+            {!isResponsible && (
+              <section className="dashboard__heatmap-section">
+                <AttendanceHeatmap
+                  title="Mapa de presença · últimas semanas"
+                  days={heatmapDays}
+                  matrix={heatmapMatrix}
+                />
+              </section>
+            )}
           </div>
         </main>
       </div>
