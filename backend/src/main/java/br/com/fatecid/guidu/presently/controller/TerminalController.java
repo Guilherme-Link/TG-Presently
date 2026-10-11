@@ -1,5 +1,6 @@
 package br.com.fatecid.guidu.presently.controller;
 
+import br.com.fatecid.guidu.presently.dto.TerminalDTO;
 import br.com.fatecid.guidu.presently.dto.TerminalIdentifyRequestDTO;
 import br.com.fatecid.guidu.presently.entity.Terminal;
 import br.com.fatecid.guidu.presently.service.TerminalService;
@@ -22,11 +23,9 @@ public class TerminalController {
         this.terminalService = terminalService;
     }
 
-    // TODO (Gui): Alterar tipos de retorno para DTO resumido
-
     // Registro automático do terminal
     @PostMapping("/identify")
-    public ResponseEntity<Terminal> identify(
+    public ResponseEntity<TerminalDTO> identify(
             @RequestBody TerminalIdentifyRequestDTO request) {
 
         try {
@@ -44,51 +43,55 @@ public class TerminalController {
             if (!terminal.isApproved()) {
                 return ResponseEntity
                         .status(HttpStatus.ACCEPTED)
-                        .body(terminal);
+                        .body(new TerminalDTO(terminal));
             }
 
-            return ResponseEntity.ok(terminal);
+            return ResponseEntity.ok(new TerminalDTO(terminal));
 
         }
     }
 
     // Retorna todos os terminais
     @GetMapping
-    public ResponseEntity<List<Terminal>> findAll() {
+    public ResponseEntity<List<TerminalDTO>> findAll() {
 
         return ResponseEntity.ok(
                 terminalService.findAll()
+                .stream()
+                .map(TerminalDTO::new)
+                .toList()
         );
     }
 
     // Busca um terminal pelo ID
     @GetMapping("/{id}")
-    public ResponseEntity<Terminal> findById(
+    public ResponseEntity<TerminalDTO> findById(
             @PathVariable Long id) {
 
         Optional<Terminal> terminal =
                 terminalService.findById(id);
 
-        return terminal
-                .map(ResponseEntity::ok)
-                .orElseGet(() ->
-                        ResponseEntity.notFound().build()
-                );
+        if (terminal.isPresent()) {
+            return ResponseEntity.ok(new TerminalDTO(terminal.orElseThrow()));
+        }
+        else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     // Busca terminal pelo terminalId físico
     @GetMapping("/terminal/{terminalId}")
-    public ResponseEntity<Terminal> findByTerminalId(
+    public ResponseEntity<TerminalDTO> findByTerminalId(
             @PathVariable String terminalId) {
 
         Terminal terminal = terminalService.findByTerminalId(terminalId);
 
-        return ResponseEntity.ok(terminal) ;
+        return ResponseEntity.ok(new TerminalDTO(terminal)) ;
     }
 
     // Altera o ambiente do terminal
     @PutMapping("/{id}/updateAmbient")
-    public ResponseEntity<Terminal> setAmbient(
+    public ResponseEntity<TerminalDTO> setAmbient(
             @PathVariable Long id,
             @RequestParam Long ambientId) {
 
@@ -100,7 +103,7 @@ public class TerminalController {
                             ambientId
                     );
 
-            return ResponseEntity.ok(terminal);
+            return ResponseEntity.ok(new TerminalDTO(terminal));
 
         } catch (IllegalArgumentException exception) {
 
@@ -110,7 +113,7 @@ public class TerminalController {
 
     // Aprova um terminal
     @PatchMapping("/{id}/approve")
-    public ResponseEntity<Terminal> approve(
+    public ResponseEntity<TerminalDTO> approve(
             @PathVariable Long id) {
 
         try {
@@ -118,7 +121,7 @@ public class TerminalController {
             Terminal terminal =
                     terminalService.approveTerminal(id);
 
-            return ResponseEntity.ok(terminal);
+            return ResponseEntity.ok(new TerminalDTO(terminal));
 
         } catch (IllegalArgumentException exception) {
 
