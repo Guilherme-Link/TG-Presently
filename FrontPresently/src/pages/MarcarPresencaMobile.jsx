@@ -1,4 +1,4 @@
-import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdError, MdRefresh } from "react-icons/md";
+import { MdArrowBackIosNew, MdCameraAlt, MdClose, MdRefresh } from "react-icons/md";
 import { IoCheckmarkSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
@@ -31,6 +31,8 @@ function QRViewfinderGlyph() {
 }
 
 const SCANNER_ELEMENT_ID = "reader";
+const QR_STABILITY_MS = 700;
+const QR_MAX_FRAME_GAP_MS = 500;
 
 function MarcarPresencaMobile({
   lesson = {
@@ -57,6 +59,8 @@ function MarcarPresencaMobile({
   } = useCurrentActiveStudentEvent();
   const html5QrRef = useRef(null);
   const scanHandledRef = useRef(false);
+  const qrCandidateRef = useRef(null);
+  const [scannerHint, setScannerHint] = useState("Posicione o QR Code dentro da moldura");
 
   const resolvedEventId = activeEvent?.id ?? null;
   const participantId = currentUser?.participantId ?? null;
@@ -122,7 +126,7 @@ function MarcarPresencaMobile({
       });
     } catch (error) {
       if (error?.status === 412) {
-        throw new Error("Presença recusada. O QR Code pode ter expirado ou sua localização pode estar fora da área permitida. Peça um novo código e tente novamente no local da aula.");
+        throw new Error("Ops... ocorreu um erro ao validar sua presença. Tente novamente.");
       }
       throw error;
     }
@@ -137,9 +141,8 @@ function MarcarPresencaMobile({
     const html5Qr = new Html5Qrcode(SCANNER_ELEMENT_ID);
     html5QrRef.current = html5Qr;
 
-    // Sem qrbox: a área decodificada é o frame inteiro.
-    // A moldura visual vermelha é só CSS, desenhada por cima.
-    const config = { fps: 10 };
+    // A região de leitura acompanha a moldura central exibida ao usuário.
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
 
     html5Qr
       .start(
@@ -147,6 +150,23 @@ function MarcarPresencaMobile({
         config,
         async (decodedText) => {
           if (scanHandledRef.current) {
+            return;
+          }
+
+          const now = Date.now();
+          const candidate = qrCandidateRef.current;
+          if (
+            !candidate ||
+            candidate.text !== decodedText ||
+            now - candidate.lastSeenAt > QR_MAX_FRAME_GAP_MS
+          ) {
+            qrCandidateRef.current = { text: decodedText, startedAt: now, lastSeenAt: now };
+            setScannerHint("QR Code detectado. Mantenha-o parado na moldura...");
+            return;
+          }
+
+          candidate.lastSeenAt = now;
+          if (now - candidate.startedAt < QR_STABILITY_MS) {
             return;
           }
 
@@ -210,6 +230,8 @@ function MarcarPresencaMobile({
       message: "",
     });
     scanHandledRef.current = false;
+    qrCandidateRef.current = null;
+    setScannerHint("Posicione o QR Code dentro da moldura");
     setIsScanning(true);
     onOpenCamera?.();
   };
@@ -244,7 +266,18 @@ function MarcarPresencaMobile({
               </span>
             </div>
             <div className={`mp-mobile__result-mark mp-mobile__result-mark--${attendanceState.status}`} aria-hidden="true">
-              {attendanceState.status === "success" ? <IoCheckmarkSharp /> : <MdError />}
+              {attendanceState.status === "success" ? (
+                <IoCheckmarkSharp />
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" style={{ strokeWidth: 3.5 }}>
+                  <path
+                    d="M4 4L20 20M20 4L4 20"
+                    stroke="currentColor"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              )}
             </div>
             <h2 className="mp-mobile__result-title">
               {attendanceState.status === "success" ? "Presença confirmada!" : "Erro inesperado!"}
@@ -340,7 +373,7 @@ function MarcarPresencaMobile({
           </div>
 
           <p className="mp-mobile__scanner-hint">
-            Posicione o QR Code dentro da moldura
+            {scannerHint}
           </p>
         </div>
       )}
