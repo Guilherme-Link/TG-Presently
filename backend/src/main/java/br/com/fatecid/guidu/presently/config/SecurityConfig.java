@@ -80,6 +80,10 @@ public class SecurityConfig {
 
     // Cria um usuário admin/admin, caso não exista um usuário admin na aplicação
     // É o usuário do first setup da aplicação. Depois da instalação a senha deve ser alterada
+
+    // Também cria o usuário service/service, caso não exista
+    // A classe de serviço é usada para conexão dos terminais físicos.
+    // Assim como admin, a senha deve ser alterada após a criação, e definida na configuração dos terminais 
     @Bean
     CommandLineRunner init(UserRepository repository,
                        PasswordEncoder encoder) {
@@ -92,9 +96,20 @@ public class SecurityConfig {
 
             admin.setUsername("admin");
             admin.setPassword(encoder.encode("admin"));
-            admin.setRoles(Set.of("ROLE_ADMIN", "ROLE_USER"));
+            admin.setRoles(Set.of("ROLE_ADMIN", "ROLE_RESPONSIBLE", "ROLE_USER"));
 
             repository.save(admin);
+        }
+
+        if (!repository.existsByUsername("service")) {
+
+            User service = new User();
+
+            service.setUsername("service");
+            service.setPassword(encoder.encode("service"));
+            service.setRoles(Set.of("ROLE_ADMIN", "ROLE_RESPONSIBLE", "ROLE_USER"));
+
+            repository.save(service);
         }
 
     };

@@ -29,7 +29,7 @@ public class AmbientController {
     // Retorna detalhes de um ambiente específico pelo ID
     @GetMapping("/{id}")
     public AmbientDTO findById(@PathVariable Long id) {
-        return service.findById(id);
+        return new AmbientDTO(service.findById(id));
     }
 
     // Retorna os eventos programados para um ambiente específico pelo ID
