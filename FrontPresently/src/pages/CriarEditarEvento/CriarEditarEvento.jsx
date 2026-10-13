@@ -69,12 +69,6 @@ function CriarEditarEvento({
   );
 
   useEffect(() => {
-    if (eventToEdit?.location && values.location !== String(eventToEdit.location)) {
-      setField("location", String(eventToEdit.location));
-    }
-  }, [eventToEdit?.location, setField, values.location]);
-
-  useEffect(() => {
     if (isEditing) {
       return;
     }

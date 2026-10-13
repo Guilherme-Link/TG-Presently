@@ -15,6 +15,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 public class QrCodeService {
@@ -31,9 +32,15 @@ public class QrCodeService {
     }
 
     public QrCodeRenderingDTO generateQRCode(long eventId, int width, int height) throws WriterException, IOException {
-        
+        Instant generatedAt = Instant.now();
+        long now = generatedAt.getEpochSecond();
+        int validForSeconds = codeService.getCodeValidFor();
+
         // Gera a String base que será transformada em QRcode
-        String text = codeService.generateValidationCode(eventId, LocalDateTime.now());
+        String text = codeService.generateValidationCode(
+            eventId,
+            LocalDateTime.ofInstant(generatedAt, ZoneId.systemDefault())
+        );
 
         // Codifica a String para código QR
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -44,7 +51,7 @@ public class QrCodeService {
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", pngOutputStream);
 
         // Momento de geração do código
-        long now = Instant.now().getEpochSecond();
+        long expirationTime = ((now / validForSeconds) + 1) * validForSeconds;
 
         // Cria o DTO para retorno ao usuário
         QrCodeRenderingDTO renderingDTO = new QrCodeRenderingDTO(
@@ -52,7 +59,7 @@ public class QrCodeService {
             width,
             height,
             now,
-            (now + codeService.getCodeValidFor())
+            expirationTime
         );
 
         return renderingDTO;

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   MdDashboard,
   MdOutlineDescription,
@@ -37,9 +38,9 @@ function NavGroup({ title, items, activeItem, onNavigate }) {
           const isActive = activeItem === id;
 
           return (
-            <a
+            <Link
               key={id}
-              href={to}
+              to={to.startsWith("/") || to.startsWith("#") ? to : `/${to}`}
               className={`sidebar-admin__link${isActive ? " sidebar-admin__link--active" : ""}`}
               onClick={onNavigate}
             >
@@ -48,7 +49,7 @@ function NavGroup({ title, items, activeItem, onNavigate }) {
               {badge ? (
                 <span className="sidebar-admin__badge">{badge}</span>
               ) : null}
-            </a>
+            </Link>
           );
         })}
       </nav>

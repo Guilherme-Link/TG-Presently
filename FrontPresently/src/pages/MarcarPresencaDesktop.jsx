@@ -110,7 +110,8 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
     }
 
     const expiresAt = Number(qrCodeData.expirationTime) * 1000;
-    const refreshDelay = Math.max(expiresAt - Date.now() - 3000, 1000);
+    // Renova antes da expiração para permitir leitura e validação da localização.
+    const refreshDelay = Math.max(expiresAt - Date.now() - 12000, 1000);
     const timer = window.setTimeout(() => setQrRefreshKey((value) => value + 1), refreshDelay);
 
     return () => window.clearTimeout(timer);
@@ -214,7 +215,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
                 </div>
 
                 <p className="mpd-qr__hint">
-                  Mostre esse código para registrar a presença da aula atual.
+                  Leia esse código com seu celular para registrar a presença da aula atual.
                 </p>
               </div>
             )}
