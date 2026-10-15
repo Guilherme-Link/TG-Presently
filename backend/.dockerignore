@@ -1,0 +1,5 @@
+config.ini
+config.ini.example
+target/
+.git/
+src/main/resources/keystore*.p12
