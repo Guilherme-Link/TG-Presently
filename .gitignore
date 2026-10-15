@@ -36,3 +36,6 @@ backend/src/main/resources/keystore.p12
 
 # Certificados do front (sensível - chave privada e CA local)
 FrontPresently/certs/
+
+# Configurações locais com credenciais; use config.ini.example como modelo
+/backend/config.ini

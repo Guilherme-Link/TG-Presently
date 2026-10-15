@@ -1,0 +1,16 @@
+[local.datasource]
+url=jdbc:postgresql://localhost:5433/presently
+username=SEU_USUARIO_LOCAL
+password=DEFINA_SUA_SENHA_LOCAL
+
+[local.server]
+port=8443
+ssl-enabled=true
+ssl-key-store=classpath:keystore-dev.p12
+ssl-key-store-password=DEFINA_A_SENHA_DO_KEYSTORE
+ssl-key-store-type=PKCS12
+ssl-key-alias=presently
+
+[local.webauthn]
+rp-id=localhost
+allowed-origins=https://localhost:5173
