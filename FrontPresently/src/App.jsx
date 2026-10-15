@@ -16,6 +16,7 @@ import GerenciamentoDeTerminais from "./pages/GerenciamentoDeTerminais.jsx";
 import EventosAdminRoutes from "./pages/EventosAdminRoutes.jsx";
 import VerificarPresenca from "./pages/VerificarPresenca.jsx";
 import HistoricoDeEventos from "./pages/HistoricoDeEventos.jsx";
+import ProfileAccount from "./pages/ProfileAccount.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
@@ -154,6 +155,7 @@ function App() {
       <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas></GerenciamentoDeSalas></ProtectedRoute>} />
       <Route path="/terminais" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeTerminais /></ProtectedRoute>} />
       <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
+      <Route path="/perfil" element={<ProtectedRoute><ProfileAccount /></ProtectedRoute>} />
 
       <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
       <Route path="/relatorio" element={<ProtectedRoute><RelatorioRoute /></ProtectedRoute>} />

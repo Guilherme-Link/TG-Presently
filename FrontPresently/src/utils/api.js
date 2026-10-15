@@ -33,12 +33,23 @@ export function buildApiUrl(path) {
 
 export async function apiFetch(path, options = {}) {
   const { headers: customHeaders = {}, ...fetchOptions } = options;
+  const method = (fetchOptions.method || "GET").toUpperCase();
+  const csrfCookie = typeof document === "undefined"
+    ? ""
+    : document.cookie
+        .split(";")
+        .map((cookie) => cookie.trim())
+        .find((cookie) => cookie.startsWith("XSRF-TOKEN="))
+        ?.slice("XSRF-TOKEN=".length);
 
   const response = await fetch(buildApiUrl(path), {
     credentials: "include",
     ...fetchOptions,
     headers: {
       ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}),
+      ...(csrfCookie && !["GET", "HEAD", "OPTIONS"].includes(method)
+        ? { "X-XSRF-TOKEN": decodeURIComponent(csrfCookie) }
+        : {}),
       ...customHeaders,
     },
   });

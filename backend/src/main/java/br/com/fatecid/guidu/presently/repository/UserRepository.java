@@ -15,6 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // Implementado automaticamente pelo Spring, não precisa de código extra
     boolean existsByUsername(String username);
 
+    boolean existsByEmailIgnoreCaseAndIdNot(String email, Long id);
+
    
 
 }

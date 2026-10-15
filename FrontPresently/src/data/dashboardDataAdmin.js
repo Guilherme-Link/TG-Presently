@@ -69,9 +69,9 @@ export const adminSidebarSections = [
     items: [
       {
         id: "configuracoes-link",
-        label: "Configurações",
+          label: "Perfil",
         icon: "settings",
-        to: "#configuracoes",
+          to: "/perfil",
       },
       { id: "sair-link", label: "Sair", icon: "logout", to: "/login" },
     ],

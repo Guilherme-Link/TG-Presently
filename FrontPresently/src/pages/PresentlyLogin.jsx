@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import FotoFoda from "../assets/FotoFoda.png";
 import { apiFetch, isFetchNetworkError } from "../utils/api.js";
+import { decodeRequestOptions, serializeCredential } from "../utils/webauthn.js";
 import "../styles/pages/PresentlyLogin.css";
 
 const COPY = [
@@ -62,8 +63,18 @@ export default function PresencefyLogin() {
   const [slide, setSlide] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [mfaPendingUser, setMfaPendingUser] = useState(null);
 
   const navigate = useNavigate();
+
+  function finishLogin(user) {
+    localStorage.setItem(
+      "presently_auth",
+      JSON.stringify({ username: user.username, roles: user.roles })
+    );
+
+    navigate(user.roles.includes("ROLE_ADMIN") ? "/dashboardAdmin" : "/dashboard");
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -71,7 +82,7 @@ export default function PresencefyLogin() {
     setSubmitting(true);
 
     try {
-      const user = await apiFetch("/security/v1/login", {
+      const loginResult = await apiFetch("/security/v1/login", {
         method: "POST",
         body: JSON.stringify({
           username: email,
@@ -79,20 +90,12 @@ export default function PresencefyLogin() {
         }),
       });
 
-      // Guarda só o essencial pra UI (o cookie de sessão já cuida da autenticação)
-      localStorage.setItem(
-        "presently_auth",
-        JSON.stringify({
-          username: user.username,
-          roles: user.roles,
-        })
-      );
-
-      if (user.roles.includes("ROLE_ADMIN")) {
-        navigate("/dashboardAdmin");
-      } else {
-        navigate("/dashboard");
+      if (loginResult?.mfaRequired) {
+        setMfaPendingUser(loginResult.user);
+        return;
       }
+
+      finishLogin(loginResult);
     } catch (err) {
       if (err && typeof err === "object" && "status" in err) {
         if (err.status === 401 || err.status === 403) {
@@ -140,6 +143,58 @@ export default function PresencefyLogin() {
     }
   }
 
+  async function handlePasskeyLogin() {
+    setError(null);
+    setSubmitting(true);
+
+    try {
+      if (!window.PublicKeyCredential || !navigator.credentials?.get) {
+        throw new Error("Este navegador não oferece suporte a passkeys.");
+      }
+
+      await apiFetch("/security/v1/csrf", { method: "GET" });
+      const optionsResponse = await apiFetch("/webauthn/authenticate/options", {
+        method: "POST",
+      });
+      const options = decodeRequestOptions(optionsResponse.publicKey ?? optionsResponse);
+      const credential = await navigator.credentials.get({ publicKey: options });
+      if (!credential) {
+        throw new Error("A verificação com passkey foi cancelada.");
+      }
+
+      await apiFetch("/login/webauthn", {
+        method: "POST",
+        body: JSON.stringify(serializeCredential(credential)),
+      });
+      const user = await apiFetch("/security/v1/me", { method: "GET" });
+      finishLogin(user);
+    } catch (err) {
+      setError({
+        kind: "credentials",
+        message: err instanceof Error && err.message
+          ? err.message
+          : "Não foi possível validar a passkey. Tente novamente.",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  async function handleCancelMfa() {
+    setSubmitting(true);
+    try {
+      await apiFetch("/security/v1/csrf", { method: "GET" });
+      await apiFetch("/security/v1/mfa/cancel", { method: "POST" });
+      setMfaPendingUser(null);
+      setPassword("");
+      setError(null);
+    } catch (err) {
+      setError({ kind: "generic", message: err.message || "Não foi possível cancelar a verificação." });
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <div className="pf-root">
 
@@ -176,6 +231,27 @@ export default function PresencefyLogin() {
         <section className="pf-panel">
           <h2>Login</h2>
 
+          {mfaPendingUser ? (
+            <div className="pf-mfa" aria-live="polite">
+              <p className="pf-mfa__title">Confirme sua identidade</p>
+              <p className="pf-mfa__description">
+                Use a passkey cadastrada na conta <strong>{mfaPendingUser.username}</strong> para concluir o login.
+              </p>
+              {error && (
+                <div className={`pf-error pf-error--${error.kind}`} role="alert">
+                  <AlertCircle size={18} className="pf-error__icon" />
+                  <p className="pf-error__text">{error.message}</p>
+                </div>
+              )}
+              <button className="pf-submit" type="button" onClick={handlePasskeyLogin} disabled={submitting}>
+                {submitting ? "Aguardando passkey..." : "Continuar com passkey"}
+                {!submitting && <ArrowRight size={18} />}
+              </button>
+              <button className="pf-mfa__cancel" type="button" onClick={handleCancelMfa} disabled={submitting}>
+                Voltar ao login
+              </button>
+            </div>
+          ) : (
           <form onSubmit={handleSubmit}>
             <div className="pf-field">
               <Mail size={18} className="pf-icon-left" />
@@ -227,6 +303,7 @@ export default function PresencefyLogin() {
               {!submitting && <ArrowRight size={18} />}
             </button>
           </form>
+          )}
 
           <div className="pf-divider" />
           <p className="pf-help">

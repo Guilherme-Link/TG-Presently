@@ -11,6 +11,9 @@ import br.com.fatecid.guidu.presently.repository.UserRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.webauthn.api.ImmutablePublicKeyCredentialUserEntity;
+import org.springframework.security.web.webauthn.api.PublicKeyCredentialUserEntity;
+import org.springframework.security.web.webauthn.management.PublicKeyCredentialUserEntityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,17 +27,20 @@ public class UserService implements UserDetailsService {
     private final ParticipantService participantService;
     private final ParticipantRepository participantRepository;
     private final PasswordEncoder encoder;
+    private final PublicKeyCredentialUserEntityRepository webAuthnUserRepository;
 
     public UserService(
                 UserRepository repository,
                 ParticipantService participantService,
                 ParticipantRepository participantRepository,
-                PasswordEncoder encoder
+                PasswordEncoder encoder,
+                PublicKeyCredentialUserEntityRepository webAuthnUserRepository
             ) {
         this.repository = repository;
         this.participantService = participantService;
         this.participantRepository = participantRepository;
         this.encoder = encoder;
+        this.webAuthnUserRepository = webAuthnUserRepository;
     }
 
     // Retorna um objeto de detalhes de um usuário; 
@@ -116,7 +122,15 @@ public class UserService implements UserDetailsService {
             throw new IllegalArgumentException("Nome de usuário já está em uso");
         }
 
+        PublicKeyCredentialUserEntity webAuthnUser = webAuthnUserRepository.findByUsername(user.getUsername());
         user.setUsername(username);
+        if (webAuthnUser != null) {
+            webAuthnUserRepository.save(ImmutablePublicKeyCredentialUserEntity.builder()
+                    .id(webAuthnUser.getId())
+                    .name(username)
+                    .displayName(webAuthnUser.getDisplayName())
+                    .build());
+        }
         resolveRoles(user, request.getRole());
 
         return new UserResponse(repository.save(user));
@@ -128,6 +142,10 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
         Participant participant = user.getParticipant();
+        PublicKeyCredentialUserEntity webAuthnUser = webAuthnUserRepository.findByUsername(user.getUsername());
+        if (webAuthnUser != null) {
+            webAuthnUserRepository.delete(webAuthnUser.getId());
+        }
 
         if (participant != null) {
             participant.setUser(null);
