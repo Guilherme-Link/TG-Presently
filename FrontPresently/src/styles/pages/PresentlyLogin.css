@@ -420,3 +420,29 @@ body,
   font-weight: 500;
   color: #5f5b59;
 }
+
+.pf-mfa__title {
+  margin: 0 0 8px;
+  color: #292423;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.pf-mfa__description {
+  margin: 0 0 20px;
+  color: #746e6b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.pf-mfa__cancel {
+  display: block;
+  margin: 14px auto 0;
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: #766e6b;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}

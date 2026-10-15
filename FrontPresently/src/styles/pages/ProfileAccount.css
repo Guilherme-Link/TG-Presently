@@ -1,0 +1,218 @@
+.security-account-page {
+  display: flex;
+  align-items: stretch;
+  min-height: 100vh;
+  background: #f7f5f4;
+}
+
+.security-account {
+  box-sizing: border-box;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 100vh;
+  padding: 32px clamp(20px, 4vw, 56px) 56px;
+}
+
+.security-account__header {
+  width: min(100%, 920px);
+  margin: 0 auto 24px;
+}
+
+.security-account__card {
+  box-sizing: border-box;
+  width: min(100%, 920px);
+  margin: 0 auto 20px;
+  padding: clamp(20px, 3vw, 30px);
+  border: 1px solid #ece7e5;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 12px 34px rgba(45, 33, 28, 0.06);
+}
+
+.security-account__section-heading {
+  margin-bottom: 22px;
+}
+
+.security-account__section-heading h2,
+.security-account__intro h2 {
+  margin: 0 0 6px;
+  color: #262222;
+  font-size: 20px;
+}
+
+.security-account__section-heading p,
+.security-account__intro p,
+.security-account__list p {
+  margin: 0;
+  color: #746e6b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.security-account__profile-form {
+  display: grid;
+  gap: 18px;
+}
+
+.security-account__password-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.security-account__field {
+  display: grid;
+  gap: 7px;
+  color: #383230;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.security-account__field input {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 46px;
+  padding: 0 13px;
+  border: 1px solid #ded8d5;
+  border-radius: 10px;
+  background: #fff;
+  color: #302b29;
+  font: inherit;
+  font-weight: 400;
+}
+
+.security-account__field input:focus {
+  border-color: #d62e2e;
+  outline: 3px solid rgba(214, 46, 46, 0.12);
+}
+
+.security-account__field input:read-only {
+  background: #f8f7f6;
+  color: #77706d;
+}
+
+.security-account__field small {
+  color: #817a77;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.security-account__intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.security-account__icon {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  place-items: center;
+  border-radius: 14px;
+  background: #fff0f0;
+  color: #d62e2e;
+}
+
+.security-account__credential {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid #eee9e7;
+}
+
+.security-account__credential div {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+  overflow-wrap: anywhere;
+}
+
+.security-account__credential strong {
+  color: #302b29;
+  font-size: 14px;
+}
+
+.security-account__credential span {
+  color: #817a77;
+  font-size: 12px;
+}
+
+.security-account__remove {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  place-items: center;
+  border: 1px solid #eee2e1;
+  border-radius: 11px;
+  background: #fff;
+  color: #b4232c;
+  cursor: pointer;
+}
+
+.security-account__remove:disabled,
+.security-account__add:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.security-account__add {
+  justify-self: start;
+  min-height: 46px;
+  margin-top: 4px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #d62e2e;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.security-account__message,
+.security-account__error {
+  margin: 12px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.security-account__message { color: #277447; }
+.security-account__error { color: #b4232c; }
+
+@media (max-width: 768px) {
+  .security-account-page {
+    display: block;
+  }
+
+  .security-account {
+    min-height: calc(100vh - var(--mobile-nav-height, 72px));
+    padding: 22px 16px 36px;
+  }
+
+  .security-account-page--admin .security-account {
+    padding-top: calc(var(--mobile-nav-height, 72px) + 18px);
+  }
+
+  .security-account__header {
+    margin-bottom: 18px;
+  }
+
+  .security-account__card {
+    margin-bottom: 14px;
+    border-radius: 16px;
+  }
+
+  .security-account__password-fields {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .security-account__add {
+    width: 100%;
+  }
+}

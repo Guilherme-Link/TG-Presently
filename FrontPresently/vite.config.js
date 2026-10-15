@@ -7,6 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     mkcert({
+      hosts: ["presently.teste.com"],
       savePath: './certs',
     })
   ],
@@ -20,6 +21,16 @@ export default defineConfig({
         secure: false,
       },
       "/security": {
+        target: "https://localhost:8443",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/webauthn": {
+        target: "https://localhost:8443",
+        changeOrigin: true,
+        secure: false,
+      },
+      "/login/webauthn": {
         target: "https://localhost:8443",
         changeOrigin: true,
         secure: false,
