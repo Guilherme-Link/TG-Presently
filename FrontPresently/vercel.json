@@ -2,6 +2,22 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://tg-presently.onrender.com/api/:path*"
+    },
+    {
+      "source": "/security/:path*",
+      "destination": "https://tg-presently.onrender.com/security/:path*"
+    },
+    {
+      "source": "/webauthn/:path*",
+      "destination": "https://tg-presently.onrender.com/webauthn/:path*"
+    },
+    {
+      "source": "/login/webauthn",
+      "destination": "https://tg-presently.onrender.com/login/webauthn"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
