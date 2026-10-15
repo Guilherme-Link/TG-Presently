@@ -23,7 +23,6 @@ export default function ProfileAccount() {
   });
   const [credentials, setCredentials] = useState([]);
   const [profile, setProfile] = useState(null);
-  const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(true);
@@ -52,7 +51,6 @@ export default function ProfileAccount() {
     apiFetch("/security/v1/me", { method: "GET" })
       .then((user) => {
         setProfile(user);
-        setEmail(user.email ?? "");
       })
       .catch((loadError) => setProfileError(loadError.message || "Não foi possível carregar seu perfil."));
   }, [loadCredentials]);
@@ -65,15 +63,14 @@ export default function ProfileAccount() {
     try {
       const updated = await apiFetch("/security/v1/me/profile", {
         method: "PUT",
-        body: JSON.stringify({ email, currentPassword, newPassword }),
+        body: JSON.stringify({ currentPassword, newPassword }),
       });
       setProfile(updated);
-      setEmail(updated.email ?? "");
       setCurrentPassword("");
       setNewPassword("");
       const cached = JSON.parse(localStorage.getItem("presently_auth") ?? "{}");
       localStorage.setItem("presently_auth", JSON.stringify({ ...cached, ...updated }));
-      setProfileMessage("Perfil atualizado.");
+      setProfileMessage("Senha alterada com sucesso.");
     } catch (saveError) {
       setProfileError(saveError.message || "Não foi possível atualizar seu perfil.");
     } finally {
@@ -140,7 +137,7 @@ export default function ProfileAccount() {
         <section className="security-account__card security-account__profile-card" aria-busy={savingProfile}>
           <div className="security-account__section-heading">
             <h2>Dados da conta</h2>
-            <p>Consulte seu nome e atualize seu e-mail ou senha.</p>
+            <p>Consulte seus dados e altere sua senha.</p>
           </div>
           {profileMessage && <p className="security-account__message" role="status">{profileMessage}</p>}
           {profileError && <p className="security-account__error" role="alert">{profileError}</p>}
@@ -152,20 +149,20 @@ export default function ProfileAccount() {
             </label>
             <label className="security-account__field">
               <span>E-mail</span>
-              <input type="email" value={email} onChange={(event) => setEmail(event.target.value)} autoComplete="email" placeholder="seu@email.com" />
+              <input type="email" value={profile?.email || profile?.username || ""} autoComplete="email" placeholder="E-mail não informado" readOnly />
             </label>
             <div className="security-account__password-fields">
               <label className="security-account__field">
                 <span>Senha atual</span>
-                <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" placeholder="Obrigatória para trocar a senha" />
+                <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" placeholder="Digite sua senha atual" required />
               </label>
               <label className="security-account__field">
                 <span>Nova senha</span>
-                <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" minLength={8} placeholder="Mínimo de 8 caracteres" />
+                <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" minLength={8} placeholder="Mínimo de 8 caracteres" required />
               </label>
             </div>
             <button type="submit" className="security-account__add" disabled={savingProfile}>
-              {savingProfile ? "Salvando..." : "Salvar alterações"}
+              {savingProfile ? "Alterando..." : "Alterar senha"}
             </button>
           </form>
         </section>

@@ -104,18 +104,6 @@ public class AuthService {
         User user = repository.findByUsername(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException(authentication.getName()));
 
-        String email = request.getEmail() == null ? null : request.getEmail().trim();
-        if (email != null && email.isEmpty()) {
-            email = null;
-        }
-        if (email != null && !email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
-            throw new IllegalArgumentException("Informe um e-mail válido.");
-        }
-        if (email != null && repository.existsByEmailIgnoreCaseAndIdNot(email, user.getId())) {
-            throw new IllegalArgumentException("Este e-mail já está vinculado a outra conta.");
-        }
-        user.setEmail(email);
-
         String newPassword = request.getNewPassword() == null ? "" : request.getNewPassword();
         if (!newPassword.isBlank()) {
             String currentPassword = request.getCurrentPassword();
