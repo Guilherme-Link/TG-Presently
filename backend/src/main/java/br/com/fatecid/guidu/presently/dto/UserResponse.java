@@ -8,6 +8,8 @@ public class UserResponse {
 
     private Long id;
     private String username;
+    private String email;
+    private String fullName;
     private Long participantId;
     private Set<String> roles;
 
@@ -21,10 +23,12 @@ public class UserResponse {
     public UserResponse(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
+        this.email = user.getEmail();
         this.roles = user.getRoles();
 
         if (user.getParticipant() != null){
             this.participantId = user.getParticipant().getId();
+            this.fullName = user.getParticipant().getName();
         }
         else this.participantId = null;
     }
@@ -36,6 +40,14 @@ public class UserResponse {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 
     public Long getParticipantId() {
