@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
+    
     {
       "source": "/api/:path*",
       "destination": "https://tg-presently.onrender.com/api/:path*"
@@ -21,5 +22,6 @@
       "source": "/(.*)",
       "destination": "/index.html"
     }
+    
   ]
 }
