@@ -21,6 +21,8 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class ValidationCodeService {
 
+    private static final ZoneId APP_TIME_ZONE = ZoneId.of("America/Sao_Paulo");
+
     // Recebe a configuração de tempo de validade do código das application.properties
     @Value("${presently.validationcode.validfor}")
     private int codeValidForSeconds;
@@ -47,7 +49,7 @@ public class ValidationCodeService {
 
         
         // Cálculo do tempo de validade do QR code 
-        long counter = timestamp.atZone(ZoneId.systemDefault()).toEpochSecond() / codeValidForSeconds;
+        long counter = timestamp.atZone(APP_TIME_ZONE).toEpochSecond() / codeValidForSeconds;
         
         String code = new String();
 
@@ -84,7 +86,7 @@ public class ValidationCodeService {
 
         LocalDateTime validationTimestamp = validationDTO.getValidationTimestamp();
         if (validationTimestamp == null) {
-            validationTimestamp = LocalDateTime.now();
+            validationTimestamp = LocalDateTime.now(APP_TIME_ZONE);
         }
 
         Event event = new Event();

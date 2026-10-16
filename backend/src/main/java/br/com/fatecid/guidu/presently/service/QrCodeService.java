@@ -39,7 +39,7 @@ public class QrCodeService {
         // Gera a String base que será transformada em QRcode
         String text = codeService.generateValidationCode(
             eventId,
-            LocalDateTime.ofInstant(generatedAt, ZoneId.systemDefault())
+            LocalDateTime.ofInstant(generatedAt, ZoneId.of("America/Sao_Paulo"))
         );
 
         // Codifica a String para código QR
@@ -70,7 +70,7 @@ public class QrCodeService {
         // Gera a String base do código de validação
         String text = codeService.generateValidationCode(
             terminalService.findActiveEventId(terminalId), 
-            LocalDateTime.now()
+            LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
         );
 
         // Cria o DTO para retorno ao usuário

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -73,7 +74,7 @@ public class TerminalService {
 
         Event event = eventService.findActiveEvent(
             ambient.getId(), 
-            LocalDateTime.now()
+            LocalDateTime.now(ZoneId.of("America/Sao_Paulo"))
         ).orElseThrow();
 
         return event.getId();
