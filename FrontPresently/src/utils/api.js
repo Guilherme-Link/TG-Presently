@@ -5,15 +5,10 @@ export function getApiBaseUrl() {
     return configuredUrl.replace(/\/$/, "");
   }
 
-  if (typeof window === "undefined") {
-    return "https://localhost:8443";
-  }
-
-  if (window.location.port === "5173") {
-    return "";
-  }
-
-  return `https://${window.location.hostname}:8443`;
+  // Em desenvolvimento, o proxy do Vite encaminha as chamadas ao backend.
+  // Em produção, os rewrites do host (por exemplo, Vercel) fazem o mesmo.
+  // Usar caminhos relativos também mantém cookies de sessão no domínio do front.
+  return "";
 }
 
 export class ApiError extends Error {
