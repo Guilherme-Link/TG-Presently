@@ -7,7 +7,6 @@ export default defineConfig({
   plugins: [
     react(),
     mkcert({
-      hosts: ["presently.teste.com"],
       savePath: './certs',
     })
   ],
