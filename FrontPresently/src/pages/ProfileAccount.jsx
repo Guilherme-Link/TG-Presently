@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { MdDeleteOutline, MdFingerprint } from "react-icons/md";
+import Modal from "../components/Modal/Modal.jsx";
+import Button from "../components/Button/Button.jsx";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
 import SidebarAdmin from "../components/DashboardComponents/Sidebar/SidebarAdmin.jsx";
 import { adminSidebarSections } from "../data/dashboardDataAdmin";
@@ -32,6 +34,12 @@ export default function ProfileAccount() {
   const [profileError, setProfileError] = useState("");
   const [passkeyMessage, setPasskeyMessage] = useState("");
   const [passkeyError, setPasskeyError] = useState("");
+  const [credentialToRemove, setCredentialToRemove] = useState(null);
+  const [isMobileDevice] = useState(() => {
+    const userAgent = navigator.userAgent || "";
+    const isIPad = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
+    return /Android|iPhone|iPad|iPod/i.test(userAgent) || isIPad;
+  });
 
   const loadCredentials = useCallback(async () => {
     setLoading(true);
@@ -83,6 +91,10 @@ export default function ProfileAccount() {
     setPasskeyMessage("");
     setPasskeyError("");
     try {
+      if (!isMobileDevice) {
+        setPasskeyError("Para cadastrar uma passkey, acesse seu perfil pelo celular ou tablet.");
+        return;
+      }
       if (!window.PublicKeyCredential || !navigator.credentials?.create) {
         throw new Error("Este navegador não oferece suporte a passkeys.");
       }
@@ -92,7 +104,8 @@ export default function ProfileAccount() {
       const options = decodeCreationOptions(response.publicKey ?? response);
       const credential = await navigator.credentials.create({ publicKey: options });
       if (!credential) {
-        throw new Error("O cadastro da passkey foi cancelado.");
+        setPasskeyMessage("Tudo certo, o cadastro da passkey foi cancelado. Você pode tentar novamente quando quiser.");
+        return;
       }
 
       await apiFetch("/webauthn/register", {
@@ -107,13 +120,19 @@ export default function ProfileAccount() {
       setPasskeyMessage("Passkey cadastrada. Nos próximos acessos, ela será solicitada após a senha.");
       await loadCredentials();
     } catch (registerError) {
-      setPasskeyError(registerError.message || "Não foi possível cadastrar a passkey.");
+      if (registerError.name === "NotAllowedError" || registerError.name === "AbortError") {
+        setPasskeyMessage("Tudo certo, o cadastro da passkey foi cancelado. Você pode tentar novamente quando quiser.");
+      } else {
+        setPasskeyError("Não foi possível cadastrar a passkey agora. Confira se o bloqueio de tela está ativado e tente novamente.");
+      }
     } finally {
       setBusy(false);
     }
   }
 
-  async function removePasskey(credential) {
+  async function removePasskey() {
+    if (!credentialToRemove) return;
+    const credential = credentialToRemove;
     setBusy(true);
     setPasskeyMessage("");
     setPasskeyError("");
@@ -121,6 +140,7 @@ export default function ProfileAccount() {
       await apiFetch("/security/v1/csrf", { method: "GET" });
       await apiFetch(`/webauthn/register/${encodeURIComponent(credential.id)}`, { method: "DELETE" });
       setPasskeyMessage("Passkey removida.");
+      setCredentialToRemove(null);
       await loadCredentials();
     } catch (removeError) {
       setPasskeyError(removeError.message || "Não foi possível remover a passkey.");
@@ -189,18 +209,27 @@ export default function ProfileAccount() {
                   <span>Cadastrada em {formatDate(credential.created)}</span>
                   <span>Último uso: {formatDate(credential.lastUsed)}</span>
                 </div>
-                <button type="button" className="security-account__remove" onClick={() => removePasskey(credential)} disabled={busy} aria-label={`Remover ${credential.label || "passkey"}`}>
+                <button type="button" className="security-account__remove" onClick={() => setCredentialToRemove(credential)} disabled={busy} aria-label={`Remover ${credential.label || "passkey"}`}>
                   <MdDeleteOutline size={19} />
                 </button>
               </article>
             ))}
           </div>
 
-          <button type="button" className="security-account__add" onClick={registerPasskey} disabled={busy || loading}>
+          {isMobileDevice ? <button type="button" className="security-account__add" onClick={registerPasskey} disabled={busy || loading}>
             {busy ? "Processando..." : "Cadastrar passkey"}
-          </button>
+          </button> : <p className="security-account__device-note">O cadastro de passkey está disponível pelo celular ou tablet. Você ainda pode remover passkeys cadastradas neste dispositivo.</p>}
         </section>
       </main>
+      {credentialToRemove && <Modal title="Remover passkey" onClose={() => !busy && setCredentialToRemove(null)} width={420}>
+        <div className="security-account__confirm">
+          <p>Tem certeza de que deseja remover <strong>{credentialToRemove.label || "esta passkey"}</strong>? Você não poderá mais usá-la para entrar na sua conta.</p>
+          <div className="security-account__confirm-actions">
+            <Button variant="muted" onClick={() => setCredentialToRemove(null)} disabled={busy}>Cancelar</Button>
+            <Button variant="destructive" onClick={removePasskey} disabled={busy}>{busy ? "Removendo…" : "Remover passkey"}</Button>
+          </div>
+        </div>
+      </Modal>}
     </div>
   );
 }

@@ -201,26 +201,58 @@
 .security-account__message { color: #277447; }
 .security-account__error { color: #b4232c; }
 
-@media (max-width: 768px) {
+.security-account__device-note {
+  margin: 14px 0 0;
+  color: #746e6b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.security-account__confirm p {
+  margin: 0 0 20px;
+  color: #4b4542;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.security-account__confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+@media (max-width: 1023px) {
   .security-account-page {
     display: block;
   }
 
+  .security-account-page > .sidebar {
+    position: fixed;
+    inset: 0 auto auto 0;
+    width: 100vw;
+    height: var(--mobile-nav-height, 72px);
+    min-height: 0;
+    padding: 0;
+  }
+
+  .security-account-page > .sidebar.sidebar--open {
+    height: 100dvh;
+  }
+
+  .security-account-page > .sidebar .sidebar__mobile-header {
+    box-sizing: border-box;
+    padding: 16px 25px 16px 16px;
+  }
+
   .security-account {
+    width: 100%;
     min-height: calc(100vh - var(--mobile-nav-height, 72px));
     padding: var(--mobile-nav-height, 72px) 16px 36px;
   }
 
-  .security-account__header {
-    width: calc(100% + 32px);
-    min-height: 100px;
-    margin: 0 -16px 18px;
-    padding: 16px 18px;
-  }
-
-  .security-account__header .page-header__title {
-    font-size: 22px;
-    line-height: 1.2;
+  .security-account-page header.page-header.security-account__header {
+    width: 100vw;
+    margin: 0 0 18px calc(50% - 50vw);
   }
 
   .security-account__card {
@@ -235,5 +267,71 @@
 
   .security-account__add {
     width: 100%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .security-account-page > .sidebar .sidebar__mobile-header {
+    display: flex;
+  }
+
+  .security-account-page > .sidebar .sidebar__menu {
+    position: absolute;
+    top: var(--mobile-nav-height, 72px);
+    left: 0;
+    display: flex;
+    max-height: calc(100dvh - var(--mobile-nav-height, 72px));
+    padding: 0 20px 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(-8px);
+  }
+
+  .security-account-page > .sidebar.sidebar--open .sidebar__menu {
+    position: static;
+    max-height: calc(100dvh - var(--mobile-nav-height, 72px));
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .security-account-page > .sidebar .sidebar__desktop-brand {
+    display: none;
+  }
+
+  .security-account-page > .sidebar .sidebar__group {
+    align-items: center;
+  }
+
+  .security-account-page > .sidebar .sidebar__group-title,
+  .security-account-page > .sidebar .sidebar__link {
+    width: min(100%, 360px);
+  }
+
+  .security-account-page > .sidebar .sidebar__group-title {
+    text-align: center;
+  }
+
+  .security-account-page > .sidebar .sidebar__nav {
+    align-items: center;
+  }
+
+  .security-account-page > .sidebar .sidebar__link {
+    justify-content: center;
+  }
+
+  .security-account__header {
+    min-height: 100px;
+    padding: 16px 18px;
+  }
+
+  .security-account__header .page-header__title {
+    font-size: 22px;
+    line-height: 1.2;
   }
 }
