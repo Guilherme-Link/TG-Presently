@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { MdDeleteOutline, MdFingerprint } from "react-icons/md";
+import { MdDeleteOutline, MdFingerprint, MdWarningAmber } from "react-icons/md";
 import Modal from "../components/Modal/Modal.jsx";
 import Button from "../components/Button/Button.jsx";
 import Sidebar from "../components/DashboardComponents/Sidebar/Sidebar (1).jsx";
@@ -87,6 +87,10 @@ export default function ProfileAccount() {
   }
 
   async function registerPasskey() {
+    if (credentials.length > 0) {
+      setPasskeyError("Esta conta já possui uma passkey cadastrada. Remova-a antes de cadastrar outra.");
+      return;
+    }
     setBusy(true);
     setPasskeyMessage("");
     setPasskeyError("");
@@ -216,13 +220,14 @@ export default function ProfileAccount() {
             ))}
           </div>
 
-          {isMobileDevice ? <button type="button" className="security-account__add" onClick={registerPasskey} disabled={busy || loading}>
+          {isMobileDevice && credentials.length === 0 ? <button type="button" className="security-account__add" onClick={registerPasskey} disabled={busy || loading}>
             {busy ? "Processando..." : "Cadastrar passkey"}
-          </button> : <p className="security-account__device-note">O cadastro de passkey está disponível pelo celular ou tablet. Você ainda pode remover passkeys cadastradas neste dispositivo.</p>}
+          </button> : isMobileDevice ? <p className="security-account__device-note">Esta conta já possui uma passkey cadastrada. Remova-a antes de cadastrar outra.</p> : <p className="security-account__device-note">O cadastro de passkey está disponível pelo celular ou tablet. Você ainda pode remover passkeys cadastradas neste dispositivo.</p>}
         </section>
       </main>
       {credentialToRemove && <Modal title="Remover passkey" onClose={() => !busy && setCredentialToRemove(null)} width={420}>
         <div className="security-account__confirm">
+          <span className="security-account__confirm-icon" aria-hidden="true"><MdWarningAmber size={22} /></span>
           <p>Tem certeza de que deseja remover <strong>{credentialToRemove.label || "esta passkey"}</strong>? Você não poderá mais usá-la para entrar na sua conta.</p>
           <div className="security-account__confirm-actions">
             <Button variant="muted" onClick={() => setCredentialToRemove(null)} disabled={busy}>Cancelar</Button>

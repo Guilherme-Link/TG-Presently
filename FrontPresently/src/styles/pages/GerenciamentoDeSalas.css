@@ -214,6 +214,73 @@
   background: #fcfcfc;
 }
 
+.gds-geo-toggle-card {
+  margin-bottom: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--gds-border);
+  border-radius: 10px;
+  background: var(--gds-white);
+}
+
+.gds-geo-toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gds-geo-toggle-row__label {
+  flex: 1;
+  color: var(--gds-black);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.gds-geo-toggle-row__state {
+  min-width: 54px;
+  color: var(--gds-text-secondary);
+  font-size: 11px;
+}
+
+.gds-geo-switch {
+  position: relative;
+  width: 42px;
+  height: 24px;
+  padding: 3px;
+  border: 0;
+  border-radius: 999px;
+  background: #a8a8a8;
+  cursor: pointer;
+  transition: background 160ms ease;
+}
+
+.gds-geo-switch--on {
+  background: #e5232e;
+}
+
+.gds-geo-switch:focus-visible {
+  outline: 3px solid rgba(229, 35, 46, 0.25);
+  outline-offset: 2px;
+}
+
+.gds-geo-switch:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.gds-geo-switch__thumb {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translateX(0);
+  transition: transform 160ms ease;
+}
+
+.gds-geo-switch--on .gds-geo-switch__thumb {
+  transform: translateX(18px);
+}
+
 .gds-location-field__help,
 .gds-location-field__saved {
   margin: -2px 0 12px;

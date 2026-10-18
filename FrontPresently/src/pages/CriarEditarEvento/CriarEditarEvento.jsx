@@ -3,6 +3,7 @@ import SidebarAdmin from "../../components/DashboardComponents/Sidebar/SidebarAd
 import PageHeader from "../../components/PageHeader/PageHeader.jsx";
 import { adminSidebarSections } from "../../data/dashboardDataAdmin";
 import Button from "../../components/Button/Button";
+import Modal from "../../components/Modal/Modal.jsx";
 import Stepper from "../../components/Stepper/Stepper";
 import ParticipantsPanel from "../../components/ParticipantsPanel/ParticipantsPanel";
 import ParticipantSelectionModal from "../../components/ParticipantSelectionModal/ParticipantSelectionModal.jsx";
@@ -26,6 +27,7 @@ function CriarEditarEvento({
 }) {
   const isEditing = Boolean(eventToEdit);
   const [activeModal, setActiveModal] = useState(null);
+  const [collisionMessage, setCollisionMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const {
     step,
@@ -119,6 +121,14 @@ function CriarEditarEvento({
     try {
       const payload = buildEventPayload(values, currentUser?.participantId ?? eventToEdit?.responsibleId ?? null);
       await onSave?.(payload);
+    } catch (error) {
+      if (error?.status === 409) {
+        setCollisionMessage(
+          "Este horário conflita com outro evento que usa a mesma sala, o mesmo responsável ou algum dos mesmos participantes. Altere esses dados ou o horário."
+        );
+        return;
+      }
+      throw error;
     } finally {
       setSaving(false);
     }
@@ -259,6 +269,15 @@ function CriarEditarEvento({
           onClose={() => setActiveModal(null)}
           onConfirm={handleAddSelectedItems}
         />
+      )}
+
+      {collisionMessage && (
+        <Modal title="Conflito de horário" onClose={() => setCollisionMessage("")} width={440}>
+          <div className="cee-conflict-modal">
+            <p>{collisionMessage}</p>
+            <Button variant="primary" onClick={() => setCollisionMessage("")}>Entendi</Button>
+          </div>
+        </Modal>
       )}
     </div>
   );

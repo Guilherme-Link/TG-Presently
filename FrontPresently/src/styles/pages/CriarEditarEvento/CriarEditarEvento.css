@@ -139,6 +139,18 @@
   padding: 10px 12px;
 }
 
+.cee-conflict-modal p {
+  margin: 0 0 20px;
+  color: var(--evt-text-secondary);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.cee-conflict-modal .evt-btn {
+  display: flex;
+  margin-left: auto;
+}
+
 .evt-participant-lists {
   display: flex;
   flex-wrap: wrap;

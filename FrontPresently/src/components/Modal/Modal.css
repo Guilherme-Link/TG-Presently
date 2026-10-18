@@ -21,8 +21,9 @@
 
 .evt-modal {
   width: 100%;
-  background: var(--evt-white);
-  border-radius: var(--evt-radius-lg);
+  background: #fff;
+  color: #202124;
+  border-radius: var(--evt-radius-lg, 14px);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.22);
   animation: evt-pop-in 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
   max-height: 88vh;

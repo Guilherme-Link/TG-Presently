@@ -297,8 +297,15 @@
 }
 
 .gt-icon-btn:hover:not(:disabled) {
-  background: #EFEFEF;
-  transform: rotate(40deg);
+  transform: translateY(-1px);
+}
+
+.gt-icon-btn--delete {
+  color: var(--gt-red);
+}
+
+.gt-icon-btn--delete:hover:not(:disabled) {
+  background: #FDE7E6;
 }
 
 .gt-icon-btn:disabled {

@@ -155,7 +155,7 @@ export default function GerenciamentoDeTerminais() {
                       <span className="gt-table__name" title={`ID físico: ${terminal.terminalId}`}>{terminal.name}</span>
                       <div className="gt-table__cell-center"><select className="gt-room-select" value={terminal.ambientId ?? ""} disabled={busyId === terminal.id || !ambients.length} onChange={(event) => changeAmbient(terminal, event.target.value)} aria-label={`Ambiente vinculado ao ${terminal.name}`}><option value="" disabled>{terminal.ambientId ? ambientName(terminal.ambientId) : "Selecione o ambiente"}</option>{ambients.map((ambient) => <option key={ambient.id} value={ambient.id}>{ambient.name}</option>)}</select></div>
                       <div className="gt-table__cell-center"><span className="gt-badge gt-badge--connected">Autorizado</span></div>
-                      <div className="gt-table__cell-center"><button type="button" className="gt-icon-btn" disabled={busyId === terminal.id} aria-label={`Excluir ${terminal.name}`} title="Excluir terminal" onClick={() => removeTerminal(terminal)}><MdDeleteOutline size={18} /></button></div>
+                      <div className="gt-table__cell-center"><button type="button" className="gt-icon-btn gt-icon-btn--delete" disabled={busyId === terminal.id} aria-label={`Excluir ${terminal.name}`} title="Excluir terminal" onClick={() => removeTerminal(terminal)}><MdDeleteOutline size={18} /></button></div>
                     </div>)}
                     {!authorizedPageTerminals.length && <p className="gt-table__empty">{search ? "Nenhum terminal autorizado encontrado." : "Nenhum terminal autorizado ainda."}</p>}
                   </div>
