@@ -5,6 +5,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PageHeader from "../components/PageHeader/PageHeader.jsx";
 import { apiFetch } from "../utils/api.js";
+import { decodeRequestOptions, serializeCredential } from "../utils/webauthn.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import "../styles/pages/MarcarPresencaMobile.css";
 
@@ -66,6 +67,30 @@ function MarcarPresencaMobile({
   const participantId = currentUser?.participantId ?? null;
   const resolvedLesson = activeEvent ?? lesson;
 
+  const confirmPasskey = useCallback(async () => {
+    if (!window.PublicKeyCredential || !navigator.credentials?.get) {
+      throw new Error("Este dispositivo ou navegador não oferece suporte a passkeys.");
+    }
+
+    const credentials = await apiFetch("/security/v1/webauthn/credentials");
+    if (!Array.isArray(credentials) || credentials.length === 0) {
+      throw new Error("Adicione uma passkey ao seu perfil antes de registrar presença.");
+    }
+
+    await apiFetch("/security/v1/csrf");
+    const optionsResponse = await apiFetch("/webauthn/authenticate/options", { method: "POST" });
+    const options = decodeRequestOptions(optionsResponse.publicKey ?? optionsResponse);
+    const credential = await navigator.credentials.get({ publicKey: options });
+    if (!credential) {
+      throw new Error("A confirmação biométrica foi cancelada.");
+    }
+
+    await apiFetch("/login/webauthn", {
+      method: "POST",
+      body: JSON.stringify(serializeCredential(credential)),
+    });
+  }, []);
+
   const validateAttendance = useCallback(async (decodedText) => {
     if (!resolvedEventId) {
       throw new Error(
@@ -82,6 +107,8 @@ function MarcarPresencaMobile({
     if (!normalizedCode) {
       throw new Error("QR Code inválido.");
     }
+
+    await confirmPasskey();
 
     const location = await new Promise((resolve) => {
       if (!navigator.geolocation) {
@@ -132,7 +159,7 @@ function MarcarPresencaMobile({
     }
 
     // O endpoint só responde 2xx após validar o código e registrar a presença.
-  }, [activeEventError, participantId, resolvedEventId]);
+  }, [activeEventError, confirmPasskey, participantId, resolvedEventId]);
 
   useEffect(() => {
     if (!isScanning) return undefined;
