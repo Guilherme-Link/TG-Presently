@@ -51,7 +51,7 @@ export const adminSidebarSections = [
         id: "tendencias-link",
         label: "Tendências",
         icon: "trending",
-        to: "#tendencias",
+        to: "tendencias",
       },
       { id: "salas-link", label: "Salas", icon: "rooms", to: "salas" },
       { id: "terminais-link", label: "Terminais / Quiosques", icon: "devices", to: "terminais" },

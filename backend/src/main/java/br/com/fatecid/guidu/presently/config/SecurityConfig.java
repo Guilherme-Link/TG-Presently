@@ -126,7 +126,7 @@ public class SecurityConfig {
         ));
         allowedOrigins.addAll(Arrays.asList(webauthnAllowedOrigins));
         configuration.setAllowedOriginPatterns(allowedOrigins);
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true); // essencial pra cookie de sessão
 

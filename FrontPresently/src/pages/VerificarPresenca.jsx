@@ -27,7 +27,8 @@ function isScheduledOn(event, date) {
     .map(Number);
   const start = new Date(startYear, startMonth - 1, startDay);
   const end = new Date(endYear, endMonth - 1, endDay);
-  if (!startYear || !endYear || date < start || date > end) return false;
+  const calendarDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  if (!startYear || !endYear || calendarDay < start || calendarDay > end) return false;
   if (event.eventType !== "RECURRING") return true;
   const interval = Number(event.intervalDays);
   const elapsedDays = Math.floor(
@@ -94,12 +95,10 @@ export default function VerificarPresenca() {
         const me = await apiFetch("/security/v1/me", { method: "GET" });
         if (!me?.participantId) throw new Error("missing-participant");
         const today = new Date();
-        const [responsibleEvents, dailyReport, allParticipants] =
-          await Promise.all([
-            listResponsibleEvents(me.participantId),
-            listDailyAttendanceReport(formatLocalDate(today), me.participantId),
-            listParticipants(),
-          ]);
+        const [responsibleEvents, allParticipants] = await Promise.all([
+          listResponsibleEvents(me.participantId),
+          listParticipants(),
+        ]);
         const currentEvent = (
           Array.isArray(responsibleEvents) ? responsibleEvents : []
         ).find((event) => isInProgress(event, today));
@@ -107,21 +106,25 @@ export default function VerificarPresenca() {
           if (!cancelled) setLesson(null);
           return;
         }
-        const occurrence = (Array.isArray(dailyReport) ? dailyReport : []).find(
-          (item) => String(item.eventId) === String(currentEvent.id),
-        );
-        const occurrenceDetail = occurrence?.occurrenceId
-          ? await getAttendanceOccurrence(occurrence.occurrenceId)
-          : null;
+        let occurrenceDetail = null;
+        try {
+          const dailyReport = await listDailyAttendanceReport(formatLocalDate(today), me.participantId);
+          const occurrence = (Array.isArray(dailyReport) ? dailyReport : []).find(
+            (item) => String(item.eventId) === String(currentEvent.id),
+          );
+          if (occurrence?.occurrenceId) {
+            occurrenceDetail = await getAttendanceOccurrence(occurrence.occurrenceId);
+          }
+        } catch {
+          // A falha no relatório de presença não deve impedir a exibição dos participantes.
+        }
         const attendanceByParticipantId = new Map(
           (Array.isArray(occurrenceDetail?.attendances)
             ? occurrenceDetail.attendances
             : []
           ).map((attendance) => [String(attendance.participantId), attendance]),
         );
-        const participantIds = new Set(
-          (currentEvent.participantIds ?? []).map(String),
-        );
+        const participantIds = new Set((currentEvent.participantIds ?? []).map(String));
         const rows = (Array.isArray(allParticipants) ? allParticipants : [])
           .filter((participant) => participantIds.has(String(participant.id)))
           .map((participant) => ({

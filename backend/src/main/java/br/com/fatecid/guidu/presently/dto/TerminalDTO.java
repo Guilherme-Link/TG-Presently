@@ -16,7 +16,11 @@ public record TerminalDTO(
             terminal.getTerminalId(),
             terminal.getName(),
             terminal.isApproved(),
-            terminal.getAmbient().getId()
+            (
+                terminal.getAmbient() == null 
+                ? null
+                : terminal.getAmbient().getId()
+            )
         );
     }
 

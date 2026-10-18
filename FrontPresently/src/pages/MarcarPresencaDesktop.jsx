@@ -72,7 +72,6 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
 
       setQrLoading(true);
       setQrError("");
-      setQrCodeData(null);
 
       try {
         const payload = await apiFetch(`/api/v1/qrcode/${resolvedEventId}`, {
@@ -80,7 +79,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
         });
 
         if (!cancelled) {
-          setQrCodeData(payload);
+          setQrCodeData({ ...payload, eventId: resolvedEventId });
         }
       } catch (error) {
         if (!cancelled) {
@@ -195,18 +194,18 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
                 </div>
 
                 <div className="mpd-qr__card">
-                  {qrLoading ? (
-                    <div className="mpd-generator__state">Gerando QR Code...</div>
-                  ) : qrError ? (
-                    <div className="mpd-generator__state mpd-generator__state--error">
-                      {qrError}
-                    </div>
-                  ) : qrCodeData?.imageData ? (
+                  {qrCodeData?.imageData && String(qrCodeData.eventId) === String(resolvedEventId) ? (
                     <img
                       className="mpd-qr__image"
                       src={`data:image/png;base64,${qrCodeData.imageData}`}
                       alt="QR Code para presença"
                     />
+                  ) : qrLoading ? (
+                    <div className="mpd-generator__state">Gerando QR Code...</div>
+                  ) : qrError ? (
+                    <div className="mpd-generator__state mpd-generator__state--error">
+                      {qrError}
+                    </div>
                   ) : (
                     <div className="mpd-generator__state">
                       Ainda não há um QR Code disponível.

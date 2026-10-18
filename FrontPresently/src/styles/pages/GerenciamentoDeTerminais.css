@@ -218,6 +218,21 @@
   color: #8b1d12;
 }
 
+.gt-feedback--success {
+  color: #288200;
+}
+
+.gt-inline-action {
+  border: 0;
+  padding: 0 0 0 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .gt-state {
   display: flex;
   flex: 1;

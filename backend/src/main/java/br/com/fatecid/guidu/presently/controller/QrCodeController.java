@@ -3,6 +3,7 @@ package br.com.fatecid.guidu.presently.controller;
 import br.com.fatecid.guidu.presently.service.TerminalService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.fatecid.guidu.presently.dto.QrCodeRenderingDTO;
 import br.com.fatecid.guidu.presently.dto.QrCodeValidationDTO;
 import br.com.fatecid.guidu.presently.dto.TerminalCodeResponseDTO;
+import br.com.fatecid.guidu.presently.config.MfaSessionFilter;
 import br.com.fatecid.guidu.presently.entity.Terminal;
 import br.com.fatecid.guidu.presently.service.QrCodeService;
 import br.com.fatecid.guidu.presently.service.ValidationCodeService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 
@@ -50,7 +53,25 @@ public class QrCodeController {
 
     // Valida uma leitura de código qr
     @PostMapping("/validate")
-    public ResponseEntity<Void> register(@RequestBody QrCodeValidationDTO validationDTO) {
+    public ResponseEntity<Void> register(
+            @RequestBody QrCodeValidationDTO validationDTO,
+            Authentication authentication,
+            HttpServletRequest request) {
+        boolean passkeyConfirmed = authentication != null && authentication.getAuthorities().stream()
+                .anyMatch(authority -> "FACTOR_WEBAUTHN".equals(authority.getAuthority()));
+        var session = request.getSession(false);
+        Object verifiedAtValue = session == null
+                ? null
+                : session.getAttribute(MfaSessionFilter.ATTENDANCE_PASSKEY_VERIFIED_AT);
+        if (session != null) {
+            session.removeAttribute(MfaSessionFilter.ATTENDANCE_PASSKEY_VERIFIED_AT);
+        }
+        boolean recentlyVerified = verifiedAtValue instanceof Long verifiedAt
+                && System.currentTimeMillis() - verifiedAt <= 60_000;
+        if (!passkeyConfirmed || !recentlyVerified) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         if (validationService.validateCode(validationDTO)) {
             return ResponseEntity.ok().build();
         }
