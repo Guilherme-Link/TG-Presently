@@ -10,9 +10,11 @@ import br.com.fatecid.guidu.presently.repository.EventRepository;
 import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.persistence.EntityNotFoundException;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -97,12 +99,14 @@ public class EventService {
         return event.getSecretKey();
     }
 
+    @Transactional
     public EventDTO create(EventCreateDTO dto) {
 
         Event event = new Event();
 
         // Copia as informações recebidas pelo DTO e gera a chave secreta do evento
         copyDtoToEntity(dto, event);
+        validateNoScheduleCollision(event, null);
         event.generateSecretKey();
 
         event = eventRepository.save(event);
@@ -110,6 +114,7 @@ public class EventService {
         return new EventDTO(event);
     }
 
+    @Transactional
     public EventDTO update(Long id, EventCreateDTO dto) {
 
         Event event = eventRepository.findById(id)
@@ -117,6 +122,7 @@ public class EventService {
                         new EntityNotFoundException("Evento não encontrado."));
 
         copyDtoToEntity(dto, event);
+        validateNoScheduleCollision(event, id);
 
         event = eventRepository.save(event);
 
@@ -171,6 +177,55 @@ public class EventService {
         }
 
         event.setParticipants(participants);
+    }
+
+    private void validateNoScheduleCollision(Event candidate, Long ignoredEventId) {
+        if (candidate.getStartDate() == null || candidate.getEndDate() == null
+                || candidate.getStartTime() == null || candidate.getEndTime() == null
+                || candidate.getStartDate().isAfter(candidate.getEndDate())
+                || candidate.getStartTime().isAfter(candidate.getEndTime())) {
+            throw new IllegalArgumentException("Informe um período válido para o evento.");
+        }
+        if (candidate.getEventType() == Event.EventType.RECURRING && candidate.getIntervalDays() <= 0) {
+            throw new IllegalArgumentException("O intervalo da recorrência deve ser maior que zero.");
+        }
+
+        for (Event other : eventRepository.findAll()) {
+            if (other.getId().equals(ignoredEventId)) {
+                continue;
+            }
+
+            boolean sameRoom = other.getAmbient().getId().equals(candidate.getAmbient().getId());
+            boolean sameResponsible = other.getResponsible().getId().equals(candidate.getResponsible().getId());
+            boolean sharedParticipant = candidate.getParticipants().stream()
+                    .anyMatch(participant -> other.getParticipants().stream()
+                            .anyMatch(otherParticipant -> participant.getId().equals(otherParticipant.getId())));
+            if (!sameRoom && !sameResponsible && !sharedParticipant) continue;
+
+            if (!candidate.getStartTime().isBefore(other.getEndTime())
+                    || !other.getStartTime().isBefore(candidate.getEndTime())) {
+                continue;
+            }
+
+            LocalDate date = candidate.getStartDate().isAfter(other.getStartDate())
+                    ? candidate.getStartDate() : other.getStartDate();
+            LocalDate lastDate = candidate.getEndDate().isBefore(other.getEndDate())
+                    ? candidate.getEndDate() : other.getEndDate();
+            while (!date.isAfter(lastDate)) {
+                if (occursOn(candidate, date) && occursOn(other, date)) {
+                    throw new IllegalStateException(
+                            "Já existe um evento simultâneo com a mesma sala, responsável ou participante.");
+                }
+                date = date.plusDays(1);
+            }
+        }
+    }
+
+    private boolean occursOn(Event event, LocalDate date) {
+        if (date.isBefore(event.getStartDate()) || date.isAfter(event.getEndDate())) return false;
+        if (event.getEventType() == Event.EventType.SINGLE) return true;
+        long days = java.time.temporal.ChronoUnit.DAYS.between(event.getStartDate(), date);
+        return event.getIntervalDays() > 0 && days % event.getIntervalDays() == 0;
     }
 
 }

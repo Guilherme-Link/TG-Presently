@@ -246,6 +246,7 @@ function AmbientFormCard({
   const [name, setName] = useState(ambient?.name ?? "");
   const [description, setDescription] = useState(ambient?.description ?? "");
   const [areaPoints, setAreaPoints] = useState(() => getGeoFencePoints(ambient?.area));
+  const [geoEnabled, setGeoEnabled] = useState(() => ambient ? Boolean(ambient.area) : true);
   const [areaChanged, setAreaChanged] = useState(false);
   const [feedback, setFeedback] = useState(null);
 
@@ -265,14 +266,14 @@ function AmbientFormCard({
       return;
     }
 
-    if ((!ambient?.area || areaChanged) && areaPoints.length < 3) {
+    if (geoEnabled && (!ambient?.area || areaChanged) && areaPoints.length < 3) {
       setFeedback({ kind: "error", message: "Marque pelo menos três pontos no mapa para delimitar a área da sala." });
       return;
     }
 
-    payload.area = areaChanged
-      ? createGeoFence(areaPoints)
-      : ambient?.area ?? null;
+    payload.area = !geoEnabled
+      ? null
+      : areaChanged ? createGeoFence(areaPoints) : ambient?.area ?? null;
 
     setFeedback(null);
     await onSubmit(payload, {
@@ -280,6 +281,7 @@ function AmbientFormCard({
         setName("");
         setDescription("");
         setAreaPoints([]);
+        setGeoEnabled(false);
         setAreaChanged(false);
       },
       setLocalFeedback: setFeedback,
@@ -342,10 +344,21 @@ function AmbientFormCard({
         </div>
 
         <div className="gds-location-field">
-          <span className="gds-field-label">Área geográfica da sala</span>
-          <p className="gds-location-field__help">O mapa parte da sua localização atual. Arraste para navegar até outro local e marque pelo menos três pontos para fechar a área permitida para registrar presença.</p>
-          <AmbientLocationPicker points={areaPoints} onChange={(points) => { setAreaPoints(points); setAreaChanged(true); }} />
-          {!areaChanged && ambient?.area && <p className="gds-location-field__saved" role="status">A área cadastrada será mantida. Marque novos pontos para substituí-la.</p>}
+          <div className="gds-geo-toggle-card">
+            <div className="gds-geo-toggle-row">
+              <span className="gds-geo-toggle-row__label">Exigir localização para registrar presença nesta sala</span>
+              <button type="button" className={`gds-geo-switch${geoEnabled ? " gds-geo-switch--on" : ""}`} role="switch" aria-checked={geoEnabled} aria-label="Exigir localização para registrar presença nesta sala" onClick={() => setGeoEnabled((enabled) => !enabled)} disabled={loading || saving}>
+                <span className="gds-geo-switch__thumb" />
+              </button>
+              <span className="gds-geo-toggle-row__state">{geoEnabled ? "Ligado" : "Desligado"}</span>
+            </div>
+          </div>
+          {geoEnabled && <>
+            <span className="gds-field-label">Área geográfica da sala</span>
+            <p className="gds-location-field__help">O mapa parte da sua localização atual. Arraste para navegar até outro local e marque pelo menos três pontos para fechar a área permitida para registrar presença.</p>
+            <AmbientLocationPicker points={areaPoints} onChange={(points) => { setAreaPoints(points); setAreaChanged(true); }} />
+            {!areaChanged && ambient?.area && <p className="gds-location-field__saved" role="status">A área cadastrada será mantida. Marque novos pontos para substituí-la.</p>}
+          </>}
         </div>
 
         <div className="gds-form__actions">
@@ -374,6 +387,7 @@ function AmbientFormCard({
                 setName("");
                 setDescription("");
                 setAreaPoints([]);
+                setGeoEnabled(false);
                 setAreaChanged(false);
                 setFeedback(null);
               }}

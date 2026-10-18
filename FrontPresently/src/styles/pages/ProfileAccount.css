@@ -208,17 +208,52 @@
   line-height: 1.6;
 }
 
+.security-account__confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+
+.security-account__confirm-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #fff0f0;
+  color: #e5232e;
+}
+
 .security-account__confirm p {
-  margin: 0 0 20px;
+  margin: 0 0 18px;
   color: #4b4542;
-  font-size: 14px;
+  font-size: 13.5px;
   line-height: 1.6;
 }
 
 .security-account__confirm-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  gap: 12px;
+  width: 100%;
+}
+
+.security-account__confirm-actions .evt-btn {
+  flex: 1;
+}
+
+.security-account__confirm-actions .evt-btn--destructive {
+  background: #e5232e;
+  color: #fff;
+  transition: background 0.18s ease, transform 0.18s ease;
+}
+
+.security-account__confirm-actions .evt-btn--destructive:hover:not(:disabled) {
+  background: #b91c1c;
+  transform: translateY(-1px);
 }
 
 @media (max-width: 1023px) {

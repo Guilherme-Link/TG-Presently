@@ -63,7 +63,8 @@ public class AuthService {
 
         PublicKeyCredentialUserEntity credentialUser =
                 credentialUserRepository.findByUsername(user.getUsername());
-        boolean mfaRequired = credentialUser != null
+        boolean desktopLogin = isDesktopBrowser(request.getHeader("User-Agent"));
+        boolean mfaRequired = !desktopLogin && credentialUser != null
                 && !credentialRepository.findByUserId(credentialUser.getId()).isEmpty();
 
         if (mfaRequired) {
@@ -78,6 +79,11 @@ public class AuthService {
         securityContextRepository.saveContext(context, request, response);
 
         return new LoginResult(new UserResponse(user), mfaRequired);
+    }
+
+    private boolean isDesktopBrowser(String userAgent) {
+        if (userAgent == null || userAgent.isBlank()) return false;
+        return !userAgent.matches("(?i).*(android|iphone|ipad|ipod|mobile).*" );
     }
 
     public void cancelPendingLogin(HttpServletRequest request) {
