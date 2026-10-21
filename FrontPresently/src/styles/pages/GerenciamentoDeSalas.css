@@ -583,14 +583,15 @@
 
 .gds-room-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 14px;
 }
 
 .gds-room-card {
   display: grid;
-  grid-template-columns: 64px minmax(0, 1fr) auto;
-  gap: 12px;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  gap: 10px;
+  min-width: 0;
   align-items: center;
   border: 1px solid var(--gds-border);
   border-radius: 12px;
@@ -605,14 +606,20 @@
 }
 
 .gds-room-card__icon {
-  width: 64px;
-  height: 64px;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 56px;
   border-radius: 12px;
   background: var(--gds-red);
   color: var(--gds-white);
   display: grid;
   place-items: center;
   flex-shrink: 0;
+}
+
+.gds-room-card__icon svg {
+  width: clamp(20px, 5vw, 26px);
+  height: auto;
 }
 
 .gds-room-card__content {
@@ -799,7 +806,7 @@
   }
 
   .gds-room-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   }
 }
 
@@ -820,18 +827,24 @@
     padding: 20px 18px;
   }
 
-  .gds-room-grid {
-    grid-template-columns: 1fr;
-  }
-
   .gds-room-card {
-    grid-template-columns: 64px minmax(0, 1fr);
+    grid-template-columns: 48px minmax(0, 1fr) auto;
     align-items: start;
   }
 
   .gds-room-card__actions {
-    grid-column: 1 / -1;
     justify-content: flex-end;
+  }
+
+  .gds-room-card__icon {
+    max-width: 48px;
+    border-radius: 10px;
+  }
+
+  .gds-icon-btn {
+    width: 44px;
+    height: 44px;
+    padding: 6px 4px;
   }
 
   .gds-form__actions {
@@ -850,5 +863,37 @@
   .gds-card__header {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@media (max-width: 380px) {
+  .gds-main {
+    padding: 12px;
+  }
+
+  .gds-card {
+    padding: 16px 14px;
+  }
+
+  .gds-room-card {
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 8px;
+    padding: 12px;
+  }
+
+  .gds-room-card__icon {
+    max-width: 40px;
+  }
+
+  .gds-room-card__actions {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .gds-icon-btn {
+    width: auto;
+    height: 36px;
+    flex-direction: row;
+    padding: 6px 10px;
   }
 }

@@ -221,3 +221,16 @@
     padding: 4px 4px 8px;
   }
 }
+
+@media (min-width: 769px) and (max-width: 1080px) {
+  .sidebar {
+    width: 220px;
+    padding: 20px 14px;
+  }
+
+  .sidebar__link {
+    gap: 9px;
+    padding-inline: 9px;
+    font-size: 12.5px;
+  }
+}

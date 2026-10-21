@@ -1,6 +1,9 @@
 .security-account-page {
   display: flex;
   align-items: stretch;
+  width: 100%;
+  min-width: 0;
+  overflow-x: clip;
   min-height: 100vh;
   background: #f7f5f4;
 }
@@ -8,6 +11,7 @@
 .security-account {
   box-sizing: border-box;
   flex: 1 1 auto;
+  width: 100%;
   min-width: 0;
   min-height: 100vh;
   padding: 0 0 56px;
@@ -286,8 +290,8 @@
   }
 
   .security-account-page header.page-header.security-account__header {
-    width: 100vw;
-    margin: 0 0 18px calc(50% - 50vw);
+    width: calc(100% + 32px);
+    margin: 0 -16px 18px;
   }
 
   .security-account__card {
@@ -302,6 +306,60 @@
 
   .security-account__add {
     width: 100%;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .security-account-page--admin {
+    display: flex;
+  }
+
+  .security-account-page--admin > .sidebar-admin {
+    width: 220px;
+  }
+
+  .security-account-page--admin .security-account {
+    width: auto;
+    padding: 0 16px 36px;
+  }
+
+  .security-account-page--admin .security-account__card {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .security-account {
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .security-account-page header.page-header.security-account__header {
+    width: calc(100% + 24px);
+    margin-right: -12px;
+    margin-left: -12px;
+    padding: 16px;
+  }
+
+  .security-account__card {
+    padding: 18px 16px;
+  }
+
+  .security-account__intro {
+    gap: 12px;
+  }
+
+  .security-account__intro h2,
+  .security-account__section-heading h2 {
+    font-size: 18px;
+  }
+
+  .security-account__credential {
+    gap: 10px;
+  }
+
+  .security-account__confirm-actions {
+    flex-direction: column;
   }
 }
 

@@ -393,10 +393,6 @@
 }
 
 @media (max-width: 1023px) {
-  .dashboard--desktop {
-    flex-direction: column;
-  }
-
   .dashboard--desktop .header--desktop {
     height: auto;
     min-height: var(--header-height-desktop);
@@ -433,5 +429,11 @@
 
   .dashboard--desktop .attendance-heatmap__grid {
     min-width: 420px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard--desktop {
+    flex-direction: column;
   }
 }

@@ -15,6 +15,8 @@
   font-family: "Poppins", sans-serif;
   display: flex;
   min-height: 100vh;
+  min-width: 0;
+  overflow-x: clip;
   background: var(--mpd-bg);
 }
 
@@ -545,10 +547,6 @@
 }
 
 @media (max-width: 1180px) {
-  .mpd {
-    flex-direction: column;
-  }
-
   .mpd-content__header {
     padding-inline: 20px;
   }
@@ -562,6 +560,12 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mpd {
+    flex-direction: column;
   }
 }
 

@@ -28,7 +28,10 @@ function DashboardDesktop() {
     isResponsible ? null : currentUser?.participantId
   );
   const dateLabel = getCurrentDateLabel();
-  const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
+  const userName = currentUser?.fullName?.trim()
+    || currentUser?.name?.trim()
+    || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
+    || (isResponsible ? "Responsável" : "Aluno");
   const confirmedAttendanceIds = new Set(
     attendanceItems
       .filter((item) => item.status === "confirmed")

@@ -363,6 +363,9 @@
     min-height: 100dvh;
     flex-direction: column;
   }
+  .hde-page:not(.hde-page--responsible) {
+    flex-direction: row;
+  }
   .hde-page--responsible > .sidebar {
     display: none;
   }
@@ -381,6 +384,11 @@
     background: transparent;
     border: 0;
     cursor: pointer;
+  }
+}
+@media (min-width: 769px) and (max-width: 1023px) {
+  .hde-page:not(.hde-page--responsible) .hde {
+    min-width: 0;
   }
 }
 @media (min-width: 769px) and (max-width: 1023px) {
