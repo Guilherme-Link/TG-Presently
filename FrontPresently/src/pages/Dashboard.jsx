@@ -82,7 +82,10 @@ function Dashboard() {
   const [classesError, setClassesError] = useState("");
 
   const dateLabel = getCurrentDateLabel();
-  const userName = currentUser?.username ?? "Aluno";
+  const userName = currentUser?.fullName?.trim()
+    || currentUser?.name?.trim()
+    || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
+    || "Aluno";
 
   useEffect(() => {
     let cancelled = false;

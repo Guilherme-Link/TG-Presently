@@ -56,7 +56,10 @@ function DashboardMobile() {
     activeEvent?.id && confirmedAttendanceIds.has(String(activeEvent.id))
   );
   const dateLabel = getCurrentDateLabel();
-  const userName = currentUser?.username ?? (isResponsible ? "Responsável" : "Aluno");
+  const userName = currentUser?.fullName?.trim()
+    || currentUser?.name?.trim()
+    || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
+    || (isResponsible ? "Responsável" : "Aluno");
   const mobileShortcuts = isResponsible
     ? [
         { id: "presenca", label: "Verificar presença", icon: "check" },
