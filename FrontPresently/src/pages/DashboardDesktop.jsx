@@ -31,7 +31,7 @@ function DashboardDesktop() {
   const userName = currentUser?.fullName?.trim()
     || currentUser?.name?.trim()
     || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
-    || (isResponsible ? "Responsável" : "Aluno");
+    || (isResponsible ? "Responsável" : "Participante");
   const confirmedAttendanceIds = new Set(
     attendanceItems
       .filter((item) => item.status === "confirmed")
@@ -68,20 +68,20 @@ function DashboardDesktop() {
           <div className="dashboard__body-grid">
             <section className="dashboard__classes">
               <div className="dashboard__classes-header">
-                <h2 className="dashboard__section-title">Minhas aulas</h2>
+                <h2 className="dashboard__section-title">Meus eventos</h2>
               </div>
 
               {loadingClasses ? (
-                <div className="dashboard__state">Carregando suas aulas...</div>
+                <div className="dashboard__state">Carregando seus eventos...</div>
               ) : classesError ? (
                 <div className="dashboard__state dashboard__state--error" role="alert">
                   {classesError}
                 </div>
               ) : classes.length === 0 ? (
                 <EmptyState
-                  title="Nenhuma aula encontrada"
+                  title="Nenhum evento encontrado"
                   description={isResponsible
-                    ? "Você ainda não é responsável por nenhuma aula."
+                    ? "Você ainda não é responsável por nenhum evento."
                     : "Você ainda não está vinculado a eventos como participante ou responsável."}
                 />
               ) : (

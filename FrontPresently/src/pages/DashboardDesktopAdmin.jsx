@@ -65,10 +65,10 @@ function buildData(participants, occurrences, details) {
 
   return {
     stats: [
-      { id: "alunos", title: "Total de alunos", value: String(participants.length), description: "participantes cadastrados", tone: "neutral" },
-      { id: "faltas", title: "Faltas hoje", value: String(todayAbsences), description: "registros das aulas de hoje", tone: "danger" },
+      { id: "alunos", title: "Total de participantes", value: String(participants.length), description: "participantes cadastrados", tone: "neutral" },
+      { id: "faltas", title: "Faltas hoje", value: String(todayAbsences), description: "registros dos eventos de hoje", tone: "danger" },
       { id: "frequencia", title: "Frequência média", value: total ? `${Math.round((present / total) * 100)}%` : "—", description: "últimos 35 dias", tone: "success" },
-      { id: "risco", title: "Alunos em risco", value: String(atRisk), description: "50% ou mais de faltas", tone: "danger" },
+      { id: "risco", title: "Participantes em risco", value: String(atRisk), description: "50% ou mais de faltas", tone: "danger" },
     ],
     highlights,
     heatmap,

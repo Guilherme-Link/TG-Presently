@@ -16,7 +16,7 @@ import { isFetchNetworkError } from "../utils/api.js";
 import { deleteUser, listUsers, registerUser, updateUser } from "../services/usersApi.js";
 
 const USER_TYPE_OPTIONS = [
-  { label: "Aluno", value: "user" },
+  { label: "Participante", value: "user" },
   { label: "Responsável", value: "responsible" },
   { label: "Administrador", value: "admin" },
 ];
@@ -61,7 +61,7 @@ function getUserProfileLabel(roles = []) {
     return "Administrador";
   }
 
-  return roles.includes("ROLE_RESPONSIBLE") ? "Responsável" : "Aluno";
+  return roles.includes("ROLE_RESPONSIBLE") ? "Responsável" : "Participante";
 }
 
 function getUserProfileClass(roles = []) {
@@ -182,14 +182,14 @@ function EditUserModal({ user, loading, error, onCancel, onConfirm }) {
 
         <form className="gua-modal__form" onSubmit={handleSubmit}>
           <label className="gua-field-label" htmlFor="edit-user-email">
-            Email do aluno
+            Email do participante
           </label>
           <div className="gua-input gua-input--modal">
             <MdMail size={17} className="gua-input__icon" />
             <input
               id="edit-user-email"
               type="email"
-              placeholder="aluno@faculdade.gov.br"
+              placeholder="participante@faculdade.gov.br"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
               autoComplete="email"
@@ -327,7 +327,7 @@ function RegisterUserCard({ onRegistered }) {
           <input
             id="student-email"
             type="email"
-            placeholder="aluno@faculdade.gov.br"
+              placeholder="participante@faculdade.gov.br"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoComplete="email"
@@ -471,7 +471,7 @@ function UserListCard({ users, loading, error, onRetry }) {
     }
 
     if (!payload.username?.trim()) {
-      setEditError("Informe o e-mail do aluno.");
+      setEditError("Informe o e-mail do participante.");
       return;
     }
 

@@ -164,7 +164,7 @@ function SubjectCard({ subject, isOpen, onToggle }) {
 
       <div className={`rfa-subject__body ${isOpen ? "rfa-subject__body--open" : ""}`} aria-hidden={!isOpen}>
           <strong className="rfa-subject__fraction">{subject.absences}/{subject.totalClasses}</strong>
-          <span className="rfa-subject__fraction-label">Faltas em aulas encerradas</span>
+          <span className="rfa-subject__fraction-label">Faltas em eventos encerrados</span>
           <div className="rfa-subject__bar-row">
             <span className="rfa-subject__bar-bound">0</span>
             <div className="rfa-subject__bar"><span className="rfa-subject__bar-fill" style={{ width: `${percentage}%` }} /></div>
@@ -213,7 +213,7 @@ export default function RelatorioDeFaltasAluno({ mobile = false }) {
     const disciplineLabel = `${subjects.length} ${subjects.length === 1 ? "disciplina" : "disciplinas"}`;
     return [
       { id: "faltas", title: "Faltas totais", value: totalAbsences, description: disciplineLabel, tone: "danger" },
-      { id: "frequencia", title: "Frequência média", value: `${Math.round(attendanceRate)}%`, description: "aulas encerradas", tone: "success" },
+      { id: "frequencia", title: "Frequência média", value: `${Math.round(attendanceRate)}%`, description: "eventos encerrados", tone: "success" },
     ];
   }, [subjects]);
 
@@ -226,7 +226,7 @@ export default function RelatorioDeFaltasAluno({ mobile = false }) {
           {loading ? <div className="rfa-state">Carregando seu relatório...</div> : error ? <div className="rfa-state rfa-state--error" role="alert">{error}</div> : (
             <>
               <section className="rfa-summary">{summary.map((item) => <SummaryCard key={item.id} {...item} />)}</section>
-              {subjects.length ? <section className="rfa-subjects">{subjects.map((subject) => <SubjectCard key={subject.id} subject={subject} isOpen={openSubjectId === subject.id} onToggle={() => setOpenSubjectId((id) => id === subject.id ? null : subject.id)} />)}</section> : <div className="rfa-state">Ainda não há aulas encerradas para compor seu relatório.</div>}
+              {subjects.length ? <section className="rfa-subjects">{subjects.map((subject) => <SubjectCard key={subject.id} subject={subject} isOpen={openSubjectId === subject.id} onToggle={() => setOpenSubjectId((id) => id === subject.id ? null : subject.id)} />)}</section> : <div className="rfa-state">Ainda não há eventos encerrados para compor seu relatório.</div>}
             </>
           )}
         </main>

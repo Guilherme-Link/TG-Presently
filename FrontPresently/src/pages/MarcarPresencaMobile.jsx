@@ -40,7 +40,7 @@ function MarcarPresencaMobile({
     subject: "Engenharia de Software II",
     day: "Quarta-feira",
     time: "19:00",
-    room: "Sala 01",
+    room: "Ambiente 01",
   },
   onBack,
   onOpenCamera,
@@ -135,7 +135,7 @@ function MarcarPresencaMobile({
     });
 
     if (!location) {
-      throw new Error("Permita o acesso à localização para validar sua presença dentro da sala.");
+      throw new Error("Permita o acesso à localização para validar sua presença dentro do ambiente.");
     }
 
     const payload = {
@@ -311,7 +311,7 @@ function MarcarPresencaMobile({
             </h2>
             <p className="mp-mobile__result-description mp-mobile__result-description--summary">
               {attendanceState.status === "success"
-                ? "Volte e aproveite sua aula :)"
+                ? "Volte e aproveite seu evento :)"
                 : "Tente marcar sua presença novamente."}
             </p>
             {attendanceState.status === "error" && <p className="mp-mobile__result-description mp-mobile__result-description--detail">{attendanceState.message}</p>}

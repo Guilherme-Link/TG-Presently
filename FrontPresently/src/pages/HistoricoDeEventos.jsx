@@ -156,7 +156,7 @@ function ParticipantsModal({ event, onClose }) {
             <span className="hde-modal__subtitle">{event.eventName ?? event.name ?? "Evento"} — {formatDate(event.eventDate)}</span>
           </div>
           <div className="hde-modal__actions">
-            <label className="hde-search"><MdSearch size={16} aria-hidden="true" /><input type="search" placeholder="Pesquisar aluno" value={search} onChange={(changeEvent) => setSearch(changeEvent.target.value)} disabled={loading} /></label>
+            <label className="hde-search"><MdSearch size={16} aria-hidden="true" /><input type="search" placeholder="Pesquisar participante" value={search} onChange={(changeEvent) => setSearch(changeEvent.target.value)} disabled={loading} /></label>
             <button type="button" className="hde-pdf-btn" onClick={handleGeneratePdf} disabled={loading || Boolean(error)}><MdPictureAsPdf size={16} />Gerar PDF</button>
           </div>
         </div>

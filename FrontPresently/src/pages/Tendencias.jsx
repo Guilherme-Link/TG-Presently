@@ -100,7 +100,7 @@ function TrendChart({ series }) {
         {points.map((point) => <circle key={point.label} cx={point.x} cy={point.y} r="4" className="trend-chart__point"><title>{point.label}: {point.value}% ({point.present}/{point.total})</title></circle>)}
         {coordinates.map((point) => <text key={`${point.label}-label`} x={point.x} y={chartHeight - 10} className="trend-chart__axis-label" textAnchor="middle">{point.label}</text>)}
       </svg>
-      {!points.length && <p className="trend-chart__empty">Ainda não há aulas realizadas com registros no período selecionado.</p>}
+      {!points.length && <p className="trend-chart__empty">Ainda não há eventos realizados com registros no período selecionado.</p>}
     </div>
   );
 }
@@ -189,20 +189,20 @@ export default function Tendencias() {
           <PageHeader breadcrumb="Início › Tendências" title="Tendências de frequência" className="trend-header" />
           <section className="trend-panel">
             <div className="trend-panel__intro">
-              <div><h2>Acompanhe a frequência</h2><p>Indicadores calculados a partir das aulas realizadas e dos registros de presença.</p></div>
+              <div><h2>Acompanhe a frequência</h2><p>Indicadores calculados a partir dos eventos realizados e dos registros de presença.</p></div>
               <label className="trend-period"><span>Período</span><select value={period} onChange={(event) => setPeriod(Number(event.target.value))}>{PERIOD_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
             </div>
 
             <div className="trend-filters">
               <label><span>Disciplina / evento</span><select value={selectedEventId} onChange={(event) => setSelectedEventId(event.target.value)}><option value="">Todos os eventos</option>{eventFilterOptions.map((event) => <option key={event.id} value={event.id}>{event.name}</option>)}</select></label>
-              <label><span>Aluno</span><select value={selectedParticipantId} onChange={(event) => setSelectedParticipantId(event.target.value)}><option value="">Todos os alunos</option>{participantFilterOptions.map((participant) => <option key={participant.id} value={participant.id}>{participant.name}</option>)}</select></label>
+              <label><span>Participante</span><select value={selectedParticipantId} onChange={(event) => setSelectedParticipantId(event.target.value)}><option value="">Todos os participantes</option>{participantFilterOptions.map((participant) => <option key={participant.id} value={participant.id}>{participant.name}</option>)}</select></label>
             </div>
 
             {loading ? <div className="trend-state">Carregando dados de frequência…</div> : error ? <div className="trend-state trend-state--error" role="alert">{error}<button type="button" onClick={load}>Tentar novamente</button></div> : <>
               <div className="trend-metrics">
-                <MetricCard icon={MdTrendingUp} label="Taxa de presença" value={formatPercent(totals.attendance)} detail={`${totals.present} presença(s) em ${totals.total} aula(s)`} tone="positive" />
-                <MetricCard icon={MdOutlineEventAvailable} label="Taxa de absenteísmo" value={formatPercent(totals.absenteeism)} detail={`${totals.absent} falta(s) em ${totals.total} aula(s)`} tone="negative" />
-                <MetricCard icon={MdOutlinePerson} label="Aulas contabilizadas" value={String(new Set(filteredRecords.map((record) => `${record.eventId}:${record.eventDate}`)).size)} detail={`Aulas realizadas ${periodLabel}`} tone="neutral" />
+                <MetricCard icon={MdTrendingUp} label="Taxa de presença" value={formatPercent(totals.attendance)} detail={`${totals.present} presença(s) em ${totals.total} evento(s)`} tone="positive" />
+                <MetricCard icon={MdOutlineEventAvailable} label="Taxa de absenteísmo" value={formatPercent(totals.absenteeism)} detail={`${totals.absent} falta(s) em ${totals.total} evento(s)`} tone="negative" />
+                <MetricCard icon={MdOutlinePerson} label="Eventos contabilizados" value={String(new Set(filteredRecords.map((record) => `${record.eventId}:${record.eventDate}`)).size)} detail={`Eventos realizados ${periodLabel}`} tone="neutral" />
               </div>
 
               <section className="trend-evolution">

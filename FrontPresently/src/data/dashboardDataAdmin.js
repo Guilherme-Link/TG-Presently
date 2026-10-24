@@ -3,7 +3,7 @@ import { heatmapDays, heatmapMatrix, heatmapTitle } from "./dashboardData";
 export const adminStats = [
   {
     id: "alunos",
-    title: "Total de alunos",
+    title: "Total de participantes",
     value: "342",
     description: "16 turmas ativas",
     tone: "neutral",
@@ -24,7 +24,7 @@ export const adminStats = [
   },
   {
     id: "risco",
-    title: "Alunos em risco",
+    title: "Participantes em risco",
     value: "12",
     description: "acima de 50% das faltas",
     tone: "danger",
@@ -53,7 +53,7 @@ export const adminSidebarSections = [
         icon: "trending",
         to: "tendencias",
       },
-      { id: "salas-link", label: "Salas", icon: "rooms", to: "salas" },
+      { id: "salas-link", label: "Ambientes", icon: "rooms", to: "salas" },
       { id: "terminais-link", label: "Terminais / Quiosques", icon: "devices", to: "terminais" },
       { id: "eventos-link", label: "Eventos", icon: "calendar", to: "eventos" },
       {
@@ -128,14 +128,14 @@ export const adminAbsenceHighlights = [
 export const adminRoomStatus = [
   {
     id: "sala-01",
-    room: "Sala 01",
+    room: "Ambiente 01",
     occupancy: "87%",
     nextClass: "POO • 19:00",
     status: "Alta ocupação",
   },
   {
     id: "sala-02",
-    room: "Sala 02",
+    room: "Ambiente 02",
     occupancy: "62%",
     nextClass: "IHC • 19:50",
     status: "Disponível em 1 turno",
@@ -154,14 +154,14 @@ export const adminSchedule = [
     id: 1,
     time: "19:00",
     subject: "Engenharia de Software II",
-    room: "Sala 01",
+    room: "Ambiente 01",
     professor: "Prof. Guilherme",
   },
   {
     id: 2,
     time: "19:50",
     subject: "Interação Humano Computador",
-    room: "Sala 02",
+    room: "Ambiente 02",
     professor: "Prof. Marina",
   },
   {
@@ -210,7 +210,7 @@ export const adminSettings = [
   },
   {
     id: "qr",
-    label: "QR Code por aula",
+    label: "QR Code por evento",
     description: "Permitir geração automática de códigos por disciplina.",
     enabled: true,
   },

@@ -98,7 +98,7 @@ function AmbientLocationPicker({ points, onChange }) {
         setMapError("");
       },
       () => {
-        setMapError("Não foi possível obter sua localização. Arraste o mapa até a sala.");
+        setMapError("Não foi possível obter sua localização. Arraste o mapa até o ambiente.");
         setCenter((value) => value ?? { latitude: 0, longitude: 0 });
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
@@ -267,7 +267,7 @@ function AmbientFormCard({
     }
 
     if (geoEnabled && (!ambient?.area || areaChanged) && areaPoints.length < 3) {
-      setFeedback({ kind: "error", message: "Marque pelo menos três pontos no mapa para delimitar a área da sala." });
+      setFeedback({ kind: "error", message: "Marque pelo menos três pontos no mapa para delimitar a área do ambiente." });
       return;
     }
 
@@ -294,13 +294,13 @@ function AmbientFormCard({
         <div>
           <p className="gds-card__eyebrow">Administração</p>
           <h2 className="gds-card__title">
-            {ambient ? "Editar sala" : "Criar nova sala"}
+            {ambient ? "Editar ambiente" : "Criar novo ambiente"}
           </h2>
         </div>
       </div>
 
       <p className="gds-card__description">
-        Cadastre e mantenha atualizadas as salas e laboratórios usados nos
+        Cadastre e mantenha atualizados os ambientes e laboratórios usados nos
         eventos e na marcação de presença.
       </p>
 
@@ -312,7 +312,7 @@ function AmbientFormCard({
 
       <form className="gds-form" onSubmit={handleSubmit}>
         <label className="gds-field-label" htmlFor="ambient-name">
-          Nome da sala
+          Nome do ambiente
         </label>
         <div className="gds-input-shell">
           <MdRoom size={18} className="gds-input-shell__icon" aria-hidden="true" />
@@ -322,7 +322,7 @@ function AmbientFormCard({
             className="gds-input"
             value={name}
             onChange={(event) => setName(event.target.value)}
-            placeholder="Ex.: Sala 06"
+            placeholder="Ex.: Ambiente 06"
             disabled={loading || saving}
           />
         </div>
@@ -346,15 +346,15 @@ function AmbientFormCard({
         <div className="gds-location-field">
           <div className="gds-geo-toggle-card">
             <div className="gds-geo-toggle-row">
-              <span className="gds-geo-toggle-row__label">Exigir localização para registrar presença nesta sala</span>
-              <button type="button" className={`gds-geo-switch${geoEnabled ? " gds-geo-switch--on" : ""}`} role="switch" aria-checked={geoEnabled} aria-label="Exigir localização para registrar presença nesta sala" onClick={() => setGeoEnabled((enabled) => !enabled)} disabled={loading || saving}>
+              <span className="gds-geo-toggle-row__label">Exigir localização para registrar presença neste ambiente</span>
+              <button type="button" className={`gds-geo-switch${geoEnabled ? " gds-geo-switch--on" : ""}`} role="switch" aria-checked={geoEnabled} aria-label="Exigir localização para registrar presença neste ambiente" onClick={() => setGeoEnabled((enabled) => !enabled)} disabled={loading || saving}>
                 <span className="gds-geo-switch__thumb" />
               </button>
               <span className="gds-geo-toggle-row__state">{geoEnabled ? "Ligado" : "Desligado"}</span>
             </div>
           </div>
           {geoEnabled && <>
-            <span className="gds-field-label">Área geográfica da sala</span>
+            <span className="gds-field-label">Área geográfica do ambiente</span>
             <p className="gds-location-field__help">O mapa parte da sua localização atual. Arraste para navegar até outro local e marque pelo menos três pontos para fechar a área permitida para registrar presença.</p>
             <AmbientLocationPicker points={areaPoints} onChange={(points) => { setAreaPoints(points); setAreaChanged(true); }} />
             {!areaChanged && ambient?.area && <p className="gds-location-field__saved" role="status">A área cadastrada será mantida. Marque novos pontos para substituí-la.</p>}
@@ -367,7 +367,7 @@ function AmbientFormCard({
             className="gds-btn gds-btn--primary"
             disabled={loading || saving}
           >
-            {saving ? "Salvando..." : ambient ? "Salvar alterações" : "Criar sala"}
+            {saving ? "Salvando..." : ambient ? "Salvar alterações" : "Criar ambiente"}
           </button>
 
           {ambient ? (
@@ -457,7 +457,7 @@ function DeleteAmbientModal({ ambient, loading, error, onCancel, onConfirm }) {
           Confirmar exclusão
         </h3>
         <p className="gds-modal__text">
-          Você vai excluir a sala <strong>{ambient.name}</strong>. Esta ação
+          Você vai excluir o ambiente <strong>{ambient.name}</strong>. Esta ação
           não pode ser desfeita.
         </p>
 
@@ -499,7 +499,7 @@ function AmbientListCard({
       <div className="gds-card__header">
         <div>
           <p className="gds-card__eyebrow">Inventário</p>
-          <h2 className="gds-card__title">Salas cadastradas</h2>
+          <h2 className="gds-card__title">Ambientes cadastrados</h2>
         </div>
 
         <button
@@ -523,10 +523,10 @@ function AmbientListCard({
       )}
 
       {loading ? (
-        <div className="gds-state">Carregando salas...</div>
+        <div className="gds-state">Carregando ambientes...</div>
       ) : ambients.length === 0 ? (
         <div className="gds-state">
-          Nenhuma sala cadastrada ainda. Crie a primeira ao lado.
+          Nenhum ambiente cadastrado ainda. Crie o primeiro ao lado.
         </div>
       ) : (
         <div className="gds-room-grid">
@@ -543,7 +543,7 @@ function AmbientListCard({
 
       <div className="gds-card__footer">
         <span className="gds-card__count">
-          {ambients.length} salas cadastradas
+          {ambients.length} ambientes cadastrados
         </span>
       </div>
     </section>
@@ -677,7 +677,7 @@ function GerenciamentoDeSalas({ institution = "Fatec Indaiatuba" }) {
       />
 
       <div className="gds-content">
-        <PageHeader breadcrumb="Início › Salas" title="Salas" className="gds-header" breadcrumbClassName="gds-breadcrumb" titleClassName="gds-title" />
+        <PageHeader breadcrumb="Início › Ambientes" title="Ambientes" className="gds-header" breadcrumbClassName="gds-breadcrumb" titleClassName="gds-title" />
 
         <main className="gds-main">
           <AmbientFormCard

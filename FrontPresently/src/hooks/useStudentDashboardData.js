@@ -90,9 +90,9 @@ async function buildRealStatistics(participatingEvents) {
   return {
     statistics: [
     { id: "faltas-totais", title: "Faltas totais", value: absences, description: `${new Set(participatingEvents.map((event) => event.id)).size} disciplinas`, valueColor: "var(--color-primary)" },
-    { id: "frequencia-media", title: "Frequência média", value: `${total ? Math.round((attended / total) * 100) : 0}%`, description: "aulas encerradas", valueColor: "var(--color-success)" },
-    { id: "aulas-hoje", title: "Aulas hoje", value: classesToday, description: todayDate, valueColor: "var(--color-text)" },
-    { id: "presencas-confirmadas", title: "Presenças confirmadas", value: attended, description: "aulas encerradas", valueColor: "var(--color-primary)" },
+    { id: "frequencia-media", title: "Frequência média", value: `${total ? Math.round((attended / total) * 100) : 0}%`, description: "eventos encerrados", valueColor: "var(--color-success)" },
+    { id: "aulas-hoje", title: "Eventos hoje", value: classesToday, description: todayDate, valueColor: "var(--color-text)" },
+    { id: "presencas-confirmadas", title: "Presenças confirmadas", value: attended, description: "eventos encerrados", valueColor: "var(--color-primary)" },
     ],
     heatmapMatrix,
   };
@@ -132,7 +132,7 @@ function buildClassItems(events = [], participantsById = new Map(), ambientsById
         id: event.id,
         time,
         subject: event.name ?? "Evento",
-        room: ambient?.name ?? event.ambientName ?? "Sala não informada",
+        room: ambient?.name ?? event.ambientName ?? "Ambiente não informado",
         professor: responsible?.name ?? currentUser?.username ?? "Responsável não informado",
         startDate: event.startDate ?? "",
         startTime: event.startTime ?? "",
@@ -232,8 +232,8 @@ export function useStudentDashboardData() {
           const responsibleClasses = Array.isArray(responsibleEvents) ? responsibleEvents : [];
           const classesToday = responsibleClasses.filter((event) => isScheduledOn(event, new Date())).length;
           setStatistics([
-            { id: "responsible-classes", title: "Aulas como responsável", value: responsibleClasses.length, description: "eventos vinculados", valueColor: "var(--color-primary)" },
-            { id: "classes-today", title: "Aulas hoje", value: classesToday, description: formatLocalDate(new Date()), valueColor: "var(--color-text)" },
+            { id: "responsible-classes", title: "Eventos como responsável", value: responsibleClasses.length, description: "eventos vinculados", valueColor: "var(--color-primary)" },
+            { id: "classes-today", title: "Eventos hoje", value: classesToday, description: formatLocalDate(new Date()), valueColor: "var(--color-text)" },
           ]);
           setHeatmapMatrix(Array.from({ length: 5 }, () => Array(7).fill(0)));
         } else {
@@ -245,7 +245,7 @@ export function useStudentDashboardData() {
       } catch {
         if (!cancelled) {
           setClasses([]);
-          setClassesError("Não foi possível carregar suas aulas agora.");
+          setClassesError("Não foi possível carregar seus eventos agora.");
           setStatistics([]);
           setHeatmapMatrix(Array.from({ length: 5 }, () => Array(7).fill(0)));
         }
