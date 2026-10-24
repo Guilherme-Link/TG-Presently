@@ -133,7 +133,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
   const currentLesson = activeEvent;
   const currentTitle = currentLesson?.subject ?? "Nenhum evento ativo";
   const currentTime = currentLesson?.time ?? "—";
-  const currentRoom = currentLesson?.room ?? "Sala não informada";
+  const currentRoom = currentLesson?.room ?? "Ambiente não informado";
   const currentProfessor = currentLesson?.professor ?? "Responsável não informado";
 
   return (
@@ -173,7 +173,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
                   <MdCheck size={122} />
                 </div>
                 <h2 className="mpd-success__title">Presença confirmada!</h2>
-                <p className="mpd-success__text">Volte e aproveite sua aula :)</p>
+                <p className="mpd-success__text">Volte e aproveite seu evento :)</p>
                 <button
                   type="button"
                   className="mpd-success__back"
@@ -214,7 +214,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
                 </div>
 
                 <p className="mpd-qr__hint">
-                  Leia esse código com seu celular para registrar a presença da aula atual.
+                  Leia esse código com seu celular para registrar a presença no evento atual.
                 </p>
               </div>
             )}
@@ -222,7 +222,7 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
 
           <aside className="mpd-side">
             <section className="mpd-current">
-              <h3 className="mpd-side__title">Aula atual</h3>
+              <h3 className="mpd-side__title">Evento atual</h3>
               {currentLesson ? (
                 <div className="mpd-current__card">
                   <span className="mpd-current__time">{currentTime}</span>

@@ -49,7 +49,7 @@ function StepDadosIniciais({
           value={values.location}
           error={errors.location}
           disabled={loadingAmbients}
-          placeholder={loadingAmbients ? "Carregando salas..." : "Selecione uma sala"}
+          placeholder={loadingAmbients ? "Carregando ambientes..." : "Selecione um ambiente"}
           onChange={(e) => setField("location", e.target.value)}
         />
       </div>

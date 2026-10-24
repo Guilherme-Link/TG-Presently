@@ -146,7 +146,7 @@ export default function VerificarPresenca() {
         if (!cancelled) {
           setLesson(null);
           setParticipants([]);
-          setError("Não foi possível carregar a presença da aula atual.");
+          setError("Não foi possível carregar a presença do evento atual.");
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -180,7 +180,7 @@ export default function VerificarPresenca() {
             <div className="vp-card__titles">
               <h2 className="vp-card__title">Lista de participantes</h2>
               <span className="vp-card__subtitle">
-                {lesson ? `${lesson.name} – ${lesson.date}` : "Aula atual"}
+                {lesson ? `${lesson.name} – ${lesson.date}` : "Evento atual"}
               </span>
             </div>
             <label className="vp-search">
@@ -202,7 +202,7 @@ export default function VerificarPresenca() {
             </div>
           ) : !lesson ? (
             <div className="vp-state">
-              Não há aula sob sua responsabilidade ocorrendo agora.
+              Não há evento sob sua responsabilidade ocorrendo agora.
             </div>
           ) : (
             <>

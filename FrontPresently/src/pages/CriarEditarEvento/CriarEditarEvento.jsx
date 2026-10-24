@@ -124,7 +124,7 @@ function CriarEditarEvento({
     } catch (error) {
       if (error?.status === 409) {
         setCollisionMessage(
-          "Este horário conflita com outro evento que usa a mesma sala, o mesmo responsável ou algum dos mesmos participantes. Altere esses dados ou o horário."
+          "Este horário conflita com outro evento que usa o mesmo ambiente, o mesmo responsável ou algum dos mesmos participantes. Altere esses dados ou o horário."
         );
         return;
       }

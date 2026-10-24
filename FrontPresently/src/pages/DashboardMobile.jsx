@@ -59,12 +59,12 @@ function DashboardMobile() {
   const userName = currentUser?.fullName?.trim()
     || currentUser?.name?.trim()
     || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
-    || (isResponsible ? "Responsável" : "Aluno");
+    || (isResponsible ? "Responsável" : "Participante");
   const mobileShortcuts = isResponsible
     ? [
         { id: "presenca", label: "Verificar presença", icon: "check" },
         { id: "historico-eventos", label: "Histórico de eventos", icon: "report" },
-        { id: "grade-aulas", label: "Grade de aulas", icon: "calendar" },
+        { id: "grade-aulas", label: "Agenda de eventos", icon: "calendar" },
       ]
     : shortcuts;
 
@@ -98,7 +98,7 @@ function DashboardMobile() {
           <div className="dashboard__body-grid">
             <section className="dashboard__classes">
               <div className="dashboard__classes-header">
-                <h2 className="dashboard__section-title">Minhas aulas</h2>
+                <h2 className="dashboard__section-title">Meus eventos</h2>
                 {!isResponsible && (
                   <button
                     type="button"
@@ -113,16 +113,16 @@ function DashboardMobile() {
               </div>
 
               {loadingClasses ? (
-                <div className="dashboard__state">Carregando suas aulas...</div>
+                <div className="dashboard__state">Carregando seus eventos...</div>
               ) : classesError ? (
                 <div className="dashboard__state dashboard__state--error" role="alert">
                   {classesError}
                 </div>
               ) : classes.length === 0 ? (
                 <EmptyState
-                  title="Nenhuma aula encontrada"
+                  title="Nenhum evento encontrado"
                   description={isResponsible
-                    ? "Você ainda não é responsável por nenhuma aula."
+                    ? "Você ainda não é responsável por nenhum evento."
                     : "Você ainda não está vinculado a eventos como participante ou responsável."}
                 />
               ) : (

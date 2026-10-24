@@ -15,7 +15,7 @@ export const statistics = [
   },
   {
     id: "aulas-hoje",
-    title: "Aulas hoje",
+    title: "Eventos hoje",
     value: 4,
     description: "A partir das 19:00",
     valueColor: "var(--color-text)",
@@ -34,28 +34,28 @@ export const classes = [
     id: 1,
     time: "19:00",
     subject: "Engenharia de Software II",
-    room: "Sala 01",
+    room: "Ambiente 01",
     professor: "Prof. Guilherme",
   },
   {
     id: 2,
     time: "19:50",
     subject: "Engenharia de Software II",
-    room: "Sala 01",
+    room: "Ambiente 01",
     professor: "Prof. Guilherme",
   },
   {
     id: 3,
     time: "20:50",
     subject: "Engenharia de Software II",
-    room: "Sala 01",
+    room: "Ambiente 01",
     professor: "Prof. Guilherme",
   },
   {
     id: 4,
     time: "21:40",
     subject: "Engenharia de Software II",
-    room: "Sala 01",
+    room: "Ambiente 01",
     professor: "Prof. Guilherme",
   },
 ];
@@ -68,7 +68,7 @@ export const shortcuts = [
   },
   {
     id: "grade-aulas",
-    label: "Grade de aulas",
+    label: "Agenda de eventos",
     icon: "calendar",
   },
 ];
@@ -77,14 +77,14 @@ export const sidebarNavAluno = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard", path: "/dashboard" },
   { id: "presenca", label: "Marcar presença", icon: "check", path: "/presenca" },
   { id: "relatorio", label: "Relatório de faltas", icon: "report", path: "/relatorio" },
-  { id: "grade", label: "Grade de aulas", icon: "calendar", path: "/grade" },
+  { id: "grade", label: "Agenda de eventos", icon: "calendar", path: "/grade" },
 ];
 
 export const sidebarNavResponsavel = [
   { id: "dashboard", label: "Dashboard", icon: "dashboard", path: "/dashboard" },
   { id: "presenca", label: "Verificar presença", icon: "check", path: "/presenca" },
   { id: "relatorio", label: "Histórico de eventos", icon: "report", path: "/relatorio" },
-  { id: "grade", label: "Grade de aulas", icon: "calendar", path: "/grade" },
+  { id: "grade", label: "Agenda de eventos", icon: "calendar", path: "/grade" },
 ];
 
 export const sidebarNavConta = [

@@ -117,7 +117,7 @@ function buildLessonCard(event) {
     id: event.id,
     time,
     subject: event.name ?? "Evento",
-    room: event.ambientName || event.location || "Sala não informada",
+    room: event.ambientName || event.location || "Ambiente não informado",
     professor: event.responsible || "Responsável não informado",
   };
 }

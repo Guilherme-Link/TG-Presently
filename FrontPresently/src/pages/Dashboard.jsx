@@ -63,7 +63,7 @@ function buildClassItems(events = [], participantsById = new Map(), ambientsById
         id: event.id,
         time,
         subject: event.name ?? "Evento",
-        room: ambient?.name ?? event.ambientName ?? "Sala não informada",
+        room: ambient?.name ?? event.ambientName ?? "Ambiente não informado",
         professor: responsible?.name ?? currentUser?.username ?? "Responsável não informado",
         startDate: event.startDate ? toDisplayDate(event.startDate) : "",
       };
@@ -85,7 +85,7 @@ function Dashboard() {
   const userName = currentUser?.fullName?.trim()
     || currentUser?.name?.trim()
     || (currentUser?.username?.includes("@") ? currentUser.username.split("@")[0] : currentUser?.username)
-    || "Aluno";
+    || "Participante";
 
   useEffect(() => {
     let cancelled = false;
@@ -153,7 +153,7 @@ function Dashboard() {
       } catch {
         if (!cancelled) {
           setClasses([]);
-          setClassesError("Não foi possível carregar suas aulas agora.");
+          setClassesError("Não foi possível carregar seus eventos agora.");
         }
       } finally {
         if (!cancelled) {
@@ -197,7 +197,7 @@ function Dashboard() {
           <div className="dashboard__body-grid">
             <section className="dashboard__classes">
               <div className="dashboard__classes-header">
-                <h2 className="dashboard__section-title">Minhas aulas</h2>
+                <h2 className="dashboard__section-title">Meus eventos</h2>
                 <button type="button" className="dashboard__attendance-btn">
                   <MdPanTool size={18} aria-hidden="true" />
                   Marcar presença
@@ -205,14 +205,14 @@ function Dashboard() {
               </div>
 
               {loadingClasses ? (
-                <div className="dashboard__state">Carregando suas aulas...</div>
+                <div className="dashboard__state">Carregando seus eventos...</div>
               ) : classesError ? (
                 <div className="dashboard__state dashboard__state--error" role="alert">
                   {classesError}
                 </div>
               ) : classes.length === 0 ? (
                 <EmptyState
-                  title="Nenhuma aula encontrada"
+                  title="Nenhum evento encontrado"
                   description="Você ainda não está vinculado a eventos como participante ou responsável."
                 />
               ) : (

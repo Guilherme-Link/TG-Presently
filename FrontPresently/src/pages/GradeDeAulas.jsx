@@ -49,7 +49,7 @@ function getEventsForDate(date, events, participantsById, ambientsById) {
     .filter((event) => isEventScheduledOn(event, date))
     .map((event) => ({
       id: `${event.id}-${formatDate(date)}`,
-      subject: event.name ?? "Aula",
+      subject: event.name ?? "Evento",
       time: formatTime(event.startTime) && formatTime(event.endTime)
         ? `${formatTime(event.startTime)} – ${formatTime(event.endTime)}`
         : formatTime(event.startTime) || formatTime(event.endTime) || "Horário não informado",
@@ -92,7 +92,7 @@ function Calendar({ monthDate, selectedDate, today, events, participantsById, am
               key={dateKey}
               className={`gda-calendar__day${date.getMonth() !== monthDate.getMonth() ? " is-outside" : ""}${selected ? " is-selected" : ""}${dateKey === formatDate(today) ? " is-today" : ""}${dayEvents.length ? " has-events" : ""}`}
               onClick={() => onSelectDate(date)}
-              aria-label={`${formatLongDate(date)}${dayEvents.length ? `, ${dayEvents.length} ${dayEvents.length === 1 ? "aula" : "aulas"}` : ""}`}
+              aria-label={`${formatLongDate(date)}${dayEvents.length ? `, ${dayEvents.length} ${dayEvents.length === 1 ? "evento" : "eventos"}` : ""}`}
               aria-pressed={selected}
             >
               <span>{date.getDate()}</span>
@@ -114,7 +114,7 @@ function WeeklyUpcoming({ selectedDate, events, participantsById, ambientsById }
   return (
     <section className="gda-upcoming" aria-live="polite">
       <div className="gda-upcoming__heading">
-        <div><span className="gda-eyebrow">Sua semana</span><h2>Próximas aulas</h2></div>
+        <div><span className="gda-eyebrow">Sua semana</span><h2>Próximos eventos</h2></div>
         <span className="gda-upcoming__range">7 dias a partir de {new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(selectedDate)}</span>
       </div>
       {upcoming.length ? (
@@ -123,12 +123,12 @@ function WeeklyUpcoming({ selectedDate, events, participantsById, ambientsById }
             <li className="gda-upcoming__item" key={item.id}>
               <span className="gda-upcoming__marker" aria-hidden="true" />
               <div className="gda-upcoming__date"><strong>{new Intl.DateTimeFormat("pt-BR", { weekday: "short" }).format(item.date).replace(".", "")}</strong><span>{new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "short" }).format(item.date)}</span></div>
-              <div className="gda-upcoming__details"><strong>{item.subject}</strong><span>{item.room || item.professor || "Aula"}</span></div>
+              <div className="gda-upcoming__details"><strong>{item.subject}</strong><span>{item.room || item.professor || "Evento"}</span></div>
               <span className="gda-upcoming__time">{item.time}</span>
             </li>
           ))}
         </ul>
-      ) : <div className="gda-upcoming__empty">Nenhuma aula nos próximos 7 dias.</div>}
+      ) : <div className="gda-upcoming__empty">Nenhum evento nos próximos 7 dias.</div>}
     </section>
   );
 }
@@ -163,7 +163,7 @@ export default function GradeDeAulas({ mobile = false }) {
         setParticipants(Array.isArray(participantsResponse) ? participantsResponse : []);
         setAmbients(Array.isArray(ambientsResponse) ? ambientsResponse : []);
       } catch {
-        if (!cancelled) setError("Não foi possível carregar sua grade de aulas.");
+        if (!cancelled) setError("Não foi possível carregar sua agenda de eventos.");
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -191,11 +191,11 @@ export default function GradeDeAulas({ mobile = false }) {
       {!mobile && <Sidebar activeId="grade" />}
       <div className="dashboard__content">
         <main className="gda">
-          <PageHeader breadcrumb="Início › Grade de aulas" title="Grade de aulas" className={mobile ? "" : "gda-header"} breadcrumbClassName="gda-breadcrumb" titleClassName="gda-title" onBack={mobile ? () => navigate(-1) : undefined} />
+          <PageHeader breadcrumb="Início › Agenda de eventos" title="Agenda de eventos" className={mobile ? "" : "gda-header"} breadcrumbClassName="gda-breadcrumb" titleClassName="gda-title" onBack={mobile ? () => navigate(-1) : undefined} />
           {error ? <div className="gda-state gda-state--error" role="alert">{error}</div> : (
             <div className="gda-content">
               <Calendar monthDate={monthDate} selectedDate={selectedDate} today={today} events={events} participantsById={participantsById} ambientsById={ambientsById} onSelectDate={selectDate} onMoveMonth={moveMonth} />
-              {loading ? <div className="gda-state">Carregando suas aulas...</div> : <WeeklyUpcoming selectedDate={selectedDate} events={events} participantsById={participantsById} ambientsById={ambientsById} />}
+              {loading ? <div className="gda-state">Carregando seus eventos...</div> : <WeeklyUpcoming selectedDate={selectedDate} events={events} participantsById={participantsById} ambientsById={ambientsById} />}
             </div>
           )}
         </main>

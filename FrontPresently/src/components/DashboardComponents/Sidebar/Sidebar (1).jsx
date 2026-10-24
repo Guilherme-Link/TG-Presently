@@ -155,7 +155,7 @@ function Sidebar() {
         </div>
 
         <NavGroup
-          title={isResponsible ? "Responsável" : "Aluno"}
+          title={isResponsible ? "Responsável" : "Participante"}
           items={isResponsible ? sidebarNavResponsavel : sidebarNavAluno}
           onNavigate={closeMenu}
         />
