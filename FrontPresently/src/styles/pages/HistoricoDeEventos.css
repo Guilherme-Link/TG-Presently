@@ -306,7 +306,7 @@
 .hde-modal__table-head,
 .hde-modal__row {
   display: grid;
-  grid-template-columns: 1fr 120px;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 1fr) 120px;
   gap: 12px;
   align-items: center;
 }
@@ -317,9 +317,18 @@
   font-size: 12px;
   font-weight: 600;
 }
+.hde-modal__table-head > :nth-child(2) {
+  text-align: center;
+}
 .hde-modal__row {
   padding: 13px 4px;
   border-bottom: 1px solid var(--hde-border);
+}
+.hde-modal__check-in {
+  color: var(--hde-black);
+  font-size: 12.5px;
+  text-align: center;
+  white-space: nowrap;
 }
 .hde-modal__name {
   color: var(--hde-black);
@@ -470,7 +479,7 @@
   }
   .hde-modal__table-head,
   .hde-modal__row {
-    grid-template-columns: minmax(0, 1fr) 96px;
+    grid-template-columns: minmax(0, 1fr) minmax(90px, 1fr) 96px;
     gap: 8px;
   }
   .hde-modal__name {

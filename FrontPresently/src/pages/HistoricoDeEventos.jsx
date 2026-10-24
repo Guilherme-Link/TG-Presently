@@ -39,6 +39,12 @@ function formatDate(value) {
     : "Data não informada";
 }
 
+function formatCheckInTime(value) {
+  if (!value) return "—";
+  const time = String(value).split("T")[1];
+  return time ? time.slice(0, 5) : "—";
+}
+
 function getScheduledDates(event) {
   const start = parseLocalDate(event?.startDate);
   const end = parseLocalDate(event?.endDate);
@@ -73,7 +79,7 @@ function printAttendance(event, participants) {
 
   const eventName = event.eventName ?? event.name ?? "Evento";
   const rows = participants.map((participant) => `
-    <tr><td>${escapeHtml(participant.participantName)}</td><td>${participant.present ? "Presente" : "Ausente"}</td></tr>
+    <tr><td>${escapeHtml(participant.participantName)}</td><td>${escapeHtml(formatCheckInTime(participant.checkInTime))}</td><td>${participant.present ? "Presente" : "Ausente"}</td></tr>
   `).join("");
   const documentToPrint = frame.contentWindow.document;
   documentToPrint.open();
@@ -81,7 +87,7 @@ function printAttendance(event, participants) {
     <title>Lista de presença - ${escapeHtml(eventName)}</title>
     <style>body{font-family:Arial,sans-serif;color:#2f2f2f;margin:32px}h1{color:#ff1e1e;font-size:22px}p{color:#666}table{width:100%;border-collapse:collapse;margin-top:24px}th,td{padding:12px 8px;border-bottom:1px solid #e7e7e7;text-align:left}th{color:#777;font-size:12px;text-transform:uppercase}</style>
   </head><body><h1>Lista de presença</h1><p>${escapeHtml(eventName)} — ${escapeHtml(formatDate(event.eventDate))}</p>
-  <table><thead><tr><th>Nome</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
+  <table><thead><tr><th>Participante</th><th>Hora do registro</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table></body></html>`);
   documentToPrint.close();
 
   window.setTimeout(() => {
@@ -133,7 +139,7 @@ function ParticipantsModal({ event, onClose }) {
   const visibleParticipants = useMemo(() => {
     const normalizedSearch = search.trim().toLocaleLowerCase("pt-BR");
     return participants.filter((participant) =>
-      String(participant.name ?? "").toLocaleLowerCase("pt-BR").includes(normalizedSearch)
+      String(participant.participantName ?? "").toLocaleLowerCase("pt-BR").includes(normalizedSearch)
     );
   }, [participants, search]);
 
@@ -163,8 +169,8 @@ function ParticipantsModal({ event, onClose }) {
         {pdfError && <p className="hde-modal__error" role="alert">{pdfError}</p>}
         {loading ? <div className="hde-modal__state">Carregando participantes...</div>
           : error ? <div className="hde-modal__state hde-modal__state--error" role="alert">{error}</div>
-            : <div className="hde-modal__table"><div className="hde-modal__table-head"><span>Nome</span><span>Status</span></div><div className="hde-modal__table-body">
-              {visibleParticipants.map((participant) => <div key={participant.participantId} className="hde-modal__row"><span className="hde-modal__name">{participant.participantName ?? "Participante"}</span><StatusBadge present={participant.present} /></div>)}
+            : <div className="hde-modal__table"><div className="hde-modal__table-head"><span>Participante</span><span>Hora do registro</span><span>Status</span></div><div className="hde-modal__table-body">
+              {visibleParticipants.map((participant) => <div key={participant.participantId} className="hde-modal__row"><span className="hde-modal__name">{participant.participantName ?? "Participante"}</span><span className="hde-modal__check-in">{formatCheckInTime(participant.checkInTime)}</span><StatusBadge present={participant.present} /></div>)}
               {!visibleParticipants.length && <p className="hde-modal__empty">Nenhum participante encontrado.</p>}
             </div></div>}
       </section>
