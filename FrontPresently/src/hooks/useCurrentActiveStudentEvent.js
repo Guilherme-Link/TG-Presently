@@ -1,9 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../utils/api.js";
-import { listAmbients } from "../services/ambientsApi.js";
-import { listParticipatingEvents, listResponsibleEvents } from "../services/eventsApi.js";
-import { listParticipants } from "../services/participantsApi.js";
-import { hydrateEventFromApi } from "../data/eventsData";
+import { listParticipantEvents } from "../services/eventsApi.js";
 
 function getStoredCurrentUser() {
   try {
@@ -117,8 +114,8 @@ function buildLessonCard(event) {
     id: event.id,
     time,
     subject: event.name ?? "Evento",
-    room: event.ambientName || event.location || "Ambiente não informado",
-    professor: event.responsible || "Responsável não informado",
+    room: event.ambientName || "Ambiente não informado",
+    professor: event.responsibleName || "Responsável não informado",
   };
 }
 
@@ -151,58 +148,30 @@ export function useCurrentActiveStudentEvent() {
           return;
         }
 
-        const [participantsResponse, ambientsResponse, responsibleEvents, participatingEvents] =
-          await Promise.all([
-            listParticipants(),
-            listAmbients(),
-            listResponsibleEvents(participantId),
-            listParticipatingEvents(participantId),
-          ]);
+        const participantEvents = await listParticipantEvents(participantId);
 
         if (cancelled) {
           return;
         }
 
-        const participantsById = new Map(
-          (Array.isArray(participantsResponse) ? participantsResponse : []).map((participant) => [
-            String(participant.id),
-            participant,
-          ])
-        );
-        const ambientsById = new Map(
-          (Array.isArray(ambientsResponse) ? ambientsResponse : []).map((ambient) => [
-            ambient.id,
-            ambient,
-          ])
-        );
-
-        const mergedEvents = new Map();
-        [
-          ...(Array.isArray(responsibleEvents) ? responsibleEvents : []),
-          ...(Array.isArray(participatingEvents) ? participatingEvents : []),
-        ].forEach((event) => {
-          if (!event?.id || mergedEvents.has(event.id)) {
-            return;
-          }
-
+        const activeEvents = (Array.isArray(participantEvents) ? participantEvents : []).filter((event) => {
+          if (!event?.id) return false;
           if (!isEventActiveAt(event, new Date())) {
-            return;
+            return false;
           }
-
-          mergedEvents.set(event.id, event);
+          return true;
         });
 
-        const activeHydratedEvent = Array.from(mergedEvents.values())
+        const activeEventData = activeEvents
           .sort((left, right) => {
             const leftKey = `${left.startDate ?? ""} ${left.startTime ?? ""}`.trim();
             const rightKey = `${right.startDate ?? ""} ${right.startTime ?? ""}`.trim();
             return leftKey.localeCompare(rightKey);
-          })
-          .map((event) => hydrateEventFromApi(event, participantsById, ambientsById))[0] ?? null;
+          })[0] ?? null;
 
-        setActiveEvent(buildLessonCard(activeHydratedEvent));
+        setActiveEvent(buildLessonCard(activeEventData));
 
-        if (!activeHydratedEvent) {
+        if (!activeEventData) {
           setError("Não existe nenhum evento ativo agora para este participante.");
         }
       } catch {

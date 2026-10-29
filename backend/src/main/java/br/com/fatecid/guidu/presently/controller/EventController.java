@@ -75,4 +75,10 @@ public class EventController {
         List<EventDTO> events = participantService.getParticipatingEvents(id);
         return ResponseEntity.ok(events);
     }
+
+    // Retorna em uma única chamada os eventos em que o participante atua como responsável ou participante.
+    @GetMapping("/participant/{id}")
+    public ResponseEntity<List<EventDTO>> getParticipantEvents(@PathVariable Long id) {
+        return ResponseEntity.ok(participantService.getEventsForParticipant(id));
+    }
 }

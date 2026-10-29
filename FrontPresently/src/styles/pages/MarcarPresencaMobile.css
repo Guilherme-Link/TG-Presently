@@ -224,6 +224,33 @@
   color: var(--mp-red, #FF1E1E);
 }
 
+.mp-mobile__permission {
+  max-width: 340px;
+  margin: 0;
+  color: var(--mp-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.mp-mobile__permission p {
+  margin: 0 0 8px;
+}
+
+.mp-mobile__permission--granted {
+  color: #267346;
+}
+
+.mp-mobile__permission button {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--mp-red-dark);
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 .mp-mobile__body:has(.mp-mobile__result) {
   padding: 0;
   gap: 0;

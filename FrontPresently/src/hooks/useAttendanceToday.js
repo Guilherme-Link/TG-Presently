@@ -1,8 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { listTodayAttendance } from "../services/attendanceApi.js";
-import { listAmbients } from "../services/ambientsApi.js";
 import { listParticipatingEvents } from "../services/eventsApi.js";
-import { listParticipants } from "../services/participantsApi.js";
 
 function formatLocalDate(date = new Date()) {
   const pad = (value) => String(value).padStart(2, "0");
@@ -54,12 +52,10 @@ function hasEventFinished(item, referenceDate = new Date()) {
   return currentTimeInMinutes > eventEndInMinutes;
 }
 
-function toScheduledAttendanceItem(event, participantsById, ambientsById, date) {
+function toScheduledAttendanceItem(event, date) {
   const startTime = formatTime(event.startTime);
   const endTime = formatTime(event.endTime);
-  const responsible = participantsById.get(String(event.responsibleId ?? ""));
-  const ambient = ambientsById.get(String(event.ambientId ?? ""));
-  const detail = [ambient?.name, responsible?.name].filter(Boolean).join(" · ");
+  const detail = [event.ambientName, event.responsibleName].filter(Boolean).join(" · ");
 
   return {
     occurrenceId: null,
@@ -75,9 +71,7 @@ function toScheduledAttendanceItem(event, participantsById, ambientsById, date) 
   };
 }
 
-function mergeTodayEvents(attendanceRecords, events, participants, ambients, date) {
-  const participantsById = new Map((Array.isArray(participants) ? participants : []).map((participant) => [String(participant.id), participant]));
-  const ambientsById = new Map((Array.isArray(ambients) ? ambients : []).map((ambient) => [String(ambient.id), ambient]));
+function mergeTodayEvents(attendanceRecords, events, date) {
   const recordsByEventId = new Map((Array.isArray(attendanceRecords) ? attendanceRecords : []).map((record) => [String(record.eventId), record]));
 
   (Array.isArray(events) ? events : [])
@@ -85,7 +79,7 @@ function mergeTodayEvents(attendanceRecords, events, participants, ambients, dat
     .forEach((event) => {
       const key = String(event.id);
       if (!recordsByEventId.has(key)) {
-        recordsByEventId.set(key, toScheduledAttendanceItem(event, participantsById, ambientsById, date));
+        recordsByEventId.set(key, toScheduledAttendanceItem(event, date));
       }
     });
 
@@ -103,6 +97,8 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
   const [error, setError] = useState("");
   const hasLoadedRef = useRef(false);
   const signatureRef = useRef("");
+  const eventsCacheRef = useRef({ participantId: null, events: null });
+  const inFlightRef = useRef(false);
 
   const load = useCallback(async (options = {}) => {
     const { silent = false } = options;
@@ -113,8 +109,18 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
       setError("");
       hasLoadedRef.current = false;
       signatureRef.current = "";
+      eventsCacheRef.current = { participantId: null, events: null };
       return;
     }
+
+    if (eventsCacheRef.current.participantId !== participantId) {
+      eventsCacheRef.current = { participantId, events: null };
+      hasLoadedRef.current = false;
+      signatureRef.current = "";
+    }
+
+    if (inFlightRef.current) return;
+    inFlightRef.current = true;
 
     if (!silent && !hasLoadedRef.current) {
       setLoading(true);
@@ -123,19 +129,14 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
 
     try {
       const today = formatLocalDate();
-      const [attendanceRecords, participatingEvents, participants, ambients] = await Promise.all([
+      const [attendanceRecords, participantEvents] = await Promise.all([
         listTodayAttendance(participantId, today),
-        listParticipatingEvents(participantId),
-        listParticipants(),
-        listAmbients(),
+        eventsCacheRef.current.events
+          ? Promise.resolve(eventsCacheRef.current.events)
+          : listParticipatingEvents(participantId),
       ]);
-      const nextItems = mergeTodayEvents(
-        attendanceRecords,
-        participatingEvents,
-        participants,
-        ambients,
-        today,
-      );
+      eventsCacheRef.current.events = participantEvents;
+      const nextItems = mergeTodayEvents(attendanceRecords, participantEvents, today);
       const nextSignature = JSON.stringify(nextItems);
 
       if (nextSignature !== signatureRef.current) {
@@ -151,6 +152,7 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
         setError("Não foi possível carregar o histórico de presença de hoje.");
       }
     } finally {
+      inFlightRef.current = false;
       if (!silent || !hasLoadedRef.current) {
         setLoading(false);
       }
@@ -167,7 +169,9 @@ export function useAttendanceToday(participantId, { refreshMs = 6000 } = {}) {
     }, 0);
 
     const intervalId = window.setInterval(() => {
-      void load({ silent: true });
+      if (document.visibilityState === "visible") {
+        void load({ silent: true });
+      }
     }, refreshMs);
 
     return () => {

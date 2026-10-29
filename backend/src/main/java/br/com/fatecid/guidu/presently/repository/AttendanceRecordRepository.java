@@ -35,4 +35,22 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
         @Param("participantId") Long participantId,
         @Param("eventDate") LocalDate eventDate
     );
+
+    @Query("""
+        SELECT a
+        FROM AttendanceRecord a
+        JOIN FETCH a.occurrence o
+        JOIN FETCH o.event e
+        JOIN FETCH a.participant p
+        WHERE p.id = :participantId
+          AND o.eventDate BETWEEN :startDate AND :endDate
+          AND e.id IN :eventIds
+        ORDER BY o.eventDate, o.startedAt
+    """)
+    List<AttendanceRecord> findAllByParticipantIdAndEventDateBetween(
+        @Param("participantId") Long participantId,
+        @Param("startDate") LocalDate startDate,
+        @Param("endDate") LocalDate endDate,
+        @Param("eventIds") List<Long> eventIds
+    );
 }

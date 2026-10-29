@@ -41,7 +41,6 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
     items: attendanceItems,
     loading: loadingAttendance,
     error: attendanceError,
-    refresh: refreshAttendance,
   } = useAttendanceToday(participantId);
 
   const currentAttendanceItem = useMemo(
@@ -115,20 +114,6 @@ function MarcarPresencaDesktop({ institution = "Fatec Indaiatuba" }) {
 
     return () => window.clearTimeout(timer);
   }, [qrCodeData, shouldShowQr]);
-
-  useEffect(() => {
-    if (!resolvedEventId) {
-      return undefined;
-    }
-
-    const timer = window.setInterval(() => {
-      void refreshAttendance();
-    }, 6000);
-
-    return () => {
-      window.clearInterval(timer);
-    };
-  }, [refreshAttendance, resolvedEventId]);
 
   const currentLesson = activeEvent;
   const currentTitle = currentLesson?.subject ?? "Nenhum evento ativo";
