@@ -19,6 +19,7 @@ import HistoricoDeEventos from "./pages/HistoricoDeEventos.jsx";
 import ProfileAccount from "./pages/ProfileAccount.jsx";
 import Tendencias from "./pages/Tendencias.jsx";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
+import PasskeyReminder from "./components/PasskeyReminder.jsx";
 
 const MOBILE_USER_AGENT_PATTERN =
   /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i;
@@ -146,24 +147,24 @@ function GradeRoute() {
 function App() {
 
   return (
-    <Routes>
-      <Route path="/login" element={<PresentlyLogin />} />
-
-      <Route path="/dashboard" element={<ProtectedRoute> <DashboardRoute /> </ProtectedRoute>} />
-
-      <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
-      <Route path="/tendencias" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><Tendencias /></ProtectedRoute>} />
-      <Route path="/usuarios" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciarUsuarioDesktopAdmin></GerenciarUsuarioDesktopAdmin></ProtectedRoute>} />
-      <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas></GerenciamentoDeSalas></ProtectedRoute>} />
-      <Route path="/terminais" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeTerminais /></ProtectedRoute>} />
-      <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
-      <Route path="/perfil" element={<ProtectedRoute><ProfileAccount /></ProtectedRoute>} />
-
-      <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
-      <Route path="/relatorio" element={<ProtectedRoute><RelatorioRoute /></ProtectedRoute>} />
-      <Route path="/grade" element={<ProtectedRoute><GradeRoute /></ProtectedRoute>} />
-      <Route path="*" element={<Navigate to="/login" />} />
-    </Routes>
+    <>
+      <PasskeyReminder />
+      <Routes>
+        <Route path="/login" element={<PresentlyLogin />} />
+        <Route path="/dashboard" element={<ProtectedRoute><DashboardRoute /></ProtectedRoute>} />
+        <Route path="/dashboardAdmin" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><DashboardDesktopAdmin /></ProtectedRoute>} />
+        <Route path="/tendencias" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><Tendencias /></ProtectedRoute>} />
+        <Route path="/usuarios" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciarUsuarioDesktopAdmin /></ProtectedRoute>} />
+        <Route path="/salas" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeSalas /></ProtectedRoute>} />
+        <Route path="/terminais" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><GerenciamentoDeTerminais /></ProtectedRoute>} />
+        <Route path="/eventos/*" element={<ProtectedRoute requiredRole="ROLE_ADMIN"><EventosAdminRoutes /></ProtectedRoute>} />
+        <Route path="/perfil" element={<ProtectedRoute><ProfileAccount /></ProtectedRoute>} />
+        <Route path="/presenca" element={<ProtectedRoute><PresencaRoute /></ProtectedRoute>} />
+        <Route path="/relatorio" element={<ProtectedRoute><RelatorioRoute /></ProtectedRoute>} />
+        <Route path="/grade" element={<ProtectedRoute><GradeRoute /></ProtectedRoute>} />
+        <Route path="*" element={<Navigate to="/login" />} />
+      </Routes>
+    </>
   );
 }
 

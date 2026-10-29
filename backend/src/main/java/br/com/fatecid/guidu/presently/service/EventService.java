@@ -213,8 +213,16 @@ public class EventService {
                     ? candidate.getEndDate() : other.getEndDate();
             while (!date.isAfter(lastDate)) {
                 if (occursOn(candidate, date) && occursOn(other, date)) {
+                    if (sameRoom) {
+                        throw new IllegalStateException(
+                                "Já existe um evento no mesmo ambiente e horário. Escolha outro ambiente ou horário.");
+                    }
+                    if (sharedParticipant) {
+                        throw new IllegalStateException(
+                                "Um ou mais participantes já estão em outro evento nesse horário. Altere os participantes ou o horário.");
+                    }
                     throw new IllegalStateException(
-                            "Já existe um evento simultâneo com a mesma sala, responsável ou participante.");
+                            "O responsável já está em outro evento nesse horário. Altere o responsável ou o horário.");
                 }
                 date = date.plusDays(1);
             }

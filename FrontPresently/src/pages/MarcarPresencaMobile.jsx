@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Html5Qrcode } from "html5-qrcode";
 import { useCallback, useEffect, useRef, useState } from "react";
 import PageHeader from "../components/PageHeader/PageHeader.jsx";
-import { apiFetch } from "../utils/api.js";
+import { apiFetch, isFetchNetworkError } from "../utils/api.js";
 import { decodeRequestOptions, serializeCredential } from "../utils/webauthn.js";
 import { useCurrentActiveStudentEvent } from "../hooks/useCurrentActiveStudentEvent.js";
 import "../styles/pages/MarcarPresencaMobile.css";
@@ -152,8 +152,11 @@ function MarcarPresencaMobile({
         body: JSON.stringify(payload),
       });
     } catch (error) {
+      if (isFetchNetworkError(error)) {
+        throw new Error("Erro de conexão. Verifique sua internet e tente registrar a presença novamente.");
+      }
       if (error?.status === 412) {
-        throw new Error("Ops... ocorreu um erro ao validar sua presença. Tente novamente.");
+        throw new Error(error.message || "Erro na leitura do QR Code. Leia o código do evento novamente.");
       }
       throw error;
     }
@@ -215,7 +218,9 @@ function MarcarPresencaMobile({
             setAttendanceState({
               status: "error",
               message:
-                error instanceof Error && error.message
+                isFetchNetworkError(error)
+                  ? "Erro de conexão. Verifique sua internet e tente registrar a presença novamente."
+                  : error instanceof Error && error.message
                   ? error.message
                   : "Não foi possível marcar a presença.",
             });

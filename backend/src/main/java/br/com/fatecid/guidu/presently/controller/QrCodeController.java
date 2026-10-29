@@ -24,6 +24,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -53,7 +54,7 @@ public class QrCodeController {
 
     // Valida uma leitura de código qr
     @PostMapping("/validate")
-    public ResponseEntity<Void> register(
+    public ResponseEntity<?> register(
             @RequestBody QrCodeValidationDTO validationDTO,
             Authentication authentication,
             HttpServletRequest request) {
@@ -72,13 +73,13 @@ public class QrCodeController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
-        if (validationService.validateCode(validationDTO)) {
+        String validationError = validationService.validateCode(validationDTO);
+        if (validationError == null) {
             return ResponseEntity.ok().build();
         }
 
-        // Returning HttpStatus as a response body still produces HTTP 200.  The
-        // client needs a real non-2xx status to distinguish a rejected code.
-        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).build();
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED)
+                .body(Map.of("message", validationError));
     }
 
     // Devolve a string de base para um QR code pelo ID de terminal
