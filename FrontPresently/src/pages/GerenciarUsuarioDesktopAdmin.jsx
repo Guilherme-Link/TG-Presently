@@ -388,12 +388,33 @@ function RegisterUserCard({ onRegistered }) {
 }
 
 function UserListCard({ users, loading, error, onRetry }) {
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: "asc" });
   const [pendingDeleteUser, setPendingDeleteUser] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
   const [pendingEditUser, setPendingEditUser] = useState(null);
   const [editing, setEditing] = useState(false);
   const [editError, setEditError] = useState(null);
+
+  function toggleSort(key) {
+    setSortConfig((current) => ({
+      key,
+      direction: current.key === key && current.direction === "asc" ? "desc" : "asc",
+    }));
+  }
+
+  const sortedUsers = sortConfig.key
+    ? [...users].sort((a, b) => {
+        const valueA = sortConfig.key === "profile"
+          ? getUserProfileLabel(a.roles)
+          : a.username ?? "";
+        const valueB = sortConfig.key === "profile"
+          ? getUserProfileLabel(b.roles)
+          : b.username ?? "";
+        const comparison = valueA.localeCompare(valueB, "pt-BR", { sensitivity: "base" });
+        return sortConfig.direction === "asc" ? comparison : -comparison;
+      })
+    : users;
 
   useEffect(() => {
     if (!pendingDeleteUser && !pendingEditUser) {
@@ -517,18 +538,30 @@ function UserListCard({ users, loading, error, onRetry }) {
       ) : (
         <div className="gua-table">
           <div className="gua-table__head">
-            <span className="gua-table__col gua-table__col--profile">
-              Perfil <MdSwapVert size={14} />
+            <span
+              className="gua-table__col gua-table__col--profile"
+              role="columnheader"
+              aria-sort={sortConfig.key === "profile" ? (sortConfig.direction === "asc" ? "ascending" : "descending") : "none"}
+            >
+              <button type="button" className="gua-table__sort" onClick={() => toggleSort("profile")} aria-label="Ordenar por perfil">
+                Perfil <MdSwapVert size={14} aria-hidden="true" />
+              </button>
             </span>
-            <span className="gua-table__col gua-table__col--email">
-              Email <MdSwapVert size={14} />
+            <span
+              className="gua-table__col gua-table__col--email"
+              role="columnheader"
+              aria-sort={sortConfig.key === "email" ? (sortConfig.direction === "asc" ? "ascending" : "descending") : "none"}
+            >
+              <button type="button" className="gua-table__sort" onClick={() => toggleSort("email")} aria-label="Ordenar por email">
+                Email <MdSwapVert size={14} aria-hidden="true" />
+              </button>
             </span>
             <span className="gua-table__col gua-table__col--action">Editar</span>
             <span className="gua-table__col gua-table__col--action">Excluir</span>
           </div>
 
           <div className="gua-table__body">
-            {users.map((user) => (
+            {sortedUsers.map((user) => (
               <div key={user.id} className="gua-table__row">
                 <span className={`gua-profile-badge ${getUserProfileClass(user.roles)}`}>
                   <span className="gua-profile-badge__dot" />

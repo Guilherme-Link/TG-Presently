@@ -4,19 +4,19 @@
     
     {
       "source": "/api/:path*",
-      "destination": "https://tg-presently.onrender.com/api/:path*"
+      "destination": "https://tg-presently1.onrender.com/api/:path*"
     },
     {
       "source": "/security/:path*",
-      "destination": "https://tg-presently.onrender.com/security/:path*"
+      "destination": "https://tg-presently1.onrender.com/security/:path*"
     },
     {
       "source": "/webauthn/:path*",
-      "destination": "https://tg-presently.onrender.com/webauthn/:path*"
+      "destination": "https://tg-presently1.onrender.com/webauthn/:path*"
     },
     {
       "source": "/login/webauthn",
-      "destination": "https://tg-presently.onrender.com/login/webauthn"
+      "destination": "https://tg-presently1.onrender.com/login/webauthn"
     },
     {
       "source": "/(.*)",

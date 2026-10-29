@@ -377,6 +377,29 @@
   justify-content: flex-start;
 }
 
+.gua-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.gua-table__sort:hover,
+.gua-table__sort:focus-visible {
+  color: var(--gua-red);
+}
+
+.gua-table__sort:focus-visible {
+  outline: 2px solid var(--gua-red);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 .gua-table__body {
   display: flex;
   flex-direction: column;

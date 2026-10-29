@@ -80,7 +80,7 @@ public class ValidationCodeService {
         return code;
     }
 
-    public boolean validateCode(QrCodeValidationDTO validationDTO){
+    public String validateCode(QrCodeValidationDTO validationDTO){
 
         // TODO (Gui): Adicionar as outras validações; Também adicionar registro no banco
 
@@ -96,17 +96,17 @@ public class ValidationCodeService {
             event = eventService.findById(validationDTO.getEventId());
         }
         catch(EntityNotFoundException e){
-            return false;
+            return "Erro na leitura do QR Code. Leia o código do evento novamente.";
         }
 
         // Segunda validação: Verifica se o evento está ativo
         if(!event.isActive(validationTimestamp)){
-            return false;
+            return "Erro na leitura do QR Code. O código é inválido ou o evento não está ativo.";
         }
 
         // Terceira validação: Verifica se o código de evento ainda é válido
         if (!generateValidationCode(event.getId(), validationTimestamp).equals(validationDTO.getValidationCode())){
-            return false;
+            return "Erro na leitura do QR Code. Leia o código do evento novamente.";
         }
 
         // Quarta validação: Verifica se o usuário está dentro da área permitida pelo geofencing
@@ -118,7 +118,7 @@ public class ValidationCodeService {
                 validationDTO.getUserLatitude(), 
                 validationDTO.getUserLongitude()
         )){
-            return false;
+            return "Fora da área permitida do ambiente. Aproxime-se do local do evento para registrar a presença.";
         }
 
         // Objeto de ocorrência de evento para armazenar histórico
@@ -129,7 +129,7 @@ public class ValidationCodeService {
 
         // Verifica se a ocorrência está aberta
         if (occurrence.isClosed()){
-            return false;
+            return "Não foi possível registrar a presença porque o evento já foi encerrado.";
         }
         
         // Registra a presença do usuário e o timestamp de chegada no registro da instância do evento
@@ -139,7 +139,7 @@ public class ValidationCodeService {
             validationTimestamp
         );
 
-        return true;
+        return null;
     }
     
 }

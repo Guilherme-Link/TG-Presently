@@ -123,12 +123,10 @@ function CriarEditarEvento({
       await onSave?.(payload);
     } catch (error) {
       if (error?.status === 409) {
-        setCollisionMessage(
-          "Este horário conflita com outro evento que usa o mesmo ambiente, o mesmo responsável ou algum dos mesmos participantes. Altere esses dados ou o horário."
-        );
+        setCollisionMessage(error.message || "Já existe um conflito de horário com outro evento.");
         return;
       }
-      throw error;
+      setCollisionMessage(error?.message || "Não foi possível salvar o evento. Verifique os dados e tente novamente.");
     } finally {
       setSaving(false);
     }
@@ -272,7 +270,7 @@ function CriarEditarEvento({
       )}
 
       {collisionMessage && (
-        <Modal title="Conflito de horário" onClose={() => setCollisionMessage("")} width={440}>
+        <Modal title="Não foi possível salvar o evento" onClose={() => setCollisionMessage("")} width={440}>
           <div className="cee-conflict-modal">
             <p>{collisionMessage}</p>
             <Button variant="primary" onClick={() => setCollisionMessage("")}>Entendi</Button>
