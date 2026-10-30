@@ -63,4 +63,22 @@ public class AttendanceReportController {
             date
         );
     }
+
+    @GetMapping("/participants/{participantId}/range")
+    public List<ParticipantAttendanceDTO> findParticipantAttendanceBetween(
+        @PathVariable Long participantId,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+        @RequestParam List<Long> eventIds
+    ) {
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("O início do período deve ser anterior ao fim.");
+        }
+        return attendanceReportService.findParticipantAttendanceBetween(
+            participantId,
+            startDate,
+            endDate,
+            eventIds
+        );
+    }
 }

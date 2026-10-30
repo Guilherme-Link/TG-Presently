@@ -56,6 +56,18 @@ export function listTodayAttendance(participantId, date = formatLocalDate()) {
   ).then((response) => (Array.isArray(response) ? response.map(toAttendanceItem) : []));
 }
 
+export function listAttendanceRange(participantId, startDate, endDate, eventIds = []) {
+  if (!participantId || !startDate || !endDate || eventIds.length === 0) {
+    return Promise.resolve([]);
+  }
+
+  const params = new URLSearchParams({ startDate, endDate, eventIds: eventIds.join(",") });
+  return apiFetch(
+    `/api/v1/attendanceReport/participants/${participantId}/range?${params.toString()}`,
+    { method: "GET" }
+  ).then((response) => (Array.isArray(response) ? response.map(toAttendanceItem) : []));
+}
+
 export function listDailyAttendanceReport(date = formatLocalDate(), responsibleId) {
   const params = new URLSearchParams({ date });
 

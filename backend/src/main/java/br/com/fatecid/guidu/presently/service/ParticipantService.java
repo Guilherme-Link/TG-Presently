@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 @Service
@@ -136,6 +137,19 @@ public class ParticipantService {
         }
 
         return lista;
+    }
+
+    // Retorna uma lista consolidada para a tela de presença, evitando duas chamadas ao endpoint.
+    @Transactional(readOnly = true)
+    public List<EventDTO> getEventsForParticipant(Long participantId) {
+        Participant participant = participantRepository.findById(participantId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        LinkedHashMap<Long, Event> eventsById = new LinkedHashMap<>();
+        participant.getResponsibleEvents().forEach(event -> eventsById.put(event.getId(), event));
+        participant.getParticipatingEvents().forEach(event -> eventsById.putIfAbsent(event.getId(), event));
+
+        return eventsById.values().stream().map(EventDTO::new).toList();
     }
 
 }

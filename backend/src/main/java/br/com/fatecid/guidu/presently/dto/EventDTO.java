@@ -32,7 +32,11 @@ public class EventDTO {
 
     private Long responsibleId;
 
+    private String responsibleName;
+
     private Long ambientId;
+
+    private String ambientName;
 
     private Set<Long> participantIds = new HashSet<>();
 
@@ -53,10 +57,12 @@ public class EventDTO {
         
         if (event.getResponsible() != null) {
             this.responsibleId = event.getResponsible().getId();
+            this.responsibleName = event.getResponsible().getName();
         }
 
         if (event.getAmbient() != null) {
             this.ambientId = event.getAmbient().getId();
+            this.ambientName = event.getAmbient().getName();
         }
 
         event.getParticipants().forEach(user ->
@@ -144,12 +150,28 @@ public class EventDTO {
         this.responsibleId = responsibleId;
     }
 
+    public String getResponsibleName() {
+        return responsibleName;
+    }
+
+    public void setResponsibleName(String responsibleName) {
+        this.responsibleName = responsibleName;
+    }
+
     public Long getAmbientId() {
         return ambientId;
     }
 
     public void setAmbientId(Long ambientId) {
         this.ambientId = ambientId;
+    }
+
+    public String getAmbientName() {
+        return ambientName;
+    }
+
+    public void setAmbientName(String ambientName) {
+        this.ambientName = ambientName;
     }
 
     public Set<Long> getParticipantIds() {

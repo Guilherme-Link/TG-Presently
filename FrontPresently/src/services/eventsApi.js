@@ -37,3 +37,9 @@ export function listParticipatingEvents(participantId) {
     method: "GET",
   });
 }
+
+export function listParticipantEvents(participantId) {
+  return apiFetch(`/api/v1/events/participant/${participantId}`, {
+    method: "GET",
+  });
+}

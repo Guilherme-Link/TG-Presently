@@ -105,6 +105,20 @@ public class AttendanceReportService {
             .toList();
     }
 
+    public List<ParticipantAttendanceDTO> findParticipantAttendanceBetween(
+        Long participantId,
+        LocalDate startDate,
+        LocalDate endDate,
+        List<Long> eventIds
+    ) {
+        if (eventIds == null || eventIds.isEmpty()) return List.of();
+        return attendanceRecordRepository
+            .findAllByParticipantIdAndEventDateBetween(participantId, startDate, endDate, eventIds)
+            .stream()
+            .map(this::toParticipantAttendanceDTO)
+            .toList();
+    }
+
     private EventOccurrenceReportDTO toEventOccurrenceReportDTO(
         EventOccurrence occurrence
     ) {

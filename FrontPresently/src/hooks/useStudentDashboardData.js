@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../utils/api.js";
-import { listAmbients } from "../services/ambientsApi.js";
 import { listParticipatingEvents, listResponsibleEvents } from "../services/eventsApi.js";
-import { listParticipants } from "../services/participantsApi.js";
-import { listTodayAttendance } from "../services/attendanceApi.js";
+import { listAttendanceRange } from "../services/attendanceApi.js";
 import { toDisplayTime } from "../data/eventsData";
 
 function formatLocalDate(date) {
@@ -57,12 +55,14 @@ function buildScheduledOccurrences(events, today = new Date()) {
   return occurrences;
 }
 
-async function buildRealStatistics(participatingEvents) {
+async function buildRealStatistics(participatingEvents, participantId) {
   const today = new Date();
   const occurrences = buildScheduledOccurrences(participatingEvents, today).filter(({ event, dateObject }) => eventHasFinished(event, dateObject, today));
-  const dates = Array.from(new Set(occurrences.map(({ date }) => date)));
-  const responses = await Promise.all(dates.map((date) => listTodayAttendanceForSummary(date, participatingEvents)));
-  const records = responses.flat();
+  const dates = Array.from(new Set(occurrences.map(({ date }) => date))).sort();
+  const eventIds = Array.from(new Set(occurrences.map(({ event }) => Number(event.id))));
+  const records = dates.length
+    ? await listAttendanceRange(participantId, dates[0], dates[dates.length - 1], eventIds)
+    : [];
   const recordsByOccurrence = new Map(records.map((record) => [`${record.eventId}|${record.eventDate}`, record]));
   let absences = 0;
   let attended = 0;
@@ -98,12 +98,6 @@ async function buildRealStatistics(participatingEvents) {
   };
 }
 
-async function listTodayAttendanceForSummary(date, events) {
-  const participantId = events?.[0]?.__participantId;
-  if (!participantId) return [];
-  return listTodayAttendance(participantId, date);
-}
-
 function getStoredCurrentUser() {
   try {
     const raw = localStorage.getItem("presently_auth");
@@ -117,12 +111,9 @@ function getStoredCurrentUser() {
   }
 }
 
-function buildClassItems(events = [], participantsById = new Map(), ambientsById = new Map(), currentUser = null) {
+function buildClassItems(events = [], currentUser = null) {
   return events
     .map((event) => {
-      const ambient = ambientsById.get(event.ambientId);
-      const responsible = participantsById.get(String(event.responsibleId ?? ""));
-
       const time =
         event.startTime && event.endTime
           ? `${toDisplayTime(event.startTime)} - ${toDisplayTime(event.endTime)}`
@@ -132,8 +123,8 @@ function buildClassItems(events = [], participantsById = new Map(), ambientsById
         id: event.id,
         time,
         subject: event.name ?? "Evento",
-        room: ambient?.name ?? event.ambientName ?? "Ambiente não informado",
-        professor: responsible?.name ?? currentUser?.username ?? "Responsável não informado",
+        room: event.ambientName ?? "Ambiente não informado",
+        professor: event.responsibleName ?? currentUser?.username ?? "Responsável não informado",
         startDate: event.startDate ?? "",
         startTime: event.startTime ?? "",
       };
@@ -182,29 +173,17 @@ export function useStudentDashboardData() {
           return;
         }
 
-        const [participantsResponse, ambientsResponse, responsibleEvents, participatingEvents] = await Promise.all([
-          listParticipants(),
-          listAmbients(),
-          listResponsibleEvents(participantId),
-          listParticipatingEvents(participantId),
-        ]);
+        const [responsibleEvents, participatingEvents] = userIsResponsible
+          ? [await listResponsibleEvents(participantId), []]
+          : await Promise.all([
+              listResponsibleEvents(participantId),
+              listParticipatingEvents(participantId),
+            ]);
 
         if (cancelled) {
           return;
         }
 
-        const participantsById = new Map(
-          (Array.isArray(participantsResponse) ? participantsResponse : []).map((participant) => [
-            String(participant.id),
-            participant,
-          ])
-        );
-        const ambientsById = new Map(
-          (Array.isArray(ambientsResponse) ? ambientsResponse : []).map((ambient) => [
-            ambient.id,
-            ambient,
-          ])
-        );
         const mergedEvents = new Map();
         const dashboardEvents = userIsResponsible
           ? responsibleEvents
@@ -223,8 +202,6 @@ export function useStudentDashboardData() {
         setClasses(
           buildClassItems(
             Array.from(mergedEvents.values()),
-            participantsById,
-            ambientsById,
             me ?? getStoredCurrentUser()
           )
         );
@@ -237,8 +214,8 @@ export function useStudentDashboardData() {
           ]);
           setHeatmapMatrix(Array.from({ length: 5 }, () => Array(7).fill(0)));
         } else {
-          const eventsForSummary = (Array.isArray(participatingEvents) ? participatingEvents : []).map((event) => ({ ...event, __participantId: participantId }));
-          const summary = await buildRealStatistics(eventsForSummary);
+          const eventsForSummary = Array.isArray(participatingEvents) ? participatingEvents : [];
+          const summary = await buildRealStatistics(eventsForSummary, participantId);
           setStatistics(summary.statistics);
           setHeatmapMatrix(summary.heatmapMatrix);
         }

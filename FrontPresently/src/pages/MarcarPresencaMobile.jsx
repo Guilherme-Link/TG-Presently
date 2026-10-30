@@ -47,6 +47,8 @@ function MarcarPresencaMobile({
 }) {
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState(null);
+  const [locationState, setLocationState] = useState({ status: "requesting", error: "" });
+  const locationRef = useRef(null);
   const [attendanceState, setAttendanceState] = useState({
     status: "idle",
     message: "",
@@ -66,6 +68,51 @@ function MarcarPresencaMobile({
   const resolvedEventId = activeEvent?.id ?? null;
   const participantId = currentUser?.participantId ?? null;
   const resolvedLesson = activeEvent ?? lesson;
+
+  const requestLocation = useCallback(() => {
+    setLocationState({ status: "requesting", error: "" });
+
+    if (!window.isSecureContext) {
+      setLocationState({
+        status: "error",
+        error: "A localização só funciona em uma conexão segura (HTTPS).",
+      });
+      return;
+    }
+
+    if (!navigator.geolocation) {
+      setLocationState({
+        status: "error",
+        error: "Este navegador não oferece suporte à localização.",
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        locationRef.current = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+        };
+        setLocationState({ status: "granted", error: "", accuracy: position.coords.accuracy });
+      },
+      (error) => {
+        locationRef.current = null;
+        const message = error.code === error.PERMISSION_DENIED
+          ? "O acesso à localização foi negado. Permita a localização nas configurações de permissão deste site e tente novamente."
+          : error.code === error.POSITION_UNAVAILABLE
+            ? "Não foi possível obter sua localização. Verifique se a localização está ativada no dispositivo."
+            : "A localização demorou para responder. Tente novamente em um local com sinal melhor.";
+        setLocationState({ status: "error", error: message });
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+    );
+  }, []);
+
+  useEffect(() => {
+    requestLocation();
+  }, [requestLocation]);
 
   const confirmPasskey = useCallback(async () => {
     if (!window.PublicKeyCredential || !navigator.credentials?.get) {
@@ -115,22 +162,19 @@ function MarcarPresencaMobile({
         resolve(null);
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          resolve({
+          const currentLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-          });
+            accuracy: position.coords.accuracy,
+          };
+          locationRef.current = currentLocation;
+          setLocationState({ status: "granted", error: "", accuracy: position.coords.accuracy });
+          resolve(currentLocation);
         },
-        () => {
-          resolve(null);
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0,
-        }
+        () => resolve(null),
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
       );
     });
 
@@ -144,6 +188,7 @@ function MarcarPresencaMobile({
       validationCode: normalizedCode,
       userLatitude: location.latitude,
       userLongitude: location.longitude,
+      userLocationAccuracyMeters: location.accuracy,
     };
 
     try {
@@ -357,6 +402,23 @@ function MarcarPresencaMobile({
             ) : activeEventError ? (
               <p className="mp-mobile__error">{activeEventError}</p>
             ) : null}
+
+            {locationState.status === "granted" ? (
+              <p className="mp-mobile__permission mp-mobile__permission--granted" role="status">
+                Localização autorizada. Precisão aproximada: ±{Math.round(locationState.accuracy)} m.
+              </p>
+            ) : locationState.status === "requesting" ? (
+              <p className="mp-mobile__permission" role="status">
+                Solicitando acesso à localização...
+              </p>
+            ) : (
+              <div className="mp-mobile__permission" role="alert">
+                <p>{locationState.error}</p>
+                <button type="button" onClick={requestLocation}>
+                  Permitir acesso à localização
+                </button>
+              </div>
+            )}
 
             {cameraError && (
               <p className="mp-mobile__error">{cameraError}</p>
