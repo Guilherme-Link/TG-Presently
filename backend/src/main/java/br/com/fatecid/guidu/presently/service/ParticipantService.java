@@ -1,7 +1,9 @@
 package br.com.fatecid.guidu.presently.service;
 
 import br.com.fatecid.guidu.presently.dto.EventDTO;
+import br.com.fatecid.guidu.presently.dto.ActiveEventDTO;
 import br.com.fatecid.guidu.presently.dto.ParticipantDTO;
+import br.com.fatecid.guidu.presently.entity.Event;
 import br.com.fatecid.guidu.presently.entity.Participant;
 import br.com.fatecid.guidu.presently.repository.ParticipantRepository;
 import br.com.fatecid.guidu.presently.repository.EventRepository;
@@ -12,9 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Service
 public class ParticipantService {
+
+    private static final ZoneId APP_TIME_ZONE = ZoneId.of("America/Sao_Paulo");
 
     private final ParticipantRepository participantRepository;
     private final EventRepository eventRepository;
@@ -128,6 +134,31 @@ public class ParticipantService {
     public List<EventDTO> getEventsForParticipant(Long participantId) {
         return eventRepository.findAllForParticipantWithDetails(participantId)
                 .stream().map(EventDTO::new).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public ActiveEventDTO getCurrentActiveEvent(Long participantId) {
+        LocalDateTime now = LocalDateTime.now(APP_TIME_ZONE);
+        return eventRepository.findActiveCandidatesForParticipant(
+                        participantId,
+                        now.toLocalDate(),
+                        now.toLocalTime()
+                ).stream()
+                .filter(event -> event.getEventType() != null)
+                .filter(event -> event.getEventType() != Event.EventType.RECURRING
+                        || event.getIntervalDays() > 0)
+                .filter(event -> event.isActive(now))
+                .findFirst()
+                .map(event -> new ActiveEventDTO(
+                        event.getId(),
+                        event.getName(),
+                        now.toLocalDate(),
+                        event.getStartTime(),
+                        event.getEndTime(),
+                        event.getAmbient().getName(),
+                        event.getResponsible().getName()
+                ))
+                .orElse(null);
     }
 
 }

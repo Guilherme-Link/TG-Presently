@@ -61,6 +61,31 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     """)
     List<Event> findAllForParticipantWithDetails(@Param("participantId") Long participantId);
 
+    @Query("""
+        SELECT e
+        FROM Event e
+        JOIN FETCH e.responsible
+        JOIN FETCH e.ambient
+        WHERE e.startDate <= :eventDate
+          AND e.endDate >= :eventDate
+          AND e.startTime <= :eventTime
+          AND e.endTime >= :eventTime
+          AND (
+              e.responsible.id = :participantId
+              OR EXISTS (
+                  SELECT participant.id
+                  FROM Event participatingEvent JOIN participatingEvent.participants participant
+                  WHERE participatingEvent.id = e.id AND participant.id = :participantId
+              )
+          )
+        ORDER BY e.startDate, e.startTime
+    """)
+    List<Event> findActiveCandidatesForParticipant(
+        @Param("participantId") Long participantId,
+        @Param("eventDate") LocalDate eventDate,
+        @Param("eventTime") LocalTime eventTime
+    );
+
     // Query para trazer uma lista de todo os eventos possivelmente ativos cadastrados
     @Query("""
     SELECT e

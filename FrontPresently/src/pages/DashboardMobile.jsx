@@ -45,16 +45,48 @@ function DashboardMobile() {
   const navigate = useNavigate();
   const { currentUser, classes, loadingClasses, classesError, statistics, isResponsible } =
     useStudentDashboardData();
-  const { items: attendanceItems } = useAttendanceToday(
+  const {
+    items: attendanceItems,
+    loading: loadingAttendance,
+    error: attendanceError,
+  } = useAttendanceToday(
     isResponsible ? null : currentUser?.participantId
   );
-  const { activeEvent } = useCurrentActiveStudentEvent();
+  const {
+    activeEvent,
+    currentUser: presenceUser,
+    loading: loadingActiveEvent,
+  } = useCurrentActiveStudentEvent();
   const confirmedAttendanceIds = new Set(
     attendanceItems.filter((item) => item.status === "confirmed").map((item) => String(item.eventId)),
   );
   const hasConfirmedActiveAttendance = Boolean(
     activeEvent?.id && confirmedAttendanceIds.has(String(activeEvent.id))
   );
+  const attendanceActionDisabled = !isResponsible && (
+    loadingActiveEvent ||
+    loadingAttendance ||
+    Boolean(attendanceError) ||
+    !presenceUser?.participantId ||
+    !activeEvent?.id ||
+    hasConfirmedActiveAttendance
+  );
+  const attendanceButtonLabel = hasConfirmedActiveAttendance
+    ? "Presença registrada"
+    : attendanceError
+      ? "Não foi possível verificar"
+      : loadingActiveEvent || loadingAttendance
+        ? "Verificando evento..."
+        : activeEvent?.id
+          ? "Marcar presença"
+          : "Nenhum evento disponível";
+  const scanDisabledLabel = hasConfirmedActiveAttendance
+    ? "Registrada"
+    : attendanceError
+      ? "Verifique"
+      : loadingActiveEvent || loadingAttendance
+        ? "Aguarde"
+        : "Sem evento";
   const dateLabel = getCurrentDateLabel();
   const userName = currentUser?.fullName?.trim()
     || currentUser?.name?.trim()
@@ -104,10 +136,10 @@ function DashboardMobile() {
                     type="button"
                     className="dashboard__attendance-btn"
                     onClick={() => navigate("/presenca")}
-                    disabled={hasConfirmedActiveAttendance}
+                    disabled={attendanceActionDisabled}
                   >
                     <AttendanceButtonIcon />
-                    {hasConfirmedActiveAttendance ? "Presença registrada" : "Marcar presença"}
+                    {attendanceButtonLabel}
                   </button>
                 )}
               </div>
@@ -152,6 +184,7 @@ function DashboardMobile() {
                   key={shortcut.id}
                   label={shortcut.label}
                   icon={shortcut.icon}
+                  disabled={shortcut.id === "presenca" && attendanceActionDisabled}
                   onClick={() => navigate(
                     shortcut.id === "presenca"
                       ? "/presenca"
@@ -166,7 +199,11 @@ function DashboardMobile() {
         </main>
       </div>
 
-      <BottomNavigation activeId="dashboard" scanDisabled={hasConfirmedActiveAttendance} />
+      <BottomNavigation
+        activeId="dashboard"
+        scanDisabled={!isResponsible && attendanceActionDisabled}
+        scanDisabledLabel={scanDisabledLabel}
+      />
     </div>
   );
 }

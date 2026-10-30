@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { apiFetch } from "../utils/api.js";
-import { listParticipantEvents } from "../services/eventsApi.js";
+import { getCurrentActiveParticipantEvent } from "../services/eventsApi.js";
 
 function getStoredCurrentUser() {
   try {
@@ -15,89 +15,6 @@ function getStoredCurrentUser() {
   }
 }
 
-function parseLocalDate(value) {
-  if (!value) {
-    return null;
-  }
-
-  const raw = String(value).trim();
-
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
-    const [year, month, day] = raw.split("-").map(Number);
-    return new Date(year, month - 1, day);
-  }
-
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(raw)) {
-    const [day, month, year] = raw.split("/").map(Number);
-    return new Date(year, month - 1, day);
-  }
-
-  return null;
-}
-
-function parseLocalTimeToMinutes(value) {
-  if (!value) {
-    return null;
-  }
-
-  const raw = String(value).trim();
-  const normalized = raw.length === 8 ? raw.slice(0, 5) : raw;
-
-  if (!/^\d{2}:\d{2}$/.test(normalized)) {
-    return null;
-  }
-
-  const [hour, minute] = normalized.split(":").map(Number);
-  if (Number.isNaN(hour) || Number.isNaN(minute)) {
-    return null;
-  }
-
-  return hour * 60 + minute;
-}
-
-function isEventActiveAt(event, referenceDate = new Date()) {
-  const startDate = parseLocalDate(event.startDate);
-  const endDate = parseLocalDate(event.endDate);
-  const startMinutes = parseLocalTimeToMinutes(event.startTime);
-  const endMinutes = parseLocalTimeToMinutes(event.endTime);
-
-  if (!startDate || !endDate || startMinutes === null || endMinutes === null) {
-    return false;
-  }
-
-  const currentDate = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
-
-  if (currentDate < startDate || currentDate > endDate) {
-    return false;
-  }
-
-  const currentMinutes = referenceDate.getHours() * 60 + referenceDate.getMinutes();
-  if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
-    return false;
-  }
-
-  if (event.eventType === "RECURRING") {
-    const intervalDays = Number(event.intervalDays || 0);
-    if (!Number.isFinite(intervalDays) || intervalDays <= 0) {
-      return false;
-    }
-
-    const startUtc = Date.UTC(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
-    const currentUtc = Date.UTC(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate()
-    );
-    const diffDays = Math.floor((currentUtc - startUtc) / 86400000);
-
-    if (diffDays < 0 || diffDays % intervalDays !== 0) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
 function buildLessonCard(event) {
   if (!event) {
     return null;
@@ -109,13 +26,18 @@ function buildLessonCard(event) {
     startTime && endTime
       ? `${startTime} - ${endTime}`
       : startTime || endTime || "—";
+  const [year, month, day] = String(event.eventDate ?? "").split("-").map(Number);
+  const eventDay = year && month && day
+    ? new Intl.DateTimeFormat("pt-BR", { weekday: "long" }).format(new Date(year, month - 1, day))
+    : "";
 
   return {
     id: event.id,
     time,
-    subject: event.name ?? "Evento",
-    room: event.ambientName || "Ambiente não informado",
-    professor: event.responsibleName || "Responsável não informado",
+    day: eventDay,
+    subject: event.name,
+    room: event.ambientName,
+    professor: event.responsibleName,
   };
 }
 
@@ -148,26 +70,11 @@ export function useCurrentActiveStudentEvent() {
           return;
         }
 
-        const participantEvents = await listParticipantEvents(participantId);
+        const activeEventData = await getCurrentActiveParticipantEvent(participantId);
 
         if (cancelled) {
           return;
         }
-
-        const activeEvents = (Array.isArray(participantEvents) ? participantEvents : []).filter((event) => {
-          if (!event?.id) return false;
-          if (!isEventActiveAt(event, new Date())) {
-            return false;
-          }
-          return true;
-        });
-
-        const activeEventData = activeEvents
-          .sort((left, right) => {
-            const leftKey = `${left.startDate ?? ""} ${left.startTime ?? ""}`.trim();
-            const rightKey = `${right.startDate ?? ""} ${right.startTime ?? ""}`.trim();
-            return leftKey.localeCompare(rightKey);
-          })[0] ?? null;
 
         setActiveEvent(buildLessonCard(activeEventData));
 
