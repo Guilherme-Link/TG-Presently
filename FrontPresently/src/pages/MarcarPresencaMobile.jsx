@@ -48,7 +48,6 @@ function MarcarPresencaMobile({
   const [isScanning, setIsScanning] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [locationState, setLocationState] = useState({ status: "requesting", error: "" });
-  const locationRef = useRef(null);
   const [attendanceState, setAttendanceState] = useState({
     status: "idle",
     message: "",
@@ -90,15 +89,9 @@ function MarcarPresencaMobile({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        locationRef.current = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy,
-        };
         setLocationState({ status: "granted", error: "", accuracy: position.coords.accuracy });
       },
       (error) => {
-        locationRef.current = null;
         const message = error.code === error.PERMISSION_DENIED
           ? "O acesso à localização foi negado. Permita a localização nas configurações de permissão deste site e tente novamente."
           : error.code === error.POSITION_UNAVAILABLE
@@ -167,9 +160,7 @@ function MarcarPresencaMobile({
           const currentLocation = {
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
           };
-          locationRef.current = currentLocation;
           setLocationState({ status: "granted", error: "", accuracy: position.coords.accuracy });
           resolve(currentLocation);
         },
@@ -188,7 +179,6 @@ function MarcarPresencaMobile({
       validationCode: normalizedCode,
       userLatitude: location.latitude,
       userLongitude: location.longitude,
-      userLocationAccuracyMeters: location.accuracy,
     };
 
     try {

@@ -17,8 +17,15 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
         Long participantId
     );
 
+    @Query("""
+        SELECT a
+        FROM AttendanceRecord a
+        JOIN FETCH a.participant p
+        WHERE a.occurrence.id = :occurrenceId
+        ORDER BY p.name
+    """)
     List<AttendanceRecord> findAllByOccurrenceIdOrderByParticipantName(
-        Long occurrenceId
+        @Param("occurrenceId") Long occurrenceId
     );
 
     @Query("""
@@ -27,6 +34,8 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
         JOIN FETCH a.occurrence o
         JOIN FETCH o.event e
         JOIN FETCH a.participant p
+        JOIN FETCH e.responsible
+        JOIN FETCH e.ambient
         WHERE p.id = :participantId
           AND o.eventDate = :eventDate
         ORDER BY o.startedAt
@@ -42,6 +51,8 @@ public interface AttendanceRecordRepository extends JpaRepository<AttendanceReco
         JOIN FETCH a.occurrence o
         JOIN FETCH o.event e
         JOIN FETCH a.participant p
+        JOIN FETCH e.responsible
+        JOIN FETCH e.ambient
         WHERE p.id = :participantId
           AND o.eventDate BETWEEN :startDate AND :endDate
           AND e.id IN :eventIds

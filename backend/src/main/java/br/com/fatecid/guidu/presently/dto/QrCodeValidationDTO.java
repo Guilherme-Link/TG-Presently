@@ -12,8 +12,6 @@ public class QrCodeValidationDTO {
 
     private double userLongitude;
 
-    private double userLocationAccuracyMeters;
-
     private String validationCode;
     
     private LocalDateTime validationTimestamp;
@@ -55,14 +53,6 @@ public class QrCodeValidationDTO {
 
     public void setUserLongitude(double UserLongitude) {
         this.userLongitude = UserLongitude;
-    }
-
-    public double getUserLocationAccuracyMeters() {
-        return userLocationAccuracyMeters;
-    }
-
-    public void setUserLocationAccuracyMeters(double userLocationAccuracyMeters) {
-        this.userLocationAccuracyMeters = userLocationAccuracyMeters;
     }
 
     public long getParticipantId() {
