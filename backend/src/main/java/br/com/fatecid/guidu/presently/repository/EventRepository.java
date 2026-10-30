@@ -9,8 +9,82 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface EventRepository extends JpaRepository<Event, Long> {
+
+    @Query("""
+        SELECT DISTINCT e
+        FROM Event e
+        LEFT JOIN FETCH e.responsible
+        LEFT JOIN FETCH e.ambient
+        LEFT JOIN FETCH e.participants
+    """)
+    List<Event> findAllWithDetails();
+
+    @Query("""
+        SELECT DISTINCT e
+        FROM Event e
+        LEFT JOIN FETCH e.responsible
+        LEFT JOIN FETCH e.ambient
+        LEFT JOIN FETCH e.participants
+        WHERE e.responsible.id = :participantId
+    """)
+    List<Event> findAllByResponsibleIdWithDetails(@Param("participantId") Long participantId);
+
+    @Query("""
+        SELECT DISTINCT e
+        FROM Event e
+        LEFT JOIN FETCH e.responsible
+        LEFT JOIN FETCH e.ambient
+        LEFT JOIN FETCH e.participants
+        WHERE EXISTS (
+            SELECT participant.id
+            FROM Event participatingEvent JOIN participatingEvent.participants participant
+            WHERE participatingEvent.id = e.id AND participant.id = :participantId
+        )
+    """)
+    List<Event> findAllByParticipantIdWithDetails(@Param("participantId") Long participantId);
+
+    @Query("""
+        SELECT DISTINCT e
+        FROM Event e
+        LEFT JOIN FETCH e.responsible
+        LEFT JOIN FETCH e.ambient
+        LEFT JOIN FETCH e.participants
+        WHERE e.responsible.id = :participantId
+           OR EXISTS (
+                SELECT participant.id
+                FROM Event participatingEvent JOIN participatingEvent.participants participant
+                WHERE participatingEvent.id = e.id AND participant.id = :participantId
+           )
+    """)
+    List<Event> findAllForParticipantWithDetails(@Param("participantId") Long participantId);
+
+    @Query("""
+        SELECT e
+        FROM Event e
+        JOIN FETCH e.responsible
+        JOIN FETCH e.ambient
+        WHERE e.startDate <= :eventDate
+          AND e.endDate >= :eventDate
+          AND e.startTime <= :eventTime
+          AND e.endTime >= :eventTime
+          AND (
+              e.responsible.id = :participantId
+              OR EXISTS (
+                  SELECT participant.id
+                  FROM Event participatingEvent JOIN participatingEvent.participants participant
+                  WHERE participatingEvent.id = e.id AND participant.id = :participantId
+              )
+          )
+        ORDER BY e.startDate, e.startTime
+    """)
+    List<Event> findActiveCandidatesForParticipant(
+        @Param("participantId") Long participantId,
+        @Param("eventDate") LocalDate eventDate,
+        @Param("eventTime") LocalTime eventTime
+    );
 
     // Query para trazer uma lista de todo os eventos possivelmente ativos cadastrados
     @Query("""

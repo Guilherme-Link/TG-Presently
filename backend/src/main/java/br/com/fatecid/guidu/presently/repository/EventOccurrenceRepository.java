@@ -17,15 +17,22 @@ public interface EventOccurrenceRepository extends JpaRepository<EventOccurrence
         LocalDate eventDate
     );
 
+    @Query("""
+        SELECT o
+        FROM EventOccurrence o
+        JOIN FETCH o.event e
+        WHERE o.eventDate = :eventDate
+        ORDER BY o.startedAt
+    """)
     List<EventOccurrence> findAllByEventDateOrderByStartedAt(
-        LocalDate eventDate
+        @Param("eventDate") LocalDate eventDate
     );
 
     @Query("""
         SELECT DISTINCT o
         FROM EventOccurrence o
-        JOIN o.event e
-        JOIN e.responsible r
+        JOIN FETCH o.event e
+        JOIN FETCH e.responsible r
         WHERE o.eventDate = :eventDate
           AND r.id = :responsibleId
         ORDER BY o.startedAt

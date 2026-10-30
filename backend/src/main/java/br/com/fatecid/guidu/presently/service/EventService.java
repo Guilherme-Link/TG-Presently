@@ -42,7 +42,7 @@ public class EventService {
     }
 
     public List<EventDTO> findAll() {
-        return eventRepository.findAll()
+        return eventRepository.findAllWithDetails()
                 .stream()
                 .map(EventDTO::new)
                 .collect(Collectors.toList());

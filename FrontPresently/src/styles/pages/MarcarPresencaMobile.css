@@ -119,6 +119,42 @@
   transform: translateY(-1px);
 }
 
+.mp-mobile__button:disabled,
+.mp-mobile__button:disabled:hover {
+  background: #9a7b7b;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.mp-mobile__state {
+  width: min(100%, 420px);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 28px 20px;
+}
+
+.mp-mobile__state .mp-mobile__status-title,
+.mp-mobile__state .mp-mobile__status-description {
+  margin: 0;
+}
+
+.mp-mobile__spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid #f1dada;
+  border-top-color: var(--mp-red);
+  border-radius: 50%;
+  animation: mp-mobile-spin .8s linear infinite;
+}
+
+@keyframes mp-mobile-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ---------- Scanner overlay (tela cheia) ---------- */
 .mp-mobile__scanner-overlay {
   position: fixed;

@@ -20,6 +20,8 @@ export class ApiError extends Error {
   }
 }
 
+const inFlightGetRequests = new Map();
+
 export function buildApiUrl(path) {
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
@@ -37,47 +39,70 @@ export async function apiFetch(path, options = {}) {
         .find((cookie) => cookie.startsWith("XSRF-TOKEN="))
         ?.slice("XSRF-TOKEN=".length);
 
-  const response = await fetch(buildApiUrl(path), {
-    credentials: "include",
-    ...fetchOptions,
-    headers: {
-      ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}),
-      ...(csrfCookie && !["GET", "HEAD", "OPTIONS"].includes(method)
-        ? { "X-XSRF-TOKEN": decodeURIComponent(csrfCookie) }
-        : {}),
-      ...customHeaders,
-    },
-  });
+  const requestUrl = buildApiUrl(path);
+  const canDeduplicate = method === "GET" && !fetchOptions.signal && !fetchOptions.body;
+  const requestKey = canDeduplicate
+    ? `${requestUrl}|${JSON.stringify({ customHeaders, cache: fetchOptions.cache, mode: fetchOptions.mode })}`
+    : null;
 
-  const contentType = response.headers.get("content-type") || "";
-  let payload = null;
+  if (requestKey && inFlightGetRequests.has(requestKey)) {
+    return inFlightGetRequests.get(requestKey);
+  }
 
-  if (response.status !== 204) {
-    if (contentType.includes("application/json")) {
-      try {
-        payload = await response.json();
-      } catch {
-        payload = null;
-      }
-    } else {
-      try {
-        payload = await response.text();
-      } catch {
-        payload = null;
+  const request = (async () => {
+    const response = await fetch(requestUrl, {
+      credentials: "include",
+      ...fetchOptions,
+      headers: {
+        ...(fetchOptions.body ? { "Content-Type": "application/json" } : {}),
+        ...(csrfCookie && !["GET", "HEAD", "OPTIONS"].includes(method)
+          ? { "X-XSRF-TOKEN": decodeURIComponent(csrfCookie) }
+          : {}),
+        ...customHeaders,
+      },
+    });
+
+    const contentType = response.headers.get("content-type") || "";
+    let payload = null;
+
+    if (response.status !== 204) {
+      if (contentType.includes("application/json")) {
+        try {
+          payload = await response.json();
+        } catch {
+          payload = null;
+        }
+      } else {
+        try {
+          payload = await response.text();
+        } catch {
+          payload = null;
+        }
       }
     }
+
+    if (!response.ok) {
+      const message =
+        (payload && typeof payload === "object" && (payload.message || payload.error)) ||
+        (typeof payload === "string" && payload.trim()) ||
+        `Requisição falhou com status ${response.status}`;
+
+      throw new ApiError(message, response.status, payload);
+    }
+
+    return payload;
+  })();
+
+  if (!requestKey) return request;
+
+  inFlightGetRequests.set(requestKey, request);
+  try {
+    return await request;
+  } finally {
+    if (inFlightGetRequests.get(requestKey) === request) {
+      inFlightGetRequests.delete(requestKey);
+    }
   }
-
-  if (!response.ok) {
-    const message =
-      (payload && typeof payload === "object" && (payload.message || payload.error)) ||
-      (typeof payload === "string" && payload.trim()) ||
-      `Requisição falhou com status ${response.status}`;
-
-    throw new ApiError(message, response.status, payload);
-  }
-
-  return payload;
 }
 
 export function isFetchNetworkError(error) {

@@ -9,7 +9,7 @@ const ICONS = {
   user: MdPerson,
 };
 
-function BottomNavigation({ activeId = "dashboard", scanDisabled = false }) {
+function BottomNavigation({ activeId = "dashboard", scanDisabled = false, scanDisabledLabel = "Registrada" }) {
   return (
     <nav className="bottom-nav">
       {bottomNavItems.map(({ id, label, icon }) => {
@@ -17,7 +17,7 @@ function BottomNavigation({ activeId = "dashboard", scanDisabled = false }) {
         const isActive = id === activeId;
         const isScan = id === "scan";
         const isDisabled = isScan && scanDisabled;
-        const ItemIcon = isDisabled ? MdCheck : Icon;
+        const ItemIcon = isDisabled && scanDisabledLabel === "Registrada" ? MdCheck : Icon;
 
         if (isDisabled) {
           return (
@@ -27,7 +27,7 @@ function BottomNavigation({ activeId = "dashboard", scanDisabled = false }) {
               aria-disabled="true"
             >
               <span className="bottom-nav__icon"><ItemIcon size={22} /></span>
-              <span className="bottom-nav__label">Registrada</span>
+              <span className="bottom-nav__label">{scanDisabledLabel}</span>
             </span>
           );
         }

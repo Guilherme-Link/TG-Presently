@@ -2,6 +2,7 @@ package br.com.fatecid.guidu.presently.controller;
 
 import br.com.fatecid.guidu.presently.dto.EventCreateDTO;
 import br.com.fatecid.guidu.presently.dto.EventDTO;
+import br.com.fatecid.guidu.presently.dto.ActiveEventDTO;
 import br.com.fatecid.guidu.presently.service.EventService;
 import br.com.fatecid.guidu.presently.service.ParticipantService;
 
@@ -80,5 +81,11 @@ public class EventController {
     @GetMapping("/participant/{id}")
     public ResponseEntity<List<EventDTO>> getParticipantEvents(@PathVariable Long id) {
         return ResponseEntity.ok(participantService.getEventsForParticipant(id));
+    }
+
+    @GetMapping("/participant/{id}/active")
+    public ResponseEntity<ActiveEventDTO> getCurrentParticipantEvent(@PathVariable Long id) {
+        ActiveEventDTO event = participantService.getCurrentActiveEvent(id);
+        return event == null ? ResponseEntity.noContent().build() : ResponseEntity.ok(event);
     }
 }

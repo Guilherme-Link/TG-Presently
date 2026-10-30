@@ -43,3 +43,9 @@ export function listParticipantEvents(participantId) {
     method: "GET",
   });
 }
+
+export function getCurrentActiveParticipantEvent(participantId) {
+  return apiFetch(`/api/v1/events/participant/${participantId}/active`, {
+    method: "GET",
+  });
+}

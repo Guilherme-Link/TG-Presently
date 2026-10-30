@@ -27,9 +27,6 @@ public class ValidationCodeService {
     @Value("${presently.validationcode.validfor}")
     private int codeValidForSeconds;
 
-    @Value("${presently.geolocation.max-accuracy-meters:100}")
-    private double maxLocationAccuracyMeters;
-
     private final EventService eventService;
     private final EventOccurrenceService occurrenceService;
     private final AmbientService ambientService;
@@ -117,15 +114,9 @@ public class ValidationCodeService {
         if (event.getAmbient().getArea() != null) {
             double latitude = validationDTO.getUserLatitude();
             double longitude = validationDTO.getUserLongitude();
-            double accuracy = validationDTO.getUserLocationAccuracyMeters();
-
             if (!Double.isFinite(latitude) || latitude < -90 || latitude > 90
                     || !Double.isFinite(longitude) || longitude < -180 || longitude > 180) {
                 return "Não foi possível obter uma localização válida. Ative a localização do dispositivo e tente novamente.";
-            }
-
-            if (!Double.isFinite(accuracy) || accuracy <= 0 || accuracy > maxLocationAccuracyMeters) {
-                return "A localização está imprecisa. Ative a localização precisa ou o GPS do dispositivo e tente novamente.";
             }
 
             if (!ambientService.validateInsideAmbient(event.getAmbient().getId(), latitude, longitude)) {
